@@ -1,5 +1,5 @@
 ---
-import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon } from '@lucide/astro';
+import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@lucide/astro';
 ---
 
 <header class="border-b border-[var(--color-border-washi)] bg-[var(--color-canvas)]/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
@@ -25,23 +25,24 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon } from '@luci
     </a>
 
     <!-- Nav Links (Desktop & Tablet Landscape) -->
-    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--color-ink-secondary)]">
+    <nav class="hidden md:flex items-center gap-3.5 lg:gap-6 text-xs lg:text-sm font-medium text-[var(--color-ink-secondary)]">
       <a href="/#katalog" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Semua Buku</a>
       <a href="/#jlpt-filter" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Level JLPT</a>
       <a href="/#kategori" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Kategori</a>
+      <a href="/about" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Tentang</a>
     </nav>
 
     <!-- Actions: Search, Theme Toggle, Admin Link & Mobile Hamburger -->
-    <div class="flex items-center gap-2 sm:gap-2.5">
+    <div class="flex items-center gap-1.5 sm:gap-2">
       <!-- Search Shortcut Trigger -->
       <a
         href="/#pencarian"
-        class="flex items-center gap-2 px-3 py-2 sm:py-1.5 min-h-[40px] sm:min-h-0 rounded-lg border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs text-[var(--color-ink-secondary)] hover:border-neutral-300 transition-colors shadow-2xs active:scale-95"
+        class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] rounded-lg border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs text-[var(--color-ink-secondary)] hover:border-neutral-300 transition-colors shadow-2xs active:scale-95"
         aria-label="Pencarian materi"
       >
         <Search class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
-        <span class="hidden sm:inline">Cari materi...</span>
-        <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-ink-tertiary)] bg-neutral-100 rounded border border-neutral-200">
+        <span class="hidden lg:inline">Cari materi...</span>
+        <kbd class="hidden xl:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-ink-tertiary)] bg-neutral-100 rounded border border-neutral-200">
           /
         </kbd>
       </a>
@@ -111,6 +112,14 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon } from '@luci
       >
         <Layers class="w-4 h-4 text-[var(--color-ink-tertiary)]" />
         <span>Kategori Topik</span>
+      </a>
+
+      <a
+        href="/about"
+        class="mobile-nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] hover:bg-[var(--color-surface-subtle)] transition-colors"
+      >
+        <User class="w-4 h-4 text-[var(--color-ink-tertiary)]" />
+        <span>Tentang Pembuat</span>
       </a>
     </div>
 

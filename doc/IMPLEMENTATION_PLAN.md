@@ -2,7 +2,7 @@
 
 Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi langkah untuk membangun dan mendeploy **Nihongo_repo** ke Cloudflare Pages dengan database Cloudflare D1.
 
-> **STATUS PROGRES TERKINI (Updated: 2026-11-08):**
+> **STATUS PROGRES TERKINI (Updated: 2026-11-09):**
 > * [x] **Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare** — `SELESAI (Completed)`
 > * [x] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SELESAI (Completed)`
 > * [x] **Fase 3: Seeding Data Awal & Kredensial Admin** — `SELESAI (Completed)`
@@ -10,6 +10,12 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > * [x] **Fase 5: Pencarian Instan & Filter Interaktif** — `SELESAI (Completed)`
 > * [x] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `SELESAI (Completed)`
 > * [x] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `SELESAI (Completed)`
+> * [x] **Fase 8: Fitur Pembelajar Lanjutan (Opsi A)** — `SELESAI (Completed)`
+> * [x] **Fase 9: Admin Ops & Keamanan (Opsi B)** — `SELESAI (Completed)`
+> * [x] **Fase 10: SEO, Social Discovery & Feeds (Opsi C)** — `SELESAI (Completed)`
+> * [x] **Fase 11: Estetika & Night Mode (Opsi D)** — `SELESAI (Completed)`
+> * [x] **Fase 12: Pengujian E2E Playwright (18/18 Skenario)** — `SELESAI (Completed)`
+> * [x] **Fase 13: Halaman Profil Pembuat & Repositori (/about)** — `SELESAI (Completed)`
 
 ---
 
@@ -149,7 +155,7 @@ gantt
 ---
 
 ### [x] Fase 12: Pengujian E2E Playwright & Otomasi CI/CD (STATUS: SELESAI)
-- [x] Suite pengujian Playwright komprehensif di `e2e/nihongo_repo.spec.ts` mencakup 17 skenario uji:
+- [x] Suite pengujian Playwright komprehensif di `e2e/nihongo_repo.spec.ts` mencakup 18 skenario uji:
   1. Pemuatan beranda dan branding Washi Jepang.
   2. Pencarian kata kunci instan interaktif.
   3. Filter chip level JLPT (N5 - N1).
@@ -167,4 +173,16 @@ gantt
   15. Verifikasi zero horizontal scroll overflow pada viewport mobile.
   16. Sticky bottom navigation bar admin pada tampilan mobile.
   17. Layout fluid responsif pada viewport tablet (768x1024).
-- [x] Hasil eksekusi: **17 passed (100% sukses)**.
+  18. Pemuatan halaman About (`/about`) dengan profil pembuat, narasi cerita, avatar, dan tautan sosial.
+- [x] Hasil eksekusi: **18 passed (100% sukses)**.
+
+---
+
+### [x] Fase 13: Halaman Profil Pembuat & Repositori (/about) (STATUS: SELESAI)
+- [x] Desain halaman `/about` (`src/pages/about.astro`) bernuansa *Digital Washi & Sumi-e* dengan kartu profil pembuat, badge stempel segel merah "日", dan avatar representatif.
+- [x] Narasi komprehensif latar belakang "Cerita di Balik Nihongo_repo" dan 3 pilar nilai inti: 100% Bebas Akses, Terkurasi & Standar, serta Modern & Cepat.
+- [x] Tautan sosial interaktif (GitHub profil pembuat via inline SVG, repositori kode sumber, surel kontak).
+- [x] Integrasi navigasi tautan "Tentang" pada navbar desktop dan hamburger drawer mobile (`src/components/Navbar.astro`), serta tautan footer (`src/components/Footer.astro`).
+- [x] Optimasi layout tablet 768px (`md:`) agar bebas dari *horizontal scroll overflow*.
+- [x] Pendaftaran URL `/about` pada dynamic XML sitemap (`src/pages/sitemap.xml.ts`).
+- [x] Penambahan test case Playwright E2E ke-18 (`e2e/nihongo_repo.spec.ts`) dengan hasil pengujian **18/18 passed (100% lulus)**.

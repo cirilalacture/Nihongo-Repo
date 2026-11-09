@@ -32,6 +32,11 @@ export const GET: APIRoute = async ({ url }) => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>${siteUrl}/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 ${materialIds
   .map(
     (id) => `  <url>

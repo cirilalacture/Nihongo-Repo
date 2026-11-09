@@ -13,7 +13,7 @@
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
-  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-17%2F17%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-18%2F18%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
 </p>
 
@@ -43,6 +43,7 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
   * Tab 2: **Intip Isi Buku** (*Google Drive Preview Embed* iframe viewer langsung di dalam situs).
   * Tombol **Salin Link** (*one-click clipboard*), tautan langsung ke **Google Drive**, dan navigasi ke halaman penuh.
 * **Halaman Rincian Mandiri (*Standalone Permalink* — `/materi/[id]`):** Halaman SEO SSR dengan OpenGraph metadata lengkap untuk sharing media sosial, breadcrumb navigasi, Web Share API, dan rekomendasi buku terkait.
+* **Halaman Profil Pembuat (*About Page* — `/about`):** Halaman profil naratif pembuat/author, avatar representatif, stempel stempel segel merah Jepang, visi nirlaba proyek, teknologi di balik situs, dan tautan sosial GitHub.
 * **Washi Night Mode (*Sumi-e Dark Mode*):** Dukungan tema terang kertas Washi dan tema gelap tinta arang Sumi-e dengan script anti-FOUC (Flash of Unstyled Content).
 * **SEO, Sitemap & RSS Feed:** Dynamic XML Sitemap (`/sitemap.xml`) dan RSS 2.0 Feed (`/rss.xml`) untuk sindikasi konten dan auto-indexing.
 * **Desain Responsif Adaptif (Mobile, Tablet, Desktop):** Drawer menu navigasi mobile yang rapi, bar filter sentuh horizontal tanpa overflow, target sentuhan jari minimal 44px, dan modal detail adaptif (berubah menjadi *bottom sheet* di smartphone dan kartu terpusat di tablet/desktop).
@@ -150,7 +151,7 @@ Proyek ini telah dilengkapi dengan suite pengujian otomatis end-to-end yang meng
 npm run test:e2e
 ```
 
-**Cakupan Skenario Uji (17/17 Passed):**
+**Cakupan Skenario Uji (18/18 Passed):**
 * ✅ Tampilan tema visual & branding Washi Paper
 * ✅ Pencarian reaktif instan berdasarkan keyword
 * ✅ Filter chip level JLPT (N5 - N1)
@@ -160,6 +161,7 @@ npm run test:e2e
 * ✅ Pengalih Tema Dark Mode (Washi Light vs Sumi-e Dark)
 * ✅ Pemuatan halaman permalink mandiri `/materi/[id]` & OpenGraph tags
 * ✅ Validasi endpoint Dynamic XML Sitemap (`/sitemap.xml`) & RSS 2.0 Feed (`/rss.xml`)
+* ✅ Pemuatan halaman profil pembuat `/about` (avatar, bio, story, visi & tautan sosial)
 * ✅ Route guard redirection untuk akses yang belum terautentikasi
 * ✅ Alur login admin dengan kredensial valid
 * ✅ Navigasi admin, tabel materi, dan penambahan kategori

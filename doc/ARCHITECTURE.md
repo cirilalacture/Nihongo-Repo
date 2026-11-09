@@ -92,6 +92,7 @@ nihongo_repo/
 │   ├── middleware.ts           # Route guard untuk /admin/*
 │   ├── pages/
 │   │   ├── index.astro         # Halaman utama katalog publik (grid & compact table)
+│   │   ├── about.astro         # Halaman profil pembuat, narasi visi, dan kontak
 │   │   ├── materi/
 │   │   │   └── [id].astro      # Standalone SEO permalink & OpenGraph preview
 │   │   ├── sitemap.xml.ts      # Dynamic XML Sitemap endpoint

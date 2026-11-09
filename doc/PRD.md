@@ -60,6 +60,11 @@
 * **SEO & Social Discovery:**
   * Endpoint XML Sitemap otomatis (`/sitemap.xml`) untuk memudahkan pengindeksan oleh Google Bot.
   * Endpoint RSS 2.0 Feed (`/rss.xml`) untuk pembaca feed berita dan notifikasi pembaruan materi pembelajaran.
+* **Halaman Profil Pembuat & Tentang Repositori (`/about`):**
+  * Halaman publik mandiri yang menyajikan narasi lahirnya Nihongo_repo, visi keterbukaan akses materi pembelajaran, profil kurator/pembuat dengan avatar representatif terkurasi, stempel segel merah "日", serta nilai-nilai inti nirlaba (100% Akses Terbuka, Kurasi Berkualitas, dan Ringan/Cepat).
+  * Menampilkan badge tech-stack modern (Astro v7, Cloudflare Pages/D1, Tailwind CSS v4, TypeScript).
+  * Tautan interaktif ke profil GitHub pembuat, repositori kode sumber, dan kontak surel.
+  * Terdaftar secara otomatis di XML Sitemap (`/sitemap.xml`) dengan prioritas pencarian 0.7.
 
 ### 4.2 Halaman Admin & CMS (`/admin`)
 Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:

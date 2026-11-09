@@ -205,6 +205,33 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     expect(rssText).toContain('Nihongo_repo');
   });
 
+  test('About page loads correctly with creator profile, avatar, story, and social links', async ({ page }) => {
+    await page.goto('/');
+
+    // Click "Tentang" from desktop navbar
+    const aboutLink = page.locator('header nav a[href="/about"]');
+    await expect(aboutLink).toBeVisible();
+    await aboutLink.click();
+
+    // Verify URL is /about
+    await expect(page).toHaveURL(/\/about$/);
+
+    // Verify creator name and headline
+    const creatorName = page.locator('main h1');
+    await expect(creatorName).toContainText('Ciril Alacture');
+
+    // Verify avatar image is visible
+    const avatarImg = page.locator('main img[alt="Ciril Alacture"]');
+    await expect(avatarImg).toBeVisible();
+
+    // Verify story section
+    await expect(page.locator('text=Cerita di Balik Nihongo_repo')).toBeVisible();
+
+    // Verify GitHub profile button
+    const githubBtn = page.locator('a[href*="github.com/cirilalacture"]').first();
+    await expect(githubBtn).toBeVisible();
+  });
+
 });
 
 test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
@@ -314,6 +341,7 @@ test.describe('Nihongo_repo Responsive & Mobile/Tablet UX Tests', () => {
     await expect(mobileMenu).toBeVisible();
     await expect(mobileMenu.locator('text=Semua Buku & Materi')).toBeVisible();
     await expect(mobileMenu.locator('text=Level JLPT')).toBeVisible();
+    await expect(mobileMenu.locator('text=Tentang Pembuat')).toBeVisible();
     await expect(mobileMenu.locator('text=Admin CMS Dashboard')).toBeVisible();
 
     // Close mobile menu
