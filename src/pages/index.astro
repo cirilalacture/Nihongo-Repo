@@ -535,7 +535,7 @@ if (materialsList.length === 0) {
         });
       }
 
-      // Keyboard Shortcut '/' to focus search
+      // Keyboard Shortcut '/' to focus search & Hash Handler
       window.addEventListener('keydown', (e) => {
         if (e.key === '/' && document.activeElement !== searchInput) {
           e.preventDefault();
@@ -546,18 +546,31 @@ if (materialsList.length === 0) {
         }
       });
 
+      if (window.location.hash === '#pencarian' && searchInput) {
+        setTimeout(() => searchInput.focus(), 150);
+      }
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash === '#pencarian' && searchInput) {
+          searchInput.focus();
+        }
+      });
+
+      // Level Filter Styling Constants
+      const ACTIVE_LEVEL_CLASSES = ['bg-neutral-900', 'text-white', 'border-neutral-900', 'dark:bg-neutral-100', 'dark:text-neutral-950', 'dark:border-neutral-100'];
+      const INACTIVE_LEVEL_CLASSES = ['bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]'];
+
       // Level Filter Click Handlers
       levelButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
           selectedLevel = btn.getAttribute('data-filter-level') || 'ALL';
 
           levelButtons.forEach((b) => {
-            b.classList.remove('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
-            b.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+            b.classList.remove(...ACTIVE_LEVEL_CLASSES);
+            b.classList.add(...INACTIVE_LEVEL_CLASSES);
           });
 
-          btn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
-          btn.classList.add('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
+          btn.classList.remove(...INACTIVE_LEVEL_CLASSES);
+          btn.classList.add(...ACTIVE_LEVEL_CLASSES);
 
           applyFilters();
         });
@@ -618,11 +631,11 @@ if (materialsList.length === 0) {
           // Reset buttons visual state
           levelButtons.forEach((b) => {
             if (b.getAttribute('data-filter-level') === 'ALL') {
-              b.classList.add('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
-              b.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+              b.classList.add(...ACTIVE_LEVEL_CLASSES);
+              b.classList.remove(...INACTIVE_LEVEL_CLASSES);
             } else {
-              b.classList.remove('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
-              b.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+              b.classList.remove(...ACTIVE_LEVEL_CLASSES);
+              b.classList.add(...INACTIVE_LEVEL_CLASSES);
             }
           });
 

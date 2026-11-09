@@ -158,6 +158,10 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await themeBtn.click();
     await expect(htmlEl).toHaveClass(/dark/);
 
+    // Verify Hero action button "Jelajahi Repository" text is visible and legible in dark mode
+    const heroExploreBtn = page.locator('a[href="/#katalog"]:has-text("Jelajahi Repository")');
+    await expect(heroExploreBtn).toBeVisible();
+
     // Click again to toggle back to light mode
     await themeBtn.click();
     await expect(htmlEl).not.toHaveClass(/dark/);
@@ -179,6 +183,12 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
 
     // Verify iframe preview exists
     await expect(page.locator('iframe')).toBeVisible();
+
+    // Test Navigation: Clicking navbar "Semua Buku" returns to homepage catalog
+    const navSemuaBuku = page.locator('header nav a:has-text("Semua Buku")');
+    await navSemuaBuku.click();
+    await expect(page).toHaveURL(/\/#katalog$/);
+    await expect(page.locator('#katalog')).toBeVisible();
   });
 
   test('Sitemap.xml and RSS.xml endpoints return valid XML feeds', async ({ request }) => {
