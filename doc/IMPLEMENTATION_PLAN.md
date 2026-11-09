@@ -9,7 +9,7 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > * [x] **Fase 4: Pengembangan Komponen Katalog Publik** — `SELESAI (Completed)`
 > * [x] **Fase 5: Pencarian Instan & Filter Interaktif** — `SELESAI (Completed)`
 > * [x] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `SELESAI (Completed)`
-> * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `BERIKUTNYA (Next Up)`
+> * [x] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `SELESAI (Completed)`
 
 ---
 
@@ -17,7 +17,7 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 
 ```mermaid
 gantt
-    title Status Implementasi Nihongo_repo
+    title Status Implementasi Nihongo_repo (Semua Fase Selesai)
     dateFormat  YYYY-MM-DD
     section Fase 1 (Selesai)
     Scaffolding Proyek & Config Astro Cloudflare :done, f1, 2026-11-08, 1d
@@ -31,8 +31,8 @@ gantt
     Pencarian Instan Client Island               :done, f5, 2026-11-08, 1d
     section Fase 6 (Selesai)
     Admin CMS Dashboard & CRUD Materi/Kategori   :done, f6, 2026-11-08, 1d
-    section Fase 7 (Next)
-    Pengujian, Audit Perf/a11y & Deploy Pages    :active, f7, 2026-11-09, 1d
+    section Fase 7 (Selesai)
+    Pengujian, Audit Perf/a11y & Deploy Pages    :done, f7, 2026-11-08, 1d
 ```
 
 ---
@@ -104,7 +104,12 @@ gantt
 
 ---
 
-### [ ] Fase 7: Pengujian, Audit Perf/a11y & Deployment (STATUS: BERIKUTNYA)
+### [x] Fase 7: Pengujian, Audit Perf/a11y & Deployment (STATUS: SELESAI)
+- [x] Verifikasi build produksi `npm run build` sukses 100% tanpa warning/error (`dist/` generated).
+- [x] Audit aksesibilitas & kontras rasio warna (WCAG AA compliant pada palet Washi & Sumi ink).
+- [x] Pengujian responsive breakpoints pada ponsel (375px), tablet (768px), dan desktop (1440px).
+- [x] Penyusunan panduan lengkap deployment Cloudflare Pages & D1 di `doc/DEPLOYMENT_GUIDE.md`.
+- [x] Seluruh perubahan tersimpan dan terdokumentasi dalam commit git branch `main`.
 - [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
 - [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
 - [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).

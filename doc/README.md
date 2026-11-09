@@ -12,7 +12,8 @@ Selamat datang di direktori dokumentasi resmi proyek **Nihongo_repo**. Direktori
 | **[2. Arsitektur & Tech Stack](./ARCHITECTURE.md)** | Alasan pemilihan Astro v5, Drizzle ORM, Cloudflare Pages/Workers, integrasi D1, dan integrasi Google Drive. |
 | **[3. Desain Skema Database](./DATABASE_SCHEMA.md)** | ERD Mermaid, skema tabel SQLite D1 (`categories`, `jlpt_levels`, `materials`, `tags`), dan script migrasi SQL. |
 | **[4. Aturan Desain Web (Design System)](./DESIGN_RULES.md)** | Panduan UI/UX (Digital Washi Minimalism), token warna, matriks warna badge JLPT, tipografi, dan referensi prototipe Stitch. |
-| **[5. Implementation Plan](./IMPLEMENTATION_PLAN.md)** | Rencana kerja bertahap dari inisialisasi scaffolding (Fase 1) hingga deployment production (Fase 6). |
+| **[5. Implementation Plan](./IMPLEMENTATION_PLAN.md)** | Rencana kerja bertahap dari Fase 1 hingga Fase 7 (Semua fase telah selesai 100%). |
+| **[6. Panduan Deployment Cloudflare](./DEPLOYMENT_GUIDE.md)** | Panduan langkah demi langkah mendeploy ke Cloudflare Pages, membuat D1 remote, migrasi SQL, dan binding DB. |
 
 ---
 
