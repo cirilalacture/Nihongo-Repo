@@ -363,7 +363,7 @@ if (materialsList.length === 0) {
   <MaterialDetailModal slot="modals" />
 
   <!-- Inject Materials Data as JSON for Modal Popups & Fast Client Filtering -->
-  <script is:inline id="materials-data" type="application/json" set:html={JSON.stringify(materialsList)} />
+  <script is:inline id="materials-data" type="application/json" set:html={JSON.stringify(materialsList)}></script>
 
   <!-- Client-Side Filtering & Modal Controller Script -->
   <script is:inline>
@@ -595,6 +595,20 @@ if (materialsList.length === 0) {
         const item = materialsMap.get(materialId);
         if (!item) return;
 
+        const modal = document.getElementById('detail-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalOriginalTitle = document.getElementById('modal-original-title');
+        const modalDescription = document.getElementById('modal-description');
+        const modalLevelBadge = document.getElementById('modal-level-badge');
+        const modalCategoryName = document.getElementById('modal-category-name');
+        const modalAuthor = document.getElementById('modal-author');
+        const modalPublisher = document.getElementById('modal-publisher');
+        const modalYear = document.getElementById('modal-year');
+        const modalSize = document.getElementById('modal-size');
+        const modalDriveBtn = document.getElementById('modal-drive-btn');
+        const modalCopyBtn = document.getElementById('modal-copy-btn');
+        const copyBtnText = document.getElementById('copy-btn-text');
+
         if (modalTitle) modalTitle.textContent = item.title;
         if (modalOriginalTitle) modalOriginalTitle.textContent = item.originalTitle || item.romajiTitle || '';
         if (modalDescription) modalDescription.textContent = item.description || 'Tidak ada deskripsi rinci.';
@@ -637,6 +651,7 @@ if (materialsList.length === 0) {
       }
 
       function closeModal() {
+        const modal = document.getElementById('detail-modal');
         if (modal) {
           modal.classList.add('hidden');
           modal.classList.remove('flex');
@@ -644,26 +659,29 @@ if (materialsList.length === 0) {
         }
       }
 
-      // Delegate click for open detail buttons
+      // Delegate click for open detail buttons and close modal
       document.addEventListener('click', (e) => {
         const btn = e.target.closest('.btn-open-detail');
         if (btn) {
           const id = btn.getAttribute('data-id');
           if (id) openModal(id);
+          return;
+        }
+
+        if (e.target.closest('#modal-close-btn')) {
+          closeModal();
+          return;
+        }
+
+        const modal = document.getElementById('detail-modal');
+        if (modal && e.target === modal) {
+          closeModal();
         }
       });
 
-      if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
-
-      // Close modal on backdrop click
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) closeModal();
-        });
-      }
-
       // Close modal on Escape
       window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('detail-modal');
         if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
           closeModal();
         }

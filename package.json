@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test:e2e": "playwright test",
     "generate-types": "wrangler types",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 execute nihongo-repo-db --local --file=./schema.sql",
@@ -23,6 +24,7 @@
     "wrangler": "^4.158.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "drizzle-kit": "^0.31.11"
   }
 }

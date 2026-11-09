@@ -24,5 +24,9 @@ pnpm-debug.log*
 .wrangler/
 .wrangler
 
+# test results & playwright
+test-results/
+playwright-report/
+
 # jetbrains setting folder
 .idea/
