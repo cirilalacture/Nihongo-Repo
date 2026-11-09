@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #FFF8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F5F5F0;
+  --color-border-washi: #E7E5E4;
+  
+  --color-ink-primary: #1C1917;
+  --color-ink-secondary: #44403C;
+  --color-ink-tertiary: #78716C;
+
+  --color-vermilion: #DC2626;
+  --color-vermilion-hover: #B91C1C;
+  --color-vermilion-subtle: #FEF2F2;
+
+  --font-sans: "Noto Sans", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-japanese: "Noto Sans JP", "Zen Kaku Gothic New", sans-serif;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,81 @@
+---
+import '../styles/global.css';
+import { BookOpen, Sparkles, FolderGit2 } from '@lucide/astro';
+---
+
+<html lang="id">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Nihongo_repo (日本語レポ) — Direktori Materi Bahasa Jepang</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+	</head>
+	<body class="min-h-screen flex flex-col justify-between selection:bg-red-100 selection:text-red-900">
+		<header class="border-b border-[var(--color-border-washi)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-50">
+			<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+				<div class="flex items-center gap-2">
+					<div class="w-9 h-9 rounded-lg bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+						日
+					</div>
+					<div>
+						<span class="font-bold text-lg tracking-tight text-[var(--color-ink-primary)]">Nihongo_repo</span>
+						<span class="text-xs text-[var(--color-ink-tertiary)] ml-1 font-medium">日本語レポ</span>
+					</div>
+				</div>
+				<div class="flex items-center gap-3">
+					<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+						<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+						Fase 1 Ready
+					</span>
+				</div>
+			</div>
+		</header>
+
+		<main class="max-w-6xl mx-auto px-4 py-16 flex-1 flex flex-col items-center justify-center text-center">
+			<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border-washi)] text-xs font-medium text-[var(--color-ink-secondary)] mb-6 shadow-xs">
+				<Sparkles class="w-3.5 h-3.5 text-amber-500" />
+				Cloudflare Pages + D1 Database Ready
+			</div>
+
+			<h1 class="text-4xl md:text-5xl font-bold tracking-tight text-[var(--color-ink-primary)] max-w-2xl leading-tight mb-4">
+				Koleksi Terkurasi Materi & Buku Bahasa Jepang
+			</h1>
+
+			<p class="text-base md:text-lg text-[var(--color-ink-secondary)] max-w-xl mb-8 leading-relaxed">
+				Platform katalog terpadu untuk mengakses buku teks, tata bahasa, kanji, dan bank soal JLPT N5–N1 yang tersimpan aman di Google Drive.
+			</p>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full text-left">
+				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
+					<div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-3">
+						<BookOpen class="w-4 h-4" />
+					</div>
+					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Astro v5 + SSR</h3>
+					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Performa ultra-cepat di Cloudflare Edge dengan zero-JS baseline.</p>
+				</div>
+				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
+					<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+						<FolderGit2 class="w-4 h-4" />
+					</div>
+					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Cloudflare D1 & Drizzle</h3>
+					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Database SQLite serverless terdistribusi global dan type-safe.</p>
+				</div>
+				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
+					<div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+						<Sparkles class="w-4 h-4" />
+					</div>
+					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Digital Washi UI</h3>
+					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Desain bertema kertas washi & tinta sumi yang ramah mata.</p>
+				</div>
+			</div>
+		</main>
+
+		<footer class="border-t border-[var(--color-border-washi)] py-6 text-center text-xs text-[var(--color-ink-tertiary)] bg-[var(--color-surface)]">
+			Nihongo_repo © 2026 — Built with Astro, Cloudflare Pages & D1
+		</footer>
+	</body>
+</html>
