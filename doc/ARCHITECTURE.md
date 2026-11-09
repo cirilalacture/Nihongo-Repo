@@ -39,14 +39,24 @@ flowchart TD
 * **Zero Overhead:** Admin CMS dibangun dengan komponen Astro + Tailwind ringan tanpa framework state manajemen yang membengkak, memuat seketika di koneksi seluler.
 
 ### 2.2 Alur Keamanan & Autentikasi Admin
-1. **Penyimpanan Kredensial:** Tabel `admin_users` menyimpan username dan password hash terenkripsi (atau token rahasia `ADMIN_SECRET` yang dapat diatur via Cloudflare Environment Variable).
+1. **Penyimpanan Kredensial:** Tabel `admin_users` menyimpan username dan password hash terenkripsi (PBKDF2 SHA-256 dengan 100.000 iterasi).
 2. **Login Flow:**
    * Admin memasukkan username & password pada form `/admin/login`.
-   * Endpoint server memverifikasi password dan mengenerate token sesi terenkripsi.
-   * Token disimpan dalam cookie berstatus `HttpOnly`, `SameSite=Strict`, dan `Secure`.
+   * Server memverifikasi password via `verifyPassword()` dan mengenerate HMAC-SHA256 session token.
+   * Token disimpan dalam cookie berstatus `HttpOnly`, `SameSite=Lax`, dan masa aktif 7 hari.
 3. **Guard Middleware:**
    * Setiap request menuju `/admin` dan sub-routenya dicek oleh `src/middleware.ts`.
-   * Jika cookie valid, request dilanjutkan. Jika tidak, redirect ke `/admin/login`.
+   * Jika cookie tidak valid, otomatis redirect ke `/admin/login`.
+
+### 2.3 Integrasi Binding Cloudflare Workers Modern
+Aplikasi menggunakan standar modern Cloudflare Workers (`cloudflare:workers` module):
+* **Binding D1 (`DB`):**
+  ```ts
+  import { env } from 'cloudflare:workers';
+  // env.DB adalah instance D1Database yang terhubung otomatis
+  ```
+  Pola ini menggantikan `Astro.locals.runtime.env` lama yang didepresiasi, memberikan koneksi langsung dan type-safe ke Cloudflare D1.
+* **ORM Drizzle:** Diinisialisasi di `src/db/index.ts` via helper `getDb()`, menyederhanakan pemanggilan query di seluruh halaman Astro dan API endpoints.
 
 ---
 
