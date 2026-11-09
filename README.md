@@ -1,89 +1,194 @@
 # Nihongo_repo (日本語レポ)
 
-> **Koleksi Terkurasi Sumber Belajar & Buku Bahasa Jepang di Cloudflare Edge**
+<p align="center">
+  <img src="https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=1200&q=80" alt="Nihongo Repo Banner" width="100%" style="border-radius: 16px; max-height: 320px; object-fit: cover;" />
+</p>
 
-Nihongo_repo adalah aplikasi web repository materi pembelajaran bahasa Jepang (buku teks, tata bahasa, kanji, audio, dan lembar soal ujian JLPT N5–N1) yang ringan, cepat, dan elegan. Aplikasi ini di-deploy di **Cloudflare Pages** dengan database serverless **Cloudflare D1** dan penyimpanan berkas langsung di **Google Drive**.
+<p align="center">
+  <strong>Direktori Terkurasi Sumber Belajar & Buku Bahasa Jepang di Cloudflare Edge</strong>
+</p>
 
-Dilengkapi dengan antarmuka katalog publik bertema *Digital Washi & Sumi-e* serta **Admin CMS** mandiri untuk mengelola materi, buku, dan kategori.
+<p align="center">
+  <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-v5%20SSR-BC52EE?style=flat-square&logo=astro&logoColor=white" alt="Astro v5" /></a>
+  <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
+  <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-Playwright%20100%25%20Passed-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
+</p>
+
+---
+
+## 📖 Tentang Proyek
+
+**Nihongo_repo** (日本語レポ) adalah platform web katalog dan repositori materi pembelajaran bahasa Jepang (buku teks, tata bahasa, kanji, audio pemahaman, dan bank soal JLPT N5–N1) yang dibangun dengan standar performa tinggi. 
+
+Dirancang dengan filosofi visual **Digital Washi & Sumi-e** (terinspirasi dari tekstur kertas tradisional Jepang dan kontras tinta kaligrafi), website ini menyajikan materi secara terstruktur, bebas iklan yang mengganggu, serta terhubung langsung ke berkas penyimpanan di **Google Drive**.
+
+Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diproteksi autentikasi *edge-level session* untuk memudahkan penambahan dan kurasi materi secara visual tanpa coding manual.
 
 ---
 
 ## ✨ Fitur Utama
 
-### 📖 Katalog Publik
-* **Tampilan Fleksibel:** Beralih antara **Grid View** (kartu visual estetik) dan **Table View** (tabel padat untuk browsing cepat).
-* **Pencarian Reaktif Instan:** Filter langsung berdasarkan judul Latin, Romaji, Kanji asli Jepang, maupun nama pengarang tanpa refresh browser (Shortcut: <kbd>/</kbd>).
-* **Filter Multifaset:** Filter per tingkat JLPT (`N5`, `N4`, `N3`, `N2`, `N1`, `ALL`) dan per kategori (`Tata Bahasa`, `Kanji`, `Kosakata`, `Membaca`, `Menyimak`, `Bank Soal`).
-* **Modal Detail Materi:** Pratinjau informasi buku, metadata berkas, tombol salin tautan, dan tombol langsung **"Buka di Drive"**.
+### 1. Katalog Publik (Public Catalog)
+* **Pencarian Reaktif Instan:** Cari materi berdasarkan judul Latin, Romaji, Kanji Jepang asli, maupun nama pengarang seketika tanpa perlu memuat ulang halaman (Shortcut pencarian: <kbd>/</kbd>).
+* **Filter Multifaset JLPT & Topik:**
+  * **Level JLPT:** `N5 (Pemula)`, `N4 (Dasar Lanjutan)`, `N3 (Menengah)`, `N2 (Pra-Mahir)`, `N1 (Tingkat Mahir)`, dan `ALL (Semua Level / Materi Umum)`.
+  * **Kategori Topik:** `Tata Bahasa (Bunpou)`, `Huruf & Kanji`, `Kosakata (Goi)`, `Membaca (Dokkai)`, `Menyimak & Audio (Choukai)`, dan `Bank Soal (Mondai)`.
+* **Dua Mode Tampilan Fleksibel:** Beralih antara **Grid View** (kartu visual estetik) dan **Compact Table View** (tabel padat untuk pemindaian cepat puluhan buku).
+* **Modal Detail Materi:** Membuka rangkuman buku, daftar isi, penerbit, tahun rilis, ukuran berkas, tombol **Salin Link** (*one-click clipboard*), dan tombol langsung **Buka di Google Drive**.
+* **Pelacak Popularitas Berkas:** Mencatat jumlah klik tautan secara otomatis ke database Cloudflare D1.
 
-### 🛡️ Admin CMS (`/admin`)
-* **Autentikasi Aman:** Dilindungi SSR middleware dengan signed HMAC-SHA256 cookie session (`/admin/login`).
-* **Ringkasan Metrik Dashboard:** Statistik total materi, total kategori, total klik Google Drive, distribusi per level JLPT, dan 5 materi paling sering diakses.
-* **Manajemen Materi (CRUD):** Tambah materi baru dengan auto-extract ID Google Drive, edit data, dan hapus materi dengan modal konfirmasi.
-* **Manajemen Kategori:** Tambah kategori baru dengan proteksi integritas data (tidak bisa dihapus jika kategori masih memiliki materi aktif).
+### 2. Admin CMS Dashboard (`/admin`)
+* **Keamanan Edge Middleware:** Seluruh rute `/admin/*` diproteksi middleware server-side dengan session token terenkripsi HMAC-SHA256 (`HttpOnly` cookie).
+* **Ringkasan Statistik Real-time:** Memantau total buku, total kategori, total klik Google Drive, serta grafik distribusi materi per tingkat JLPT.
+* **Manajemen Materi (CRUD Lengkap):**
+  * Form penambahan materi baru yang otomatis mengekstrak *File ID* dari URL berbagi Google Drive.
+  * Dukungan berbagai format file: `PDF`, `AUDIO_ZIP`, `ANKI`, dan `EXCEL`.
+  * Status kontrol publikasi (`Publik` vs `Draft`) dan penanda khusus *"Pilihan Sensei"* (*Featured*).
+  * Form edit materi dan dialog modal konfirmasi sebelum menghapus data.
+* **Manajemen Kategori:** Tambah dan atur urutan kategori dengan proteksi integritas relasi data (kategori tidak dapat dihapus jika masih menampung materi aktif).
 
 ---
 
-## 🛠️ Tech Stack
+## 🏗️ Arsitektur Sistem
 
-* **Framework:** [Astro v5](https://astro.build/) (Server-Side Rendering / SSR)
-* **Hosting & Runtime:** [Cloudflare Pages](https://pages.cloudflare.com/) via `@astrojs/cloudflare`
-* **Database:** [Cloudflare D1](https://developers.cloudflare.com/d1/) (Serverless SQLite)
+```mermaid
+flowchart TD
+    User([Pengguna / Pembelajar]) -->|Akses Katalog| CDN[Cloudflare Global Edge]
+    Admin([Administrator]) -->|Akses CMS /admin| CDN
+
+    CDN -->|Server-Side Rendering| AstroApp[Astro v5 SSR Runtime]
+    
+    subgraph Astro App Logic
+        AstroApp -->|Route Guard Middleware| AuthGuard{Admin Valid?}
+        AuthGuard -->|Ya| AdminCMS[Admin CMS Dashboard]
+        AuthGuard -->|Tidak| AdminLogin[Redirect ke /admin/login]
+        AstroApp --> PublicCatalog[Public Catalog Interface]
+    end
+
+    subgraph Cloudflare Infrastructure
+        AdminCMS -->|Drizzle ORM Queries| D1[(Cloudflare D1 Database)]
+        PublicCatalog -->|Drizzle ORM Queries| D1
+    end
+
+    subgraph External Storage
+        User -->|Unduh / Baca Berkas| GDrive[(Google Drive Cloud)]
+    end
+```
+
+---
+
+## 🛠️ Tech Stack & Ekosistem
+
+* **Framework:** [Astro v5](https://astro.build/) (`output: 'server'` dengan adapter `@astrojs/cloudflare`)
+* **Hosting & Runtime:** [Cloudflare Pages](https://pages.cloudflare.com/) (V8 Edge Isolate)
+* **Database:** [Cloudflare D1](https://developers.cloudflare.com/d1/) (Serverless SQL SQLite distributed globally)
 * **ORM:** [Drizzle ORM](https://orm.drizzle.team/) + Drizzle Kit
 * **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) + `@lucide/astro`
-* **Desain UI/UX:** Mengikuti prinsip *Digital Washi & Sumi-e* (Stitch Prototype ID: `407598114321150448`)
+* **Testing:** [Playwright](https://playwright.dev/) End-to-End Test Suite (Headless Chromium)
+* **Keamanan:** Web Crypto API native (PBKDF2 SHA-256 password hash + HMAC session signature)
+* **Desain Sistem:** Konsep *Digital Washi & Sumi-e* (Stitch Prototype Project ID: `407598114321150448`)
 
 ---
 
-## 🚀 Menjalankan Secara Lokal
+## 🚀 Memulai Secara Lokal (Local Development)
 
-1. **Clone & Masuk ke Folder Proyek:**
-   ```bash
-   cd Projects/Web/nihongo_repo
-   ```
+### 1. Prasyarat
+* [Node.js](https://nodejs.org/) versi 20+ atau 22+
+* npm versi 10+
 
-2. **Install Dependensi:**
-   ```bash
-   npm install
-   ```
+### 2. Instalasi & Setup Proyek
+```bash
+# Masuk ke folder proyek
+cd Projects/Web/nihongo_repo
 
-3. **Inisialisasi Database D1 Lokal & Seeding Data:**
-   ```bash
-   # Jalankan migrasi tabel
-   npx wrangler d1 execute nihongo-repo-db --local --file=./schema.sql
+# Install dependensi
+npm install
+```
 
-   # Masukkan data awal (JLPT levels, kategori, akun admin, koleksi buku awal)
-   npx wrangler d1 execute nihongo-repo-db --local --file=./src/db/seed.sql
-   ```
+### 3. Migrasi & Seeding Database D1 Lokal
+```bash
+# 1. Jalankan skema tabel database lokal
+npx wrangler d1 execute nihongo-repo-db --local --file=./schema.sql
 
-4. **Jalankan Server Development:**
-   ```bash
-   npm run dev
-   ```
-   Buka browser di:
-   * **Katalog Publik:** [http://localhost:4321](http://localhost:4321)
-   * **Admin CMS:** [http://localhost:4321/admin/login](http://localhost:4321/admin/login)
-     * **Username:** `admin`
-     * **Password:** `admin123`
+# 2. Masukkan data awal level JLPT, kategori, dan koleksi materi awal
+npx wrangler d1 execute nihongo-repo-db --local --file=./src/db/seed.sql
+```
 
-5. **Build Uji Produksi:**
-   ```bash
-   npm run build
-   ```
+### 4. Menjalankan Server Development
+```bash
+npm run dev
+```
+Buka browser pada alamat:
+* **Katalog Publik:** `http://localhost:4321`
+* **Admin CMS Login:** `http://localhost:4321/admin/login`
+  * **Username:** `admin`
+  * **Password:** `admin123`
 
 ---
 
-## 📚 Dokumentasi Lengkap
+## 🧪 Menjalankan Pengujian E2E (Playwright)
 
-Seluruh dokumen spesifikasi teknis dan rencana implementasi dapat dibaca di folder [`doc/`](./doc):
-* 📋 **[`doc/PRD.md`](./doc/PRD.md)** — *Product Requirements Document*
-* 🏗️ **[`doc/ARCHITECTURE.md`](./doc/ARCHITECTURE.md)** — Arsitektur sistem & integrasi Cloudflare
-* 🗄️ **[`doc/DATABASE_SCHEMA.md`](./doc/DATABASE_SCHEMA.md)** — Skema database D1 & ERD
-* 🎨 **[`doc/DESIGN_RULES.md`](./doc/DESIGN_RULES.md)** — Panduan token warna & tipografi
-* 📅 **[`doc/IMPLEMENTATION_PLAN.md`](./doc/IMPLEMENTATION_PLAN.md)** — Riwayat eksekusi Fase 1 - 7
-* 🚀 **[`doc/DEPLOYMENT_GUIDE.md`](./doc/DEPLOYMENT_GUIDE.md)** — Panduan lengkap deploy ke Cloudflare Pages
+Proyek ini telah dilengkapi dengan suite pengujian otomatis end-to-end yang menguji alur pengguna publik dan admin secara menyeluruh:
+
+```bash
+# Jalankan seluruh skenario E2E test
+npm run test:e2e
+```
+
+**Cakupan Skenario Uji:**
+* ✅ Tampilan tema visual & branding Washi Paper
+* ✅ Pencarian reaktif instan berdasarkan keyword
+* ✅ Filter chip level JLPT (N5 - N1)
+* ✅ Switcher tampilan Grid View & Table View
+* ✅ Interaksi pop-up Modal Detail & Salin Tautan Google Drive
+* ✅ Route guard redirection untuk akses yang belum terautentikasi
+* ✅ Alur login admin dengan kredensial valid
+* ✅ Navigasi admin, tabel materi, dan penambahan kategori
 
 ---
 
-## 📝 Lisensi
-Dibuat untuk komunitas pembelajar bahasa Jepang. Bebas digunakan dan dikembangkan untuk keperluan edukasi.
+## ☁️ Panduan Deployment (GitHub ➔ Cloudflare Pages)
+
+1. **Buat Database D1 di Cloudflare:**
+   ```bash
+   npx wrangler d1 create nihongo-repo-db
+   ```
+2. **Jalankan Migrasi & Seeding ke Production (Remote):**
+   ```bash
+   npx wrangler d1 execute nihongo-repo-db --remote --file=./schema.sql
+   npx wrangler d1 execute nihongo-repo-db --remote --file=./src/db/seed.sql
+   ```
+3. **Hubungkan Repository ke Cloudflare Pages:**
+   * Di Cloudflare Dashboard, pilih **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
+   * Pilih repository GitHub Anda.
+   * **Build command:** `npm run build`
+   * **Build output directory:** `dist`
+   * **Environment variable:** `NODE_VERSION` = `22`
+4. **Pasang Binding Database D1:**
+   * Buka project Pages > **Settings** > **Functions** > **D1 Database Bindings**.
+   * Tambahkan binding dengan nama variabel: `DB` dan arahkan ke database `nihongo-repo-db`.
+   * Klik **Save** dan lakukan redeploy.
+
+> 📖 Panduan lengkap dan troubleshooting operasional dapat dilihat di [`doc/DEPLOYMENT_GUIDE.md`](./doc/DEPLOYMENT_GUIDE.md).
+
+---
+
+## 📚 Direktori Dokumentasi Teknis
+
+| Dokumen | Deskripsi |
+| :--- | :--- |
+| 📋 **[`doc/PRD.md`](./doc/PRD.md)** | *Product Requirements Document*: visi produk, audiens, dan fitur lengkap. |
+| 🏗️ **[`doc/ARCHITECTURE.md`](./doc/ARCHITECTURE.md)** | Arsitektur teknis Astro SSR, Cloudflare Workers, dan middleware session. |
+| 🗄️ **[`doc/DATABASE_SCHEMA.md`](./doc/DATABASE_SCHEMA.md)** | Diagram ERD Mermaid, skema tabel D1, dan seed SQL. |
+| 🎨 **[`doc/DESIGN_RULES.md`](./doc/DESIGN_RULES.md)** | Panduan token warna, tipografi Noto Sans JP, dan aturan komponen UI. |
+| 📅 **[`doc/IMPLEMENTATION_PLAN.md`](./doc/IMPLEMENTATION_PLAN.md)** | Riwayat eksekusi Fase 1 hingga Fase 7 (Semua fase telah selesai 100%). |
+| 🚀 **[`doc/DEPLOYMENT_GUIDE.md`](./doc/DEPLOYMENT_GUIDE.md)** | Panduan lengkap langkah demi langkah deploy ke Cloudflare Pages. |
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dirilis di bawah lisensi [MIT](./LICENSE). Dibuat untuk mendukung komunitas pembelajar bahasa Jepang di seluruh dunia.
