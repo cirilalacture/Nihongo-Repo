@@ -143,7 +143,7 @@ const levelCode = material.levelCode || 'ALL';
       <!-- Detail Modal Trigger -->
       <button
         type="button"
-        class="btn-open-detail w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-xs font-medium text-[var(--color-ink-secondary)] transition-colors"
+        class="btn-open-detail w-full flex items-center justify-center gap-1.5 py-2.5 px-3 min-h-[42px] sm:min-h-0 rounded-xl border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-xs font-semibold text-[var(--color-ink-secondary)] active:scale-95 transition-all"
         data-id={material.id}
       >
         <Info class="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ const levelCode = material.levelCode || 'ALL';
         href={material.driveUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-semibold shadow-2xs transition-all duration-150 active:scale-95"
+        class="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 min-h-[42px] sm:min-h-0 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all duration-150 active:scale-95"
         title="Buka file langsung di Google Drive"
       >
         <span>Buka Drive</span>

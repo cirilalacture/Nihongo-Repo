@@ -163,7 +163,7 @@ if (db) {
                   <div class="inline-flex items-center gap-1.5 justify-end">
                     <a
                       href={`/admin/materials/edit/${item.id}`}
-                      class="p-1.5 rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 transition-colors"
+                      class="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 active:scale-95 transition-all"
                       title="Edit Materi"
                     >
                       <Edit2 class="w-3.5 h-3.5" />
@@ -172,14 +172,14 @@ if (db) {
                       href={item.driveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="p-1.5 rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 transition-colors"
+                      class="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 active:scale-95 transition-all"
                       title="Buka Drive"
                     >
                       <ExternalLink class="w-3.5 h-3.5" />
                     </a>
                     <button
                       type="button"
-                      class="btn-delete-mat p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                      class="btn-delete-mat p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 active:scale-95 transition-all"
                       data-id={item.id}
                       data-title={item.title}
                       title="Hapus Materi"

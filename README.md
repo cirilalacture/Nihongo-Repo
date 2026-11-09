@@ -13,7 +13,7 @@
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
-  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-Playwright%20100%25%20Passed-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-12%2F12%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
 </p>
 
@@ -37,11 +37,13 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
   * **Level JLPT:** `N5 (Pemula)`, `N4 (Dasar Lanjutan)`, `N3 (Menengah)`, `N2 (Pra-Mahir)`, `N1 (Tingkat Mahir)`, dan `ALL (Semua Level / Materi Umum)`.
   * **Kategori Topik:** `Tata Bahasa (Bunpou)`, `Huruf & Kanji`, `Kosakata (Goi)`, `Membaca (Dokkai)`, `Menyimak & Audio (Choukai)`, dan `Bank Soal (Mondai)`.
 * **Dua Mode Tampilan Fleksibel:** Beralih antara **Grid View** (kartu visual estetik) dan **Compact Table View** (tabel padat untuk pemindaian cepat puluhan buku).
+* **Desain Responsif Adaptif (Mobile, Tablet, Desktop):** Drawer menu navigasi mobile yang rapi, bar filter sentuh horizontal tanpa overflow, target sentuhan jari minimal 44px, dan modal detail adaptif (berubah menjadi *bottom sheet* di smartphone dan kartu terpusat di tablet/desktop).
 * **Modal Detail Materi:** Membuka rangkuman buku, daftar isi, penerbit, tahun rilis, ukuran berkas, tombol **Salin Link** (*one-click clipboard*), dan tombol langsung **Buka di Google Drive**.
 * **Pelacak Popularitas Berkas:** Mencatat jumlah klik tautan secara otomatis ke database Cloudflare D1.
 
 ### 2. Admin CMS Dashboard (`/admin`)
 * **Keamanan Edge Middleware:** Seluruh rute `/admin/*` diproteksi middleware server-side dengan session token terenkripsi HMAC-SHA256 (`HttpOnly` cookie).
+* **Mobile-First Admin Navigation:** Dilengkapi *sticky bottom navigation bar* pada layar ponsel/tablet untuk beralih instan antara Ringkasan Metrik, Kelola Materi, Tambah Buku, dan Kelola Kategori tanpa repot scrolling ke atas.
 * **Ringkasan Statistik Real-time:** Memantau total buku, total kategori, total klik Google Drive, serta grafik distribusi materi per tingkat JLPT.
 * **Manajemen Materi (CRUD Lengkap):**
   * Form penambahan materi baru yang otomatis mengekstrak *File ID* dari URL berbagi Google Drive.

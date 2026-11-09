@@ -20,15 +20,15 @@ const { totalMaterials = 9, totalCategories = 6 } = Astro.props;
 
   <div class="max-w-4xl mx-auto px-4 text-center">
     <!-- Status Badge -->
-    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border-washi)] text-xs font-medium text-[var(--color-ink-secondary)] mb-6 shadow-2xs">
-      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-      <span class="font-japanese text-[var(--color-ink-tertiary)]">日本語学習資料</span>
-      <span class="text-neutral-300">|</span>
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border-washi)] text-[11px] sm:text-xs font-medium text-[var(--color-ink-secondary)] mb-6 shadow-2xs">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+      <span class="font-japanese text-[var(--color-ink-tertiary)] hidden sm:inline">日本語学習資料</span>
+      <span class="text-neutral-300 hidden sm:inline">|</span>
       <span>Cloudflare Pages & D1 Live</span>
     </div>
 
     <!-- Main Headline -->
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--color-ink-primary)] leading-[1.15] mb-5">
+    <h1 class="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--color-ink-primary)] leading-[1.2] sm:leading-[1.15] mb-4 sm:mb-5">
       Koleksi Terkurasi Materi & Buku <br class="hidden sm:inline" />
       <span class="text-[var(--color-vermilion)] relative inline-block">
         Bahasa Jepang
@@ -39,12 +39,12 @@ const { totalMaterials = 9, totalCategories = 6 } = Astro.props;
     </h1>
 
     <!-- Descriptive Subtitle -->
-    <p class="text-base sm:text-lg text-[var(--color-ink-secondary)] max-w-2xl mx-auto mb-8 leading-relaxed font-normal">
+    <p class="text-sm sm:text-base md:text-lg text-[var(--color-ink-secondary)] max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed font-normal">
       Katalog terpusat untuk mencari buku teks, tata bahasa, kanji, audio pemahaman, dan persiapan ujian JLPT N5 hingga N1 yang tersimpan aman di Google Drive.
     </p>
 
     <!-- Key Metrics Pills -->
-    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-[var(--color-ink-secondary)] mb-8">
+    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-[var(--color-ink-secondary)] mb-6 sm:mb-8">
       <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-2xs">
         <BookOpen class="w-3.5 h-3.5 text-[var(--color-vermilion)]" />
         <span><strong>{totalMaterials}</strong> Materi Terdaftar</span>
@@ -63,7 +63,7 @@ const { totalMaterials = 9, totalCategories = 6 } = Astro.props;
     <div class="flex justify-center">
       <a
         href="#katalog"
-        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-ink-primary)] hover:bg-neutral-800 text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-95"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl bg-[var(--color-ink-primary)] hover:bg-neutral-800 text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-95"
       >
         <span>Jelajahi Repository</span>
         <ArrowDown class="w-4 h-4 text-neutral-400" />

@@ -14,7 +14,7 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(brand).toContainText('日');
 
     // Check Hero Section Headline
-    const heroTitle = page.locator('h1');
+    const heroTitle = page.locator('main h1');
     await expect(heroTitle).toContainText('Koleksi Terkurasi Materi & Buku');
 
     // Check that materials exist
@@ -155,8 +155,81 @@ test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
     await expect(page.locator('text=Tambah Kategori Baru')).toBeVisible();
 
     // Logout
-    await page.click('a[title="Keluar / Logout"]');
+    await page.click('aside a[title="Keluar / Logout"]');
     await expect(page).toHaveURL(/\/admin\/login/);
+  });
+
+});
+
+test.describe('Nihongo_repo Responsive & Mobile/Tablet UX Tests', () => {
+
+  test('Mobile viewport (390x844 - iPhone) renders hamburger drawer and touch navigation', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    // Check hamburger button is visible on mobile
+    const toggleBtn = page.locator('#mobile-nav-toggle');
+    await expect(toggleBtn).toBeVisible();
+
+    // Check desktop nav is hidden
+    const desktopNav = page.locator('header nav');
+    await expect(desktopNav).toBeHidden();
+
+    // Open mobile menu
+    await toggleBtn.click();
+    const mobileMenu = page.locator('#mobile-nav-menu');
+    await expect(mobileMenu).toBeVisible();
+    await expect(mobileMenu.locator('text=Semua Buku & Materi')).toBeVisible();
+    await expect(mobileMenu.locator('text=Level JLPT')).toBeVisible();
+    await expect(mobileMenu.locator('text=Admin CMS Dashboard')).toBeVisible();
+
+    // Close mobile menu
+    await toggleBtn.click();
+    await expect(mobileMenu).toBeHidden();
+  });
+
+  test('Mobile viewport has zero horizontal scroll overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const isHorizontallyScrollable = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > window.innerWidth;
+    });
+    expect(isHorizontallyScrollable).toBeFalsy();
+  });
+
+  test('Admin panel on mobile shows sticky bottom navigation and hides desktop sidebar', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    
+    // Login
+    await page.goto('/admin/login');
+    await page.fill('#username', 'admin');
+    await page.fill('#password', 'admin123');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/\/admin$/);
+
+    // Bottom nav bar should be visible on mobile
+    const bottomNav = page.locator('nav.md\\:hidden');
+    await expect(bottomNav).toBeVisible();
+    await expect(bottomNav.locator('text=Ringkasan')).toBeVisible();
+    await expect(bottomNav.locator('text=Materi')).toBeVisible();
+    await expect(bottomNav.locator('text=Tambah')).toBeVisible();
+    await expect(bottomNav.locator('text=Kategori')).toBeVisible();
+
+    // Desktop sidebar should be hidden
+    const desktopSidebar = page.locator('aside');
+    await expect(desktopSidebar).toBeHidden();
+  });
+
+  test('Tablet viewport (768x1024 - iPad) maintains fluid responsive layout', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto('/');
+
+    await expect(page.locator('#grid-container')).toBeVisible();
+    const isHorizontallyScrollable = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > window.innerWidth;
+    });
+    expect(isHorizontallyScrollable).toBeFalsy();
   });
 
 });

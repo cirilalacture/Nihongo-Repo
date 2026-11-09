@@ -78,3 +78,19 @@ Desain **Nihongo_repo** memadukan estetika tradisional alat tulis Jepang (*Japan
   * Field link Google Drive otomatis memvalidasi format URL dan mengekstrak ID file jika memungkinkan.
 * **Dialog Konfirmasi Hapus (Delete Confirmation Modal):**
   * Menampilkan nama materi yang akan dihapus untuk mencegah *accidental clicks*.
+
+---
+
+## 5. Standar Responsif & Adaptasi Perangkat (Mobile, Tablet, Desktop)
+
+* **Mobile Viewport (Smartphone: 360px – 640px):**
+  * **Header:** Menampilkan brand mini dan hamburger menu drawer animasi yang membuka opsi navigasi lengkap dan shortcut admin.
+  * **Touch Target Standard:** Target sentuhan tombol utama, chip filter, dan aksi minimal 40px–44px untuk kenyamanan jempol (*thumb-zone ergonomis*).
+  * **Modal Detail:** Berubah adaptif menjadi *Bottom Sheet* dengan sudut atas melengkung (`rounded-t-3xl`), indikator handle di atas, dan scroll inersia sentuh.
+  * **Admin CMS Mobile:** Dilengkapi *Sticky Bottom Navigation Bar* (Dashboard, Materi, Tambah, Kategori) dengan safe-area padding untuk layar modern (iPhone gesture bar).
+* **Tablet Viewport (641px – 1024px):**
+  * **Grid Materi:** Ditampilkan dalam 2 kolom terstruktur rapi.
+  * **Admin CMS:** Form input dan tabel data tertata ergonomis dengan responsivitas sentuh.
+* **Desktop Viewport (1025px+):**
+  * **Grid Materi:** Ditampilkan dalam 3 kolom seimbang.
+  * **Admin CMS:** Sidebar navigasi persisten di sisi kiri untuk alur kerja operasional intensif.

@@ -314,20 +314,20 @@ if (materialsList.length === 0) {
                 <div class="inline-flex items-center gap-1.5 justify-end">
                   <button
                     type="button"
-                    class="btn-open-detail p-1.5 rounded-lg border border-[var(--color-border-washi)] text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)]"
+                    class="btn-open-detail p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-[var(--color-border-washi)] text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] active:scale-95 transition-all"
                     data-id={item.id}
                     title="Lihat Detail"
                   >
-                    <Info class="w-3.5 h-3.5" />
+                    <Info class="w-4 h-4" />
                   </button>
                   <a
                     href={item.driveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="p-1.5 rounded-lg bg-[var(--color-vermilion)] text-white hover:bg-[var(--color-vermilion-hover)]"
+                    class="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg bg-[var(--color-vermilion)] text-white hover:bg-[var(--color-vermilion-hover)] active:scale-95 transition-all"
                     title="Buka di Drive"
                   >
-                    <ExternalLink class="w-3.5 h-3.5" />
+                    <ExternalLink class="w-4 h-4" />
                   </a>
                 </div>
               </td>
