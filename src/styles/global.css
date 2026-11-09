@@ -1,21 +1,47 @@
 @import "tailwindcss";
 
 @theme {
+  --color-canvas: var(--color-canvas);
+  --color-surface: var(--color-surface);
+  --color-surface-subtle: var(--color-surface-subtle);
+  --color-border-washi: var(--color-border-washi);
+  
+  --color-ink-primary: var(--color-ink-primary);
+  --color-ink-secondary: var(--color-ink-secondary);
+  --color-ink-tertiary: var(--color-ink-tertiary);
+
+  --color-vermilion: var(--color-vermilion);
+  --color-vermilion-hover: var(--color-vermilion-hover);
+  --color-vermilion-subtle: var(--color-vermilion-subtle);
+
+  --font-sans: "Noto Sans", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-japanese: "Noto Sans JP", "Zen Kaku Gothic New", sans-serif;
+}
+
+:root {
   --color-canvas: #FFF8F5;
   --color-surface: #FFFFFF;
   --color-surface-subtle: #F5F5F0;
   --color-border-washi: #E7E5E4;
-  
   --color-ink-primary: #1C1917;
   --color-ink-secondary: #44403C;
   --color-ink-tertiary: #78716C;
-
   --color-vermilion: #DC2626;
   --color-vermilion-hover: #B91C1C;
   --color-vermilion-subtle: #FEF2F2;
+}
 
-  --font-sans: "Noto Sans", "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-japanese: "Noto Sans JP", "Zen Kaku Gothic New", sans-serif;
+html.dark {
+  --color-canvas: #121214;
+  --color-surface: #1C1C20;
+  --color-surface-subtle: #24242A;
+  --color-border-washi: #32323A;
+  --color-ink-primary: #F4F4F6;
+  --color-ink-secondary: #D4D4D8;
+  --color-ink-tertiary: #A1A1AA;
+  --color-vermilion: #EF4444;
+  --color-vermilion-hover: #DC2626;
+  --color-vermilion-subtle: #2D1414;
 }
 
 body {
@@ -24,6 +50,7 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Prevent auto-zoom on iOS when focusing inputs */

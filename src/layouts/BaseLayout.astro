@@ -35,6 +35,21 @@ const {
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Theme Initialization Script (Avoid FOUC) -->
+    <script is:inline>
+      (function () {
+        try {
+          const stored = localStorage.getItem('nihongo_theme');
+          const isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="min-h-screen flex flex-col bg-[var(--color-canvas)] text-[var(--color-ink-primary)] selection:bg-red-100 selection:text-red-900 antialiased font-sans">
     <slot name="header" />

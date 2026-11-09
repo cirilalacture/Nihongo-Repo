@@ -13,7 +13,7 @@
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
-  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-12%2F12%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-17%2F17%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
 </p>
 
@@ -36,14 +36,24 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
 * **Filter Multifaset JLPT & Topik:**
   * **Level JLPT:** `N5 (Pemula)`, `N4 (Dasar Lanjutan)`, `N3 (Menengah)`, `N2 (Pra-Mahir)`, `N1 (Tingkat Mahir)`, dan `ALL (Semua Level / Materi Umum)`.
   * **Kategori Topik:** `Tata Bahasa (Bunpou)`, `Huruf & Kanji`, `Kosakata (Goi)`, `Membaca (Dokkai)`, `Menyimak & Audio (Choukai)`, dan `Bank Soal (Mondai)`.
+* **Sistem Bookmark Mandiri (*Favorites*):** Simpan materi favorit ke `localStorage` tanpa perlu registrasi/login, lengkap dengan tombol filter *"Tersimpan"* dan badge counter real-time.
 * **Dua Mode Tampilan Fleksibel:** Beralih antara **Grid View** (kartu visual estetik) dan **Compact Table View** (tabel padat untuk pemindaian cepat puluhan buku).
+* **Modal Detail Materi dengan PDF Preview:**
+  * Tab 1: Ringkasan buku, penerbit, tahun rilis, dan ukuran berkas.
+  * Tab 2: **Intip Isi Buku** (*Google Drive Preview Embed* iframe viewer langsung di dalam situs).
+  * Tombol **Salin Link** (*one-click clipboard*), tautan langsung ke **Google Drive**, dan navigasi ke halaman penuh.
+* **Halaman Rincian Mandiri (*Standalone Permalink* — `/materi/[id]`):** Halaman SEO SSR dengan OpenGraph metadata lengkap untuk sharing media sosial, breadcrumb navigasi, Web Share API, dan rekomendasi buku terkait.
+* **Washi Night Mode (*Sumi-e Dark Mode*):** Dukungan tema terang kertas Washi dan tema gelap tinta arang Sumi-e dengan script anti-FOUC (Flash of Unstyled Content).
+* **SEO, Sitemap & RSS Feed:** Dynamic XML Sitemap (`/sitemap.xml`) dan RSS 2.0 Feed (`/rss.xml`) untuk sindikasi konten dan auto-indexing.
 * **Desain Responsif Adaptif (Mobile, Tablet, Desktop):** Drawer menu navigasi mobile yang rapi, bar filter sentuh horizontal tanpa overflow, target sentuhan jari minimal 44px, dan modal detail adaptif (berubah menjadi *bottom sheet* di smartphone dan kartu terpusat di tablet/desktop).
-* **Modal Detail Materi:** Membuka rangkuman buku, daftar isi, penerbit, tahun rilis, ukuran berkas, tombol **Salin Link** (*one-click clipboard*), dan tombol langsung **Buka di Google Drive**.
-* **Pelacak Popularitas Berkas:** Mencatat jumlah klik tautan secara otomatis ke database Cloudflare D1.
 
 ### 2. Admin CMS Dashboard (`/admin`)
 * **Keamanan Edge Middleware:** Seluruh rute `/admin/*` diproteksi middleware server-side dengan session token terenkripsi HMAC-SHA256 (`HttpOnly` cookie).
-* **Mobile-First Admin Navigation:** Dilengkapi *sticky bottom navigation bar* pada layar ponsel/tablet untuk beralih instan antara Ringkasan Metrik, Kelola Materi, Tambah Buku, dan Kelola Kategori tanpa repot scrolling ke atas.
+* **Pengaturan Akun & Ganti Kata Sandi (`/admin/settings`):** Form ganti password aman dengan enkripsi Web Crypto PBKDF2 (SHA-256, 100.000 iterasi).
+* **Ekspor & Impor Koleksi CSV:**
+  * **Ekspor CSV (`/api/admin/materials/export`):** Unduh seluruh basis data materi lengkap ke format CSV dalam satu klik.
+  * **Impor CSV (`/admin/materials/import`):** Unggah file CSV atau tempel teks langsung dengan auto-resolusi kategori dan level JLPT.
+* **Mobile-First Admin Navigation:** Dilengkapi *sticky bottom navigation bar* pada layar ponsel/tablet untuk beralih instan antara Ringkasan Metrik, Kelola Materi, Tambah Buku, Kelola Kategori, dan Pengaturan.
 * **Ringkasan Statistik Real-time:** Memantau total buku, total kategori, total klik Google Drive, serta grafik distribusi materi per tingkat JLPT.
 * **Manajemen Materi (CRUD Lengkap):**
   * Form penambahan materi baru yang otomatis mengekstrak *File ID* dari URL berbagi Google Drive.
@@ -140,15 +150,24 @@ Proyek ini telah dilengkapi dengan suite pengujian otomatis end-to-end yang meng
 npm run test:e2e
 ```
 
-**Cakupan Skenario Uji:**
+**Cakupan Skenario Uji (17/17 Passed):**
 * ✅ Tampilan tema visual & branding Washi Paper
 * ✅ Pencarian reaktif instan berdasarkan keyword
 * ✅ Filter chip level JLPT (N5 - N1)
 * ✅ Switcher tampilan Grid View & Table View
-* ✅ Interaksi pop-up Modal Detail & Salin Tautan Google Drive
+* ✅ Interaksi pop-up Modal Detail & Tab Pratinjau Dokumen Google Drive
+* ✅ Penyimpanan Bookmark / Favorit ke `localStorage` & filter "Tersimpan"
+* ✅ Pengalih Tema Dark Mode (Washi Light vs Sumi-e Dark)
+* ✅ Pemuatan halaman permalink mandiri `/materi/[id]` & OpenGraph tags
+* ✅ Validasi endpoint Dynamic XML Sitemap (`/sitemap.xml`) & RSS 2.0 Feed (`/rss.xml`)
 * ✅ Route guard redirection untuk akses yang belum terautentikasi
 * ✅ Alur login admin dengan kredensial valid
 * ✅ Navigasi admin, tabel materi, dan penambahan kategori
+* ✅ Akses pengaturan ganti kata sandi admin & alat ekspor/impor CSV
+* ✅ Drawer menu navigasi mobile pada layar smartphone (390x844)
+* ✅ Bebas dari scroll horizontal berlebih (*zero horizontal scroll overflow*) di mobile
+* ✅ Tampilan *sticky bottom navigation bar* admin di viewport mobile
+* ✅ Tata letak responsif fluid pada layar tablet (768x1024)
 
 ---
 

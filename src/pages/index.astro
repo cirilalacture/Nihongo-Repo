@@ -365,23 +365,36 @@ if (materialsList.length === 0) {
   <!-- Inject Materials Data as JSON for Modal Popups & Fast Client Filtering -->
   <script is:inline id="materials-data" type="application/json" set:html={JSON.stringify(materialsList)}></script>
 
-  <!-- Client-Side Filtering & Modal Controller Script -->
+  <!-- Client-Side Filtering, Bookmark & Modal Controller Script -->
   <script is:inline>
     (function () {
       const dataEl = document.getElementById('materials-data');
       const allMaterials = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
       const materialsMap = new Map(allMaterials.map((m) => [m.id, m]));
 
+      // Bookmark State (localStorage)
+      const BOOKMARK_STORAGE_KEY = 'nihongo_saved_materials';
+      let savedBookmarks = new Set();
+      try {
+        const stored = localStorage.getItem(BOOKMARK_STORAGE_KEY);
+        if (stored) savedBookmarks = new Set(JSON.parse(stored));
+      } catch (err) {
+        console.warn('Could not read bookmarks from localStorage:', err);
+      }
+
       // Filter State
       let selectedLevel = 'ALL';
       let selectedCategory = 'ALL';
       let searchKeyword = '';
+      let showOnlyBookmarks = false;
       let activeView = 'grid'; // 'grid' | 'table'
 
       // DOM Elements
       const searchInput = document.getElementById('search-input');
       const levelButtons = document.querySelectorAll('.filter-level-btn');
       const categoryButtons = document.querySelectorAll('.filter-category-btn');
+      const bookmarkFilterBtn = document.getElementById('filter-bookmarks-btn');
+      const bookmarkCountBadge = document.getElementById('bookmarks-count-badge');
       const gridContainer = document.getElementById('grid-container');
       const tableContainer = document.getElementById('table-container');
       const viewGridBtn = document.getElementById('view-grid-btn');
@@ -390,21 +403,33 @@ if (materialsList.length === 0) {
       const emptyStateEl = document.getElementById('empty-state');
       const resetFilterBtn = document.getElementById('reset-filter-btn');
 
-      // Modal Elements
-      const modal = document.getElementById('detail-modal');
-      const modalCloseBtn = document.getElementById('modal-close-btn');
-      const modalTitle = document.getElementById('modal-title');
-      const modalOriginalTitle = document.getElementById('modal-original-title');
-      const modalDescription = document.getElementById('modal-description');
-      const modalLevelBadge = document.getElementById('modal-level-badge');
-      const modalCategoryName = document.getElementById('modal-category-name');
-      const modalAuthor = document.getElementById('modal-author');
-      const modalPublisher = document.getElementById('modal-publisher');
-      const modalYear = document.getElementById('modal-year');
-      const modalSize = document.getElementById('modal-size');
-      const modalDriveBtn = document.getElementById('modal-drive-btn');
-      const modalCopyBtn = document.getElementById('modal-copy-btn');
-      const copyBtnText = document.getElementById('copy-btn-text');
+      // Update Bookmark UI on Cards and Badge
+      function updateBookmarkVisuals() {
+        if (bookmarkCountBadge) {
+          bookmarkCountBadge.textContent = String(savedBookmarks.size);
+          if (savedBookmarks.size > 0) {
+            bookmarkCountBadge.classList.remove('hidden');
+          } else {
+            bookmarkCountBadge.classList.add('hidden');
+          }
+        }
+
+        document.querySelectorAll('.btn-bookmark').forEach((btn) => {
+          const id = btn.getAttribute('data-id');
+          const isSaved = id && savedBookmarks.has(id);
+          const emptyIcon = btn.querySelector('.bookmark-empty');
+          const filledIcon = btn.querySelector('.bookmark-filled');
+          if (isSaved) {
+            btn.classList.add('text-red-600', 'border-red-300', 'bg-red-50/50');
+            if (emptyIcon) emptyIcon.classList.add('hidden');
+            if (filledIcon) filledIcon.classList.remove('hidden');
+          } else {
+            btn.classList.remove('text-red-600', 'border-red-300', 'bg-red-50/50');
+            if (emptyIcon) emptyIcon.classList.remove('hidden');
+            if (filledIcon) filledIcon.classList.add('hidden');
+          }
+        });
+      }
 
       // Filter Function
       function applyFilters() {
@@ -415,6 +440,8 @@ if (materialsList.length === 0) {
         const rows = document.querySelectorAll('.table-material-row');
 
         cards.forEach((card) => {
+          const cardId = card.getAttribute('data-id');
+          const matchBookmark = !showOnlyBookmarks || (cardId && savedBookmarks.has(cardId));
           const matchLevel = selectedLevel === 'ALL' || card.getAttribute('data-level') === selectedLevel;
           const matchCategory = selectedCategory === 'ALL' || card.getAttribute('data-category') === selectedCategory;
           
@@ -430,7 +457,7 @@ if (materialsList.length === 0) {
             orig.includes(query) ||
             author.includes(query);
 
-          if (matchLevel && matchCategory && matchQuery) {
+          if (matchBookmark && matchLevel && matchCategory && matchQuery) {
             card.style.display = 'flex';
             visibleCount++;
           } else {
@@ -439,6 +466,8 @@ if (materialsList.length === 0) {
         });
 
         rows.forEach((row) => {
+          const rowId = row.getAttribute('data-id');
+          const matchBookmark = !showOnlyBookmarks || (rowId && savedBookmarks.has(rowId));
           const matchLevel = selectedLevel === 'ALL' || row.getAttribute('data-level') === selectedLevel;
           const matchCategory = selectedCategory === 'ALL' || row.getAttribute('data-category') === selectedCategory;
           
@@ -454,7 +483,7 @@ if (materialsList.length === 0) {
             orig.includes(query) ||
             author.includes(query);
 
-          if (matchLevel && matchCategory && matchQuery) {
+          if (matchBookmark && matchLevel && matchCategory && matchQuery) {
             row.style.display = 'table-row';
           } else {
             row.style.display = 'none';
@@ -481,6 +510,21 @@ if (materialsList.length === 0) {
             }
           }
         }
+      }
+
+      // Bookmark Filter Button Handler
+      if (bookmarkFilterBtn) {
+        bookmarkFilterBtn.addEventListener('click', () => {
+          showOnlyBookmarks = !showOnlyBookmarks;
+          if (showOnlyBookmarks) {
+            bookmarkFilterBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+            bookmarkFilterBtn.classList.add('bg-red-600', 'text-white', 'border-red-600');
+          } else {
+            bookmarkFilterBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+            bookmarkFilterBtn.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+          }
+          applyFilters();
+        });
       }
 
       // Search Event Listener
@@ -563,7 +607,13 @@ if (materialsList.length === 0) {
           selectedLevel = 'ALL';
           selectedCategory = 'ALL';
           searchKeyword = '';
+          showOnlyBookmarks = false;
           if (searchInput) searchInput.value = '';
+
+          if (bookmarkFilterBtn) {
+            bookmarkFilterBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+            bookmarkFilterBtn.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+          }
 
           // Reset buttons visual state
           levelButtons.forEach((b) => {
@@ -590,10 +640,70 @@ if (materialsList.length === 0) {
         });
       }
 
-      // Detail Modal Handlers
+      // Detail Modal & Tabs Handlers
+      let currentModalMaterial = null;
+
+      function switchModalTab(tab) {
+        const tabInfoBtn = document.getElementById('modal-tab-info');
+        const tabPreviewBtn = document.getElementById('modal-tab-preview');
+        const contentInfo = document.getElementById('modal-content-info');
+        const contentPreview = document.getElementById('modal-content-preview');
+        const previewIframe = document.getElementById('modal-preview-iframe');
+        const previewLoading = document.getElementById('modal-preview-loading');
+
+        if (tab === 'info') {
+          if (tabInfoBtn) {
+            tabInfoBtn.classList.add('border-[var(--color-vermilion)]', 'text-[var(--color-vermilion)]', 'font-bold');
+            tabInfoBtn.classList.remove('border-transparent', 'text-[var(--color-ink-tertiary)]');
+          }
+          if (tabPreviewBtn) {
+            tabPreviewBtn.classList.remove('border-[var(--color-vermilion)]', 'text-[var(--color-vermilion)]', 'font-bold');
+            tabPreviewBtn.classList.add('border-transparent', 'text-[var(--color-ink-tertiary)]');
+          }
+          if (contentInfo) contentInfo.classList.remove('hidden');
+          if (contentPreview) contentPreview.classList.add('hidden');
+        } else {
+          if (tabPreviewBtn) {
+            tabPreviewBtn.classList.add('border-[var(--color-vermilion)]', 'text-[var(--color-vermilion)]', 'font-bold');
+            tabPreviewBtn.classList.remove('border-transparent', 'text-[var(--color-ink-tertiary)]');
+          }
+          if (tabInfoBtn) {
+            tabInfoBtn.classList.remove('border-[var(--color-vermilion)]', 'text-[var(--color-vermilion)]', 'font-bold');
+            tabInfoBtn.classList.add('border-transparent', 'text-[var(--color-ink-tertiary)]');
+          }
+          if (contentInfo) contentInfo.classList.add('hidden');
+          if (contentPreview) contentPreview.classList.remove('hidden');
+
+          // Load preview iframe if not yet set
+          if (currentModalMaterial && previewIframe) {
+            const driveFileId = currentModalMaterial.driveFileId;
+            let previewUrl = '';
+            if (driveFileId) {
+              previewUrl = `https://drive.google.com/file/d/${driveFileId}/preview`;
+            } else if (currentModalMaterial.driveUrl) {
+              previewUrl = currentModalMaterial.driveUrl.replace(/\/view(\?.*)?$/, '/preview');
+            }
+
+            if (previewUrl && previewIframe.src !== previewUrl) {
+              if (previewLoading) previewLoading.classList.remove('hidden');
+              previewIframe.src = previewUrl;
+              previewIframe.onload = () => {
+                if (previewLoading) previewLoading.classList.add('hidden');
+              };
+            }
+          }
+        }
+      }
+
       function openModal(materialId) {
         const item = materialsMap.get(materialId);
         if (!item) return;
+        currentModalMaterial = item;
+
+        // Reset tab to Info
+        switchModalTab('info');
+        const iframe = document.getElementById('modal-preview-iframe');
+        if (iframe) iframe.src = '';
 
         const modal = document.getElementById('detail-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -607,6 +717,7 @@ if (materialsList.length === 0) {
         const modalSize = document.getElementById('modal-size');
         const modalDriveBtn = document.getElementById('modal-drive-btn');
         const modalCopyBtn = document.getElementById('modal-copy-btn');
+        const modalPermalinkBtn = document.getElementById('modal-permalink-btn');
         const copyBtnText = document.getElementById('copy-btn-text');
 
         if (modalTitle) modalTitle.textContent = item.title;
@@ -630,6 +741,10 @@ if (materialsList.length === 0) {
 
         if (modalDriveBtn) {
           modalDriveBtn.href = item.driveUrl;
+        }
+
+        if (modalPermalinkBtn) {
+          modalPermalinkBtn.href = `/materi/${item.id}`;
         }
 
         if (modalCopyBtn) {
@@ -656,11 +771,46 @@ if (materialsList.length === 0) {
           modal.classList.add('hidden');
           modal.classList.remove('flex');
           document.body.style.overflow = '';
+          const iframe = document.getElementById('modal-preview-iframe');
+          if (iframe) iframe.src = '';
         }
       }
 
-      // Delegate click for open detail buttons and close modal
+      // Delegate click for open detail, bookmarks, and modal close
       document.addEventListener('click', (e) => {
+        // 1. Bookmark Toggle Click
+        const bookmarkBtn = e.target.closest('.btn-bookmark');
+        if (bookmarkBtn) {
+          const id = bookmarkBtn.getAttribute('data-id');
+          if (id) {
+            if (savedBookmarks.has(id)) {
+              savedBookmarks.delete(id);
+            } else {
+              savedBookmarks.add(id);
+            }
+            try {
+              localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify([...savedBookmarks]));
+            } catch (err) {
+              console.warn('Could not save to localStorage:', err);
+            }
+            updateBookmarkVisuals();
+            if (showOnlyBookmarks) applyFilters();
+          }
+          return;
+        }
+
+        // 2. Tab Switcher Click
+        const tabBtn = e.target.closest('.modal-tab-btn');
+        if (tabBtn) {
+          if (tabBtn.id === 'modal-tab-preview') {
+            switchModalTab('preview');
+          } else {
+            switchModalTab('info');
+          }
+          return;
+        }
+
+        // 3. Open Detail Modal Click
         const btn = e.target.closest('.btn-open-detail');
         if (btn) {
           const id = btn.getAttribute('data-id');
@@ -668,6 +818,7 @@ if (materialsList.length === 0) {
           return;
         }
 
+        // 3. Close Modal Click
         if (e.target.closest('#modal-close-btn')) {
           closeModal();
           return;
@@ -686,6 +837,9 @@ if (materialsList.length === 0) {
           closeModal();
         }
       });
+
+      // Initial visual setup for bookmarks
+      updateBookmarkVisuals();
     })();
   </script>
 </BaseLayout>

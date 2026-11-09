@@ -1,5 +1,5 @@
 ---
-import { ExternalLink, Info, Star, FileText, Headphones, FolderGit2 } from '@lucide/astro';
+import { ExternalLink, Info, Star, Bookmark, BookmarkCheck } from '@lucide/astro';
 
 interface Material {
   id: string;
@@ -64,7 +64,7 @@ const levelCode = material.levelCode || 'ALL';
         )}
       </span>
 
-      <!-- Format & Recommended Badges -->
+      <!-- Format & Recommended Badges & Bookmark -->
       <div class="flex items-center gap-1.5">
         {material.isRecommended === 1 && (
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200" title="Rekomendasi Utama">
@@ -75,6 +75,16 @@ const levelCode = material.levelCode || 'ALL';
         <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-[var(--color-surface-subtle)] text-[var(--color-ink-secondary)] border border-[var(--color-border-washi)]">
           {material.fileType || 'PDF'}
         </span>
+        <button
+          type="button"
+          class="btn-bookmark p-1.5 rounded-lg border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-tertiary)] hover:text-red-500 hover:border-red-300 active:scale-90 transition-all"
+          data-id={material.id}
+          title="Simpan ke Favorit"
+          aria-label="Simpan ke Favorit"
+        >
+          <Bookmark class="w-3.5 h-3.5 bookmark-empty" />
+          <BookmarkCheck class="w-3.5 h-3.5 bookmark-filled text-[var(--color-vermilion)] hidden" />
+        </button>
       </div>
     </div>
 
@@ -111,7 +121,9 @@ const levelCode = material.levelCode || 'ALL';
 
     <!-- Titles -->
     <h3 class="text-base font-bold text-[var(--color-ink-primary)] tracking-tight leading-snug mb-1 group-hover:text-[var(--color-vermilion)] transition-colors line-clamp-2">
-      {material.title}
+      <a href={`/materi/${material.id}`} class="hover:underline" title={`Buka halaman detail: ${material.title}`}>
+        {material.title}
+      </a>
     </h3>
 
     {material.originalTitle && (

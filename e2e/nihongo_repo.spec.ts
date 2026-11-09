@@ -83,7 +83,7 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(tableContainer).toBeHidden();
   });
 
-  test('Detail modal opens and displays book metadata', async ({ page }) => {
+  test('Detail modal opens, switches tabs to preview, and displays book metadata', async ({ page }) => {
     await page.goto('/');
 
     const firstDetailBtn = page.locator('.btn-open-detail').first();
@@ -99,10 +99,100 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     const driveBtn = page.locator('#modal-drive-btn');
     await expect(driveBtn).toHaveAttribute('href', /drive\.google\.com/);
 
+    // Switch to Preview Tab
+    const previewTab = page.locator('#modal-tab-preview');
+    await previewTab.click();
+    await expect(page.locator('#modal-content-preview')).toBeVisible();
+    await expect(page.locator('#modal-content-info')).toBeHidden();
+
+    // Switch back to Info Tab
+    const infoTab = page.locator('#modal-tab-info');
+    await infoTab.click();
+    await expect(page.locator('#modal-content-info')).toBeVisible();
+
     // Close modal
     const closeBtn = page.locator('#modal-close-btn');
     await closeBtn.click();
     await expect(modal).toBeHidden();
+  });
+
+  test('Learner can bookmark a material into favorites', async ({ page }) => {
+    await page.goto('/');
+
+    // Check initial badge is hidden
+    const badge = page.locator('#bookmarks-count-badge');
+    await expect(badge).toBeHidden();
+
+    // Click bookmark button on first card
+    const firstBookmarkBtn = page.locator('.btn-bookmark').first();
+    await firstBookmarkBtn.click();
+
+    // Badge should now show 1
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveText('1');
+
+    // Click "Tersimpan" filter button
+    const filterSavedBtn = page.locator('#filter-bookmarks-btn');
+    await filterSavedBtn.click();
+
+    // Only 1 book should be visible
+    const visibleCards = page.locator('.material-item:visible');
+    await expect(visibleCards).toHaveCount(1);
+
+    // Unclick bookmark button
+    await firstBookmarkBtn.click();
+    await expect(badge).toBeHidden();
+  });
+
+  test('Dark mode toggle switches between Washi and Sumi-e themes', async ({ page }) => {
+    await page.goto('/');
+
+    const htmlEl = page.locator('html');
+    const themeBtn = page.locator('#theme-toggle-btn');
+    await expect(themeBtn).toBeVisible();
+
+    // Initially light mode
+    await expect(htmlEl).not.toHaveClass(/dark/);
+
+    // Click to toggle to dark mode
+    await themeBtn.click();
+    await expect(htmlEl).toHaveClass(/dark/);
+
+    // Click again to toggle back to light mode
+    await themeBtn.click();
+    await expect(htmlEl).not.toHaveClass(/dark/);
+  });
+
+  test('Standalone material page loads with OpenGraph metadata and Google Drive preview', async ({ page }) => {
+    await page.goto('/materi/mat_minna1');
+
+    // Verify H1 title
+    await expect(page.locator('main h1')).toContainText('Minna no Nihongo');
+
+    // Verify breadcrumb
+    await expect(page.locator('nav[aria-label="Breadcrumb"]')).toContainText('Beranda');
+
+    // Verify Drive button
+    const driveLink = page.locator('a:has-text("Buka di Google Drive")').first();
+    await expect(driveLink).toBeVisible();
+    await expect(driveLink).toHaveAttribute('href', /drive\.google\.com/);
+
+    // Verify iframe preview exists
+    await expect(page.locator('iframe')).toBeVisible();
+  });
+
+  test('Sitemap.xml and RSS.xml endpoints return valid XML feeds', async ({ request }) => {
+    const sitemapRes = await request.get('/sitemap.xml');
+    expect(sitemapRes.status()).toBe(200);
+    const sitemapText = await sitemapRes.text();
+    expect(sitemapText).toContain('<urlset');
+    expect(sitemapText).toContain('/materi/');
+
+    const rssRes = await request.get('/rss.xml');
+    expect(rssRes.status()).toBe(200);
+    const rssText = await rssRes.text();
+    expect(rssText).toContain('<rss');
+    expect(rssText).toContain('Nihongo_repo');
   });
 
 });
@@ -128,7 +218,7 @@ test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
     await expect(page).toHaveURL(/\/admin$/);
 
     // Verify Dashboard metrics
-    await expect(page.locator('h2')).toContainText('Selamat Datang, Sensei Admin!');
+    await expect(page.locator('main h2')).toContainText('Selamat Datang, Sensei Admin!');
     await expect(page.locator('text=Total Materi')).toBeVisible();
     await expect(page.locator('text=Kategori Topik')).toBeVisible();
     await expect(page.locator('text=Akses Google Drive')).toBeVisible();
@@ -145,18 +235,51 @@ test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
     // Navigate to Materials Management
     await page.click('a[href="/admin/materials"]');
     await expect(page).toHaveURL(/\/admin\/materials/);
-    await expect(page.locator('h2')).toContainText('Daftar Materi & Buku Pembelajaran');
+    await expect(page.locator('main h2')).toContainText('Daftar Materi & Buku Pembelajaran');
     await expect(page.locator('table')).toBeVisible();
 
     // Navigate to Categories Management
     await page.click('a[href="/admin/categories"]');
     await expect(page).toHaveURL(/\/admin\/categories/);
-    await expect(page.locator('h2')).toContainText('Kelola Kategori Materi');
+    await expect(page.locator('main h2')).toContainText('Kelola Kategori Materi');
     await expect(page.locator('text=Tambah Kategori Baru')).toBeVisible();
 
     // Logout
     await page.click('aside a[title="Keluar / Logout"]');
     await expect(page).toHaveURL(/\/admin\/login/);
+  });
+
+  test('Admin can access Settings and CSV Import/Export tools', async ({ page, request }) => {
+    // Login
+    await page.goto('/admin/login');
+    await page.fill('#username', 'admin');
+    await page.fill('#password', 'admin123');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/\/admin$/);
+
+    // Navigate to Settings
+    await page.click('a[href="/admin/settings"]');
+    await expect(page).toHaveURL(/\/admin\/settings/);
+    await expect(page.locator('main h2')).toContainText('Pengaturan Akun & Keamanan');
+    await expect(page.locator('#currentPassword')).toBeVisible();
+    await expect(page.locator('#newPassword')).toBeVisible();
+
+    // Navigate to Materials and check CSV buttons
+    await page.click('a[href="/admin/materials"]');
+    await expect(page.locator('a[href="/api/admin/materials/export"]')).toBeVisible();
+    await expect(page.locator('a[href="/admin/materials/import"]')).toBeVisible();
+
+    // Visit Import CSV page
+    await page.click('a[href="/admin/materials/import"]');
+    await expect(page).toHaveURL(/\/admin\/materials\/import/);
+    await expect(page.locator('main h2')).toContainText('Impor Koleksi Materi dari Berkas CSV');
+
+    // Test CSV Export endpoint directly
+    const exportRes = await request.get('/api/admin/materials/export');
+    expect(exportRes.status()).toBe(200);
+    const exportText = await exportRes.text();
+    expect(exportText).toContain('id,title,romajiTitle,originalTitle');
+    expect(exportText).toContain('driveUrl');
   });
 
 });

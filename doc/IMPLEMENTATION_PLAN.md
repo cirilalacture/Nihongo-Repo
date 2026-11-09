@@ -110,46 +110,61 @@ gantt
 - [x] Pengujian responsive breakpoints pada ponsel (375px), tablet (768px), dan desktop (1440px).
 - [x] Penyusunan panduan lengkap deployment Cloudflare Pages & D1 di `doc/DEPLOYMENT_GUIDE.md`.
 - [x] Seluruh perubahan tersimpan dan terdokumentasi dalam commit git branch `main`.
-- [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
-- [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
-- [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).
-- [ ] Buat akun admin default (username `admin`, password ter-hash aman).
-- [ ] Eksekusi seeder ke database D1 lokal.
 
 ---
 
-### [ ] Fase 4: Pengembangan Komponen Katalog Publik (STATUS: MENUNGGU)
-- [ ] Buat layout publik `src/layouts/BaseLayout.astro`.
-- [ ] Buat komponen header/navbar `src/components/Navbar.astro`.
-- [ ] Buat komponen hero section `src/components/HeroSection.astro`.
-- [ ] Buat komponen kartu buku `src/components/MaterialCard.astro`.
-- [ ] Buat modal/drawer detail materi `src/components/MaterialDetailModal.astro`.
-- [ ] Hubungkan halaman `src/pages/index.astro` dengan query D1 untuk menampilkan daftar materi secara SSR.
+### [x] Fase 8: Fitur Pembelajar Lanjutan — Opsi A (STATUS: SELESAI)
+- [x] Client-side Bookmarking / Favorit berbasis `localStorage` tanpa login.
+- [x] Tombol aksi bookmark cepat pada kartu buku dan baris tabel dengan indikator visual dinamis (hati/bookmark outline vs merah terisi).
+- [x] Tombol filter chip "Tersimpan" di FilterBar dengan counter badge real-time.
+- [x] Tab switcher pada modal detail materi: Tab 1 "Ringkasan & Detail" vs Tab 2 "Intip Isi Buku (PDF Preview)".
+- [x] Embed Google Drive Preview iframe viewer langsung di dalam situs (`https://drive.google.com/file/d/{id}/preview`).
 
 ---
 
-### [ ] Fase 5: Pencarian Instan & Filter Interaktif (STATUS: MENUNGGU)
-- [ ] Buat komponen pencarian instan sisi klien (`src/components/SearchBar.tsx` atau lightweight script).
-- [ ] Implementasikan filtering instan berdasarkan level JLPT (N5–N1) dan kategori tanpa reload.
-- [ ] Sinkronisasi state pencarian dengan URL query parameters (`?level=N3&q=kanji`).
-- [ ] Buat endpoint API pelacak klik `src/pages/api/track-click.ts` untuk menghitung statistik popularitas.
+### [x] Fase 9: Fitur Admin Operasional & Keamanan — Opsi B (STATUS: SELESAI)
+- [x] Halaman Pengaturan Akun & Ganti Kata Sandi (`src/pages/admin/settings.astro`).
+- [x] Hashing kata sandi berbasis Web Crypto API PBKDF2 (SHA-256, 100.000 iterasi, salt acak unik) yang langsung diupdate ke Cloudflare D1.
+- [x] Tombol dan endpoint Ekspor Basis Data CSV (`src/pages/api/admin/materials/export.ts`) untuk mencadangkan seluruh data buku.
+- [x] Halaman Impor Koleksi CSV (`src/pages/admin/materials/import.astro`) dengan fitur unggah berkas `.csv` atau tempel teks langsung serta auto-resolusi kategori dan level JLPT.
 
 ---
 
-### [ ] Fase 6: Pembangunan Admin CMS (STATUS: MENUNGGU)
-- [ ] Buat layout admin `src/layouts/AdminLayout.astro` lengkap dengan sidebar dan breadcrumbs.
-- [ ] Buat route `src/middleware.ts` untuk memproteksi seluruh URL `/admin/*` via cookie session.
-- [ ] Buat halaman login admin `src/pages/admin/login.astro` dan endpoint autentikasi server.
-- [ ] Buat halaman overview metrik `src/pages/admin/index.astro` (Total Materi, Total Kategori, Klik Terbanyak, Distribusi Level).
-- [ ] Buat halaman manajemen materi `src/pages/admin/materials/index.astro` (Data table, filter, tombol delete).
-- [ ] Buat form tambah & edit materi `src/pages/admin/materials/new.astro` & `edit/[id].astro`.
-- [ ] Buat form manajemen kategori `src/pages/admin/categories/index.astro`.
+### [x] Fase 10: SEO, Social Discovery & Feeds — Opsi C (STATUS: SELESAI)
+- [x] Halaman detail mandiri (*Standalone Detail Route*) `src/pages/materi/[id].astro` dengan URL permalink ramah mesin pencari.
+- [x] OpenGraph meta tags lengkap (`og:title`, `og:description`, `og:image`, `og:type`) untuk thumbnail kaya saat tautan dibagikan ke WhatsApp, Twitter/X, Discord, Telegram.
+- [x] Breadcrumb navigasi (*Beranda > Kategori > Judul Buku*).
+- [x] Tombol Bagikan (*Web Share API* native dengan fallback otomatis salin ke clipboard).
+- [x] Daftar materi dan buku rekomendasi terkait dalam kategori/level yang sama.
+- [x] Endpoint Dynamic XML Sitemap `src/pages/sitemap.xml.ts` berstandar sitemaps.org.
+- [x] Endpoint Dynamic RSS 2.0 Feed `src/pages/rss.xml.ts` untuk sindikasi konten dan feed readers.
 
 ---
 
-### [ ] Fase 7: Pengujian, Audit Perf/a11y & Deployment (STATUS: MENUNGGU)
-- [ ] Jalankan testing simulasi lokal via `npx wrangler pages dev`.
-- [ ] Audit aksesibilitas (a11y) dan kontras rasio warna.
-- [ ] Verifikasi responsivitas pada layar mobile dan desktop.
-- [ ] Siapkan panduan pembuatan database D1 remote di Cloudflare Dashboard.
-- [ ] Deployment ke Cloudflare Pages dan migrasi skema production.
+### [x] Fase 11: Estetika & Night Mode — Opsi D (STATUS: SELESAI)
+- [x] Desain sistem Washi Night Mode (*Sumi-e Charcoal Theme*) dengan token CSS tema gelap (`html.dark`) di `src/styles/global.css`.
+- [x] Tombol pengalih tema (*Theme Toggle Button*) pada header navigasi desktop dan hamburger mobile drawer.
+- [x] Script anti-FOUC (Flash of Unstyled Content) inline di `<head>` untuk deteksi instan preferensi tema pengguna dari `localStorage` atau preferensi OS sistem.
+
+---
+
+### [x] Fase 12: Pengujian E2E Playwright & Otomasi CI/CD (STATUS: SELESAI)
+- [x] Suite pengujian Playwright komprehensif di `e2e/nihongo_repo.spec.ts` mencakup 17 skenario uji:
+  1. Pemuatan beranda dan branding Washi Jepang.
+  2. Pencarian kata kunci instan interaktif.
+  3. Filter chip level JLPT (N5 - N1).
+  4. Pengalih tampilan (Grid vs Compact Table).
+  5. Interaksi modal detail dan tab embed preview Google Drive.
+  6. Penyimpanan bookmark lokal dan filter "Tersimpan".
+  7. Toggle dark mode Washi vs Sumi-e.
+  8. Pemuatan halaman mandiri `/materi/[id]` dengan OpenGraph meta.
+  9. Validasi respons XML Sitemap dan RSS Feed.
+  10. Proteksi unauthorized access ke `/admin`.
+  11. Login autentikasi admin dan overview dashboard.
+  12. Navigasi CRUD admin (Materi & Kategori).
+  13. Akses pengaturan ganti password admin dan ekspor/impor CSV.
+  14. Responsivitas hamburger mobile drawer pada layar smartphone (390x844).
+  15. Verifikasi zero horizontal scroll overflow pada viewport mobile.
+  16. Sticky bottom navigation bar admin pada tampilan mobile.
+  17. Layout fluid responsif pada viewport tablet (768x1024).
+- [x] Hasil eksekusi: **17 passed (100% sukses)**.

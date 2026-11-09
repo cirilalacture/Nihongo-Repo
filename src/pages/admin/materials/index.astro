@@ -2,7 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import { getDb, materials, categories, jlptLevels } from '../../../db';
 import { eq, desc } from 'drizzle-orm';
-import { PlusCircle, Search, Edit2, Trash2, ExternalLink, Star } from '@lucide/astro';
+import { PlusCircle, Search, Edit2, Trash2, ExternalLink, Star, Upload, Download } from '@lucide/astro';
 
 let allMaterials: any[] = [];
 let allCategories: any[] = [];
@@ -62,13 +62,33 @@ if (db) {
         </p>
       </div>
 
-      <a
-        href="/admin/materials/new"
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95 self-start sm:self-auto"
-      >
-        <PlusCircle class="w-4 h-4" />
-        <span>Tambah Buku Baru</span>
-      </a>
+      <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+        <a
+          href="/api/admin/materials/export"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-xs font-semibold text-[var(--color-ink-secondary)] shadow-2xs transition-all active:scale-95"
+          title="Ekspor Seluruh Database Materi ke Berkas CSV"
+        >
+          <Download class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
+          <span>Ekspor CSV</span>
+        </a>
+
+        <a
+          href="/admin/materials/import"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-xs font-semibold text-[var(--color-ink-secondary)] shadow-2xs transition-all active:scale-95"
+          title="Impor Koleksi Materi dari Berkas CSV"
+        >
+          <Upload class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
+          <span>Impor CSV</span>
+        </a>
+
+        <a
+          href="/admin/materials/new"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95"
+        >
+          <PlusCircle class="w-4 h-4" />
+          <span>Tambah Buku Baru</span>
+        </a>
+      </div>
     </div>
 
     <!-- Filter & Search Bar in Admin -->

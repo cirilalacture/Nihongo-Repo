@@ -1,5 +1,5 @@
 ---
-import { Lock, Search, BookOpen, Layers, Award, Menu, X } from '@lucide/astro';
+import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon } from '@lucide/astro';
 ---
 
 <header class="border-b border-[var(--color-border-washi)] bg-[var(--color-canvas)]/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
@@ -31,8 +31,8 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X } from '@lucide/astro';
       <a href="#kategori" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Kategori</a>
     </nav>
 
-    <!-- Actions: Search, Admin Link & Mobile Hamburger -->
-    <div class="flex items-center gap-2 sm:gap-3">
+    <!-- Actions: Search, Theme Toggle, Admin Link & Mobile Hamburger -->
+    <div class="flex items-center gap-2 sm:gap-2.5">
       <!-- Search Shortcut Trigger -->
       <a
         href="#pencarian"
@@ -45,6 +45,18 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X } from '@lucide/astro';
           /
         </kbd>
       </a>
+
+      <!-- Theme Switcher Toggle (Washi Day / Sumi Night) -->
+      <button
+        type="button"
+        id="theme-toggle-btn"
+        class="flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] active:scale-90 transition-all"
+        title="Ganti Tema (Washi Terang / Sumi Gelap)"
+        aria-label="Ganti Tema"
+      >
+        <Sun class="w-4 h-4 theme-icon-sun hidden" />
+        <Moon class="w-4 h-4 theme-icon-moon" />
+      </button>
 
       <!-- Admin Access Link (Desktop/Tablet) -->
       <a
@@ -102,7 +114,21 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X } from '@lucide/astro';
       </a>
     </div>
 
-    <div class="pt-2 border-t border-[var(--color-border-washi)]">
+    <div class="pt-2 border-t border-[var(--color-border-washi)] space-y-2">
+      <!-- Mobile Theme Switcher Row -->
+      <button
+        type="button"
+        id="mobile-theme-toggle-btn"
+        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-surface-subtle)] text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] border border-[var(--color-border-washi)] transition-colors"
+      >
+        <span class="flex items-center gap-3">
+          <Sun class="w-4 h-4 theme-icon-sun hidden text-amber-500" />
+          <Moon class="w-4 h-4 theme-icon-moon text-[var(--color-ink-tertiary)]" />
+          <span>Mode Tampilan</span>
+        </span>
+        <span id="mobile-theme-label" class="text-xs font-bold text-[var(--color-ink-tertiary)]">Terang</span>
+      </button>
+
       <a
         href="/admin"
         class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-[var(--color-surface-subtle)] text-[var(--color-ink-primary)] border border-[var(--color-border-washi)] transition-colors"
@@ -119,37 +145,70 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X } from '@lucide/astro';
 
 <script is:inline>
   (function () {
+    // 1. Mobile Menu Drawer Toggle
     const toggleBtn = document.getElementById('mobile-nav-toggle');
     const menuEl = document.getElementById('mobile-nav-menu');
     const openIcon = document.getElementById('mobile-menu-open-icon');
     const closeIcon = document.getElementById('mobile-menu-close-icon');
 
-    if (!toggleBtn || !menuEl) return;
+    if (toggleBtn && menuEl) {
+      function toggleMenu() {
+        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+        if (isExpanded) {
+          menuEl.classList.add('hidden');
+          if (openIcon) openIcon.classList.remove('hidden');
+          if (closeIcon) closeIcon.classList.add('hidden');
+        } else {
+          menuEl.classList.remove('hidden');
+          if (openIcon) openIcon.classList.add('hidden');
+          if (closeIcon) closeIcon.classList.remove('hidden');
+        }
+      }
 
-    function toggleMenu() {
-      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
-      if (isExpanded) {
-        menuEl.classList.add('hidden');
-        if (openIcon) openIcon.classList.remove('hidden');
-        if (closeIcon) closeIcon.classList.add('hidden');
-      } else {
-        menuEl.classList.remove('hidden');
-        if (openIcon) openIcon.classList.add('hidden');
-        if (closeIcon) closeIcon.classList.remove('hidden');
+      toggleBtn.addEventListener('click', toggleMenu);
+
+      const navLinks = menuEl.querySelectorAll('.mobile-nav-link');
+      navLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          if (!menuEl.classList.contains('hidden')) {
+            toggleMenu();
+          }
+        });
+      });
+    }
+
+    // 2. Dark Mode Switcher Controller
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const mobileThemeBtn = document.getElementById('mobile-theme-toggle-btn');
+    const mobileThemeLabel = document.getElementById('mobile-theme-label');
+
+    function syncThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.querySelectorAll('.theme-icon-sun').forEach((el) => {
+        if (isDark) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+      document.querySelectorAll('.theme-icon-moon').forEach((el) => {
+        if (isDark) el.classList.add('hidden');
+        else el.classList.remove('hidden');
+      });
+      if (mobileThemeLabel) {
+        mobileThemeLabel.textContent = isDark ? 'Sumi Gelap' : 'Washi Terang';
       }
     }
 
-    toggleBtn.addEventListener('click', toggleMenu);
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      try {
+        localStorage.setItem('nihongo_theme', isDark ? 'dark' : 'light');
+      } catch (e) {}
+      syncThemeIcons();
+    }
 
-    // Auto-close on link click
-    const navLinks = menuEl.querySelectorAll('.mobile-nav-link');
-    navLinks.forEach((link) => {
-      link.addEventListener('click', () => {
-        if (!menuEl.classList.contains('hidden')) {
-          toggleMenu();
-        }
-      });
-    });
+    if (themeBtn) themeBtn.addEventListener('click', toggleDarkMode);
+    if (mobileThemeBtn) mobileThemeBtn.addEventListener('click', toggleDarkMode);
+
+    syncThemeIcons();
   })();
 </script>

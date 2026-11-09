@@ -73,41 +73,49 @@ nihongo_repo/
 │   └── IMPLEMENTATION_PLAN.md
 ├── src/
 │   ├── components/             # UI Components Publik & Admin
-│   │   ├── Navbar.astro
-│   │   ├── HeroSection.astro
-│   │   ├── FilterChips.astro
-│   │   ├── MaterialCard.astro
-│   │   ├── MaterialDetailModal.astro
-│   │   ├── SearchBar.tsx
+│   │   ├── Navbar.astro        # Header, desktop links, theme switcher & mobile hamburger
+│   │   ├── HeroSection.astro   # Headline & metrik hero
+│   │   ├── FilterBar.astro     # Search bar, JLPT level chips, bookmark filter, view switcher
+│   │   ├── MaterialCard.astro  # Kartu buku dengan quick bookmark, cover, badge, direct drive link
+│   │   ├── MaterialDetailModal.astro # Modal tabbed (Detail & Google Drive iframe preview)
 │   │   └── admin/              # Komponen khusus Admin
 │   │       ├── AdminSidebar.astro
 │   │       ├── AdminNavbar.astro
-│   │       ├── StatCard.astro
-│   │       └── ConfirmDeleteModal.astro
+│   │       └── StatCard.astro
 │   ├── db/
 │   │   ├── schema.ts           # Drizzle ORM schema (materials, categories, admin_users, dll.)
-│   │   ├── index.ts            # D1 database client connector
+│   │   ├── index.ts            # D1 database client connector & PBKDF2 crypto helpers
 │   │   └── seed.sql            # Initial seed data
 │   ├── layouts/
-│   │   ├── BaseLayout.astro    # Layout publik (Washi theme)
-│   │   └── AdminLayout.astro   # Layout admin (Clean Operate theme)
+│   │   ├── BaseLayout.astro    # Layout publik (Washi theme + Sumi-e dark mode + anti-FOUC)
+│   │   └── AdminLayout.astro   # Layout admin (Clean Operate theme + mobile bottom nav)
 │   ├── middleware.ts           # Route guard untuk /admin/*
 │   ├── pages/
-│   │   ├── index.astro         # Halaman utama publik
-│   │   ├── level/[level].astro # Filter halaman per level JLPT
+│   │   ├── index.astro         # Halaman utama katalog publik (grid & compact table)
+│   │   ├── materi/
+│   │   │   └── [id].astro      # Standalone SEO permalink & OpenGraph preview
+│   │   ├── sitemap.xml.ts      # Dynamic XML Sitemap endpoint
+│   │   ├── rss.xml.ts          # Dynamic RSS 2.0 XML feed endpoint
 │   │   ├── admin/
 │   │   │   ├── index.astro     # Dashboard overview metrik
 │   │   │   ├── login.astro     # Form login admin
 │   │   │   ├── logout.ts       # Endpoint pembersih cookie sesi
-│   │   │   ├── materials/      # CRUD Materi (list, add, edit)
-│   │   │   ├── categories/     # CRUD Kategori (list, add, edit)
-│   │   │   └── tags/           # CRUD Tags
+│   │   │   ├── settings.astro  # Manajemen kata sandi & keamanan akun admin
+│   │   │   ├── materials/
+│   │   │   │   ├── index.astro # Tabel materi, pencarian, aksi ekspor/impor CSV
+│   │   │   │   ├── new.astro   # Form tambah materi baru
+│   │   │   │   ├── [id]/edit.astro # Form edit materi
+│   │   │   │   ├── [id]/delete.ts  # Endpoint hapus materi
+│   │   │   │   └── import.astro    # Wizard impor massal data dari file/teks CSV
+│   │   │   └── categories/     # CRUD Kategori (list, add, edit, delete)
 │   │   └── api/
-│   │       ├── materials.json.ts
-│   │       └── track-click.ts  # Pencatat metrik popularitas buku
+│   │       ├── admin/
+│   │       │   └── materials/
+│   │       │       └── export.ts # Endpoint unduh data materi lengkap format CSV
+│   │       └── track-click.ts  # Pencatat metrik popularitas buku di Edge
 │   └── styles/
-│       └── global.css          # Tailwind CSS + Washi & Admin tokens
-├── wrangler.jsonc              # Konfigurasi Cloudflare Pages & D1 binding
+│       └── global.css          # Tailwind CSS v4 + Washi light & Sumi-e dark design tokens
+├── wrangler.jsonc              # Konfigurasi Cloudflare Workers & D1 binding
 ├── astro.config.mjs
 └── package.json
 ```

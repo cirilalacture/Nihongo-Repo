@@ -30,24 +30,47 @@
 
 ### 4.1 Halaman Publik (Public Catalog Surface)
 * **Mode Tampilan Katalog:**
-  * *Card Grid View* (Default): Kartu buku visual dengan cover, badge level JLPT, tag kategori, tombol "Buka di Drive", dan tombol "Detail".
+  * *Card Grid View* (Default): Kartu buku visual dengan cover, badge level JLPT, tag kategori, tombol "Buka di Drive", tombol "Detail", dan tombol cepat "Favorit / Bookmark".
   * *Compact Table View*: Tampilan tabel ringkas untuk pemindaian cepat puluhan item.
 * **Pencarian & Filter Multifaset:**
   * Instant search bar (client-side) tanpa reload halaman.
   * Filter Chips Level JLPT: N5, N4, N3, N2, N1, Umum.
   * Filter Kategori: Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal.
+  * Filter Cepat "Tersimpan" (*Bookmarks*): Menyaring hanya buku yang ditandai favorit oleh pengguna secara lokal.
   * Opsi Urutan: Terpopuler (klik terbanyak), Rekomendasi Sensei, Terbaru, Judul A-Z.
 * **Modal / Quick Drawer Detail Buku:**
-  * Ringkasan buku, penerbit, tahun rilis, ukuran file PDF/audio.
-  * Link Google Drive langsung dengan opsi salin tautan.
+  * Tab 1: Ringkasan & Detail (deskripsi buku, penerbit, tahun rilis, ukuran file PDF/audio).
+  * Tab 2: Intip Isi Buku (*Google Drive Preview Embed* iframe viewer langsung di dalam situs).
+  * Link Google Drive langsung dengan opsi salin tautan ke clipboard.
+  * Tombol navigasi ke *Halaman Penuh (Permalink)*.
+* **Fitur Bookmark Mandiri (*Client-Side Favorites*):**
+  * Penyimpanan favorit di `localStorage` per peramban tanpa perlu registrasi akun.
+  * Sinkronisasi visual status bookmark (ikon hati/bookmark outline vs merah terisi) di grid dan badge counter di filter bar.
+* **Halaman Rincian Mandiri (*Standalone Detail Permalink* — `/materi/[id]`):**
+  * Halaman SSR khusus untuk setiap buku/materi dengan URL ramah SEO.
+  * OpenGraph metadata (judul, deskripsi, gambar cover, tipe artikel) untuk tampilan thumbnail kaya saat dibagikan ke WhatsApp, Telegram, Twitter/X, dan Discord.
+  * Breadcrumb navigasi (*Beranda > Kategori > Judul Buku*).
+  * Tombol bagikan interaktif (*Web Share API* dengan fallback otomatis salin ke clipboard).
+  * Pratinjau dokumen Google Drive inline terintegrasi.
+  * Rekomendasi materi terkait dalam level atau kategori yang sama.
+* **Washi Night Mode (*Sumi-e Dark Mode*):**
+  * Dua mode tema: *Washi Paper Light* (krem organik lembut) dan *Sumi-e Charcoal Dark* (hitam arang tinta Jepang `#121214`).
+  * Tombol switcher tema di header navigasi desktop dan mobile drawer.
+  * Script anti-FOUC inline di `<head>` untuk mencegah kedipan putih saat pemuatan halaman.
+* **SEO & Social Discovery:**
+  * Endpoint XML Sitemap otomatis (`/sitemap.xml`) untuk memudahkan pengindeksan oleh Google Bot.
+  * Endpoint RSS 2.0 Feed (`/rss.xml`) untuk pembaca feed berita dan notifikasi pembaruan materi pembelajaran.
 
 ### 4.2 Halaman Admin & CMS (`/admin`)
 Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 
-#### A. Autentikasi Admin
+#### A. Autentikasi & Keamanan Admin
 * Proteksi login berbasis password/kredensial admin yang aman (`/admin/login`).
 * Manajemen sesi menggunakan HTTP-only secure cookie yang diverifikasi di sisi server (Cloudflare Edge SSR).
-* Tombol Logout instan yang membersihkan sesi.
+* Tombol Logout instan yang membersihkan cookie sesi.
+* **Pengaturan Akun & Ganti Kata Sandi (`/admin/settings`):**
+  * Form verifikasi kata sandi saat ini dan penetapan kata sandi baru.
+  * Enkripsi hashing menggunakan standar Web Crypto API PBKDF2 (SHA-256 dengan 100.000 iterasi dan salt unik acak) yang langsung diperbarui ke Cloudflare D1.
 
 #### B. Ringkasan Statistik (Dashboard Overview)
 * Ringkasan metrik utama:
@@ -70,6 +93,12 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
   * Deskripsi ringkas buku.
   * Checkbox: "Rekomendasi Utama" (*Featured / Recommended*).
 * **Hapus Materi:** Dilengkapi dialog konfirmasi hapus untuk mencegah ketidaksengajaan.
+* **Ekspor Basis Data CSV (`/api/admin/materials/export`):**
+  * Mengunduh seluruh basis data materi ke file `.csv` terstruktur dengan sekali klik.
+* **Impor Koleksi CSV (`/admin/materials/import`):**
+  * Mengunggah file `.csv` atau menempelkan teks CSV langsung.
+  * Deteksi kolom cerdas (judul, pengarang, level, kategori, link drive, dsb.) dengan parser regex CSV aman tanda kutip dan koma.
+  * Resolusi otomatis relasi kategori dan level JLPT di D1.
 
 #### D. Manajemen Kategori (`/admin/categories`)
 * Tambah, ubah, dan hapus kategori pembelajaran.
@@ -79,6 +108,20 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 #### E. Manajemen Level & Tag (`/admin/tags`)
 * Manajemen tag pelengkap (misal: `#AudioTersedia`, `#KunciJawaban`, `#AnkiDeck`, `#FullColor`).
 * Menghubungkan atau melepaskan tag dari materi buku.
+
+---
+
+### 4.3 Desain & Responsivitas Antarmuka (Mobile, Tablet, Desktop)
+* **Mobile-First UX (360px - 640px):**
+  * Header ringkas dengan tombol hamburger drawer menu beranimasi halus.
+  * Panel admin di mobile dilengkapi *Sticky Bottom Navigation Bar* (Ringkasan, Materi, Tambah, Kategori, Pengaturan) untuk kenyamanan jempol satu tangan (*thumb zone*).
+  * Modal detail tampil sebagai *Bottom Sheet* dengan indikator grab handle.
+  * Ukuran target sentuh tombol minimal 40px - 44px (*touch-target friendly*).
+  * Bebas dari *horizontal overflow* di semua ukuran layar ponsel cerdas.
+* **Tablet UX (768px - 1024px):**
+  * Tata letak grid 2 kolom adaptif dengan pemanfaatan ruang proporsional.
+* **Desktop UX (1024px+):**
+  * Tata letak grid 3–4 kolom dengan sidebar admin persisten.
 
 ---
 

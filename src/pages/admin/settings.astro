@@ -1,0 +1,176 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb, adminUsers } from '../../db';
+import { eq } from 'drizzle-orm';
+import { verifyPassword, hashPassword, verifySessionToken } from '../../utils/auth';
+import { KeyRound, Shield, Lock, Save, UserCheck } from '@lucide/astro';
+
+let errorMessage = '';
+const sessionCookie = Astro.cookies.get('nihongo_admin_session')?.value;
+let currentUsername = 'admin';
+
+if (sessionCookie) {
+  const sessionCheck = await verifySessionToken(sessionCookie);
+  if (sessionCheck.valid && sessionCheck.username) {
+    currentUsername = sessionCheck.username;
+  }
+}
+
+const db = getDb();
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const currentPassword = (formData.get('currentPassword') || '').toString().trim();
+    const newPassword = (formData.get('newPassword') || '').toString().trim();
+    const confirmPassword = (formData.get('confirmPassword') || '').toString().trim();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      errorMessage = 'Semua bidang kata sandi wajib diisi!';
+    } else if (newPassword.length < 6) {
+      errorMessage = 'Kata sandi baru minimal harus 6 karakter!';
+    } else if (newPassword !== confirmPassword) {
+      errorMessage = 'Konfirmasi kata sandi baru tidak sesuai!';
+    } else if (db) {
+      const userRows = await db.select().from(adminUsers).where(eq(adminUsers.username, currentUsername)).limit(1);
+      const user = userRows[0];
+
+      if (!user) {
+        errorMessage = 'Data admin tidak ditemukan.';
+      } else {
+        const isOldValid = await verifyPassword(currentPassword, user.passwordHash);
+        if (!isOldValid) {
+          errorMessage = 'Kata sandi saat ini yang Anda masukkan salah!';
+        } else {
+          const newHash = await hashPassword(newPassword);
+          await db.update(adminUsers).set({ passwordHash: newHash }).where(eq(adminUsers.username, currentUsername));
+          return Astro.redirect('/admin/settings?msg=Kata sandi berhasil diperbarui! Gunakan kata sandi baru saat login berikutnya.');
+        }
+      }
+    } else {
+      errorMessage = 'Database tidak terhubung saat ini.';
+    }
+  } catch (err) {
+    console.error('Error changing admin password:', err);
+    errorMessage = 'Terjadi kesalahan sistem saat memperbarui kata sandi.';
+  }
+}
+---
+
+<AdminLayout title="Pengaturan Akun & Keamanan — Admin CMS" activeNav="settings">
+  <div class="max-w-2xl space-y-6">
+    
+    <!-- Header -->
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+        Pengaturan Akun & Keamanan
+      </h2>
+      <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+        Kelola kredensial login dan amankan akses ke dashboard admin repositori.
+      </p>
+    </div>
+
+    {errorMessage && (
+      <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-xs font-semibold text-red-700 animate-in fade-in">
+        {errorMessage}
+      </div>
+    )}
+
+    <!-- Account Overview Card -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 shadow-2xs flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-red-50 text-[var(--color-vermilion)] flex items-center justify-center font-bold text-lg">
+          日
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm text-[var(--color-ink-primary)]">Sensei Admin</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+              Aktif
+            </span>
+          </div>
+          <span class="text-xs text-[var(--color-ink-tertiary)] font-mono">Username: @{currentUsername}</span>
+        </div>
+      </div>
+      <div class="text-right hidden sm:block">
+        <span class="text-[11px] text-[var(--color-ink-tertiary)] block">Tingkat Hak Akses</span>
+        <span class="text-xs font-bold text-[var(--color-ink-secondary)]">Superadministrator</span>
+      </div>
+    </div>
+
+    <!-- Change Password Form -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 sm:p-7 shadow-2xs space-y-5">
+      <div class="flex items-center gap-2.5 pb-3 border-b border-[var(--color-border-washi)]">
+        <div class="w-8 h-8 rounded-lg bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] flex items-center justify-center">
+          <KeyRound class="w-4 h-4" />
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-[var(--color-ink-primary)]">Ganti Kata Sandi</h3>
+          <p class="text-[11px] text-[var(--color-ink-tertiary)]">Gunakan kombinasi minimal 6 karakter demi keamanan akun.</p>
+        </div>
+      </div>
+
+      <form method="POST" class="space-y-4 text-xs">
+        <div>
+          <label for="currentPassword" class="block font-bold text-[var(--color-ink-secondary)] mb-1.5">
+            Kata Sandi Saat Ini <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="password"
+            id="currentPassword"
+            name="currentPassword"
+            required
+            autocomplete="current-password"
+            placeholder="Masukkan password lama"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs text-[var(--color-ink-primary)] focus:outline-none focus:border-[var(--color-vermilion)]"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="newPassword" class="block font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Kata Sandi Baru <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              id="newPassword"
+              name="newPassword"
+              required
+              minlength="6"
+              autocomplete="new-password"
+              placeholder="Minimal 6 karakter"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs text-[var(--color-ink-primary)] focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="block font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Ulangi Kata Sandi Baru <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              required
+              minlength="6"
+              autocomplete="new-password"
+              placeholder="Ketik ulang password baru"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs text-[var(--color-ink-primary)] focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+        </div>
+
+        <div class="pt-3 flex justify-end">
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center gap-2 px-6 py-2.5 min-h-[42px] rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95"
+          >
+            <Save class="w-4 h-4" />
+            <span>Simpan Kata Sandi Baru</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</AdminLayout>

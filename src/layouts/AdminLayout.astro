@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
-import { LayoutDashboard, BookOpen, PlusCircle, Layers, Globe, LogOut, ShieldCheck, CheckCircle2, AlertCircle } from '@lucide/astro';
+import { LayoutDashboard, BookOpen, PlusCircle, Layers, Globe, LogOut, ShieldCheck, CheckCircle2, AlertCircle, KeyRound } from '@lucide/astro';
 
 interface Props {
   title?: string;
-  activeNav?: 'dashboard' | 'materials' | 'new-material' | 'categories';
+  activeNav?: 'dashboard' | 'materials' | 'new-material' | 'categories' | 'settings';
 }
 
 const { title = 'Admin Dashboard — Nihongo_repo', activeNav = 'dashboard' } = Astro.props;
@@ -27,6 +27,20 @@ const errorMsg = urlParams.get('err');
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Theme Initialization Script -->
+    <script is:inline>
+      (function () {
+        try {
+          const stored = localStorage.getItem('nihongo_theme');
+          const isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="bg-neutral-50 text-[var(--color-ink-primary)] min-h-screen flex antialiased font-sans">
     
@@ -98,6 +112,18 @@ const errorMsg = urlParams.get('err');
           >
             <Layers class="w-4 h-4" />
             <span>Kelola Kategori</span>
+          </a>
+
+          <a
+            href="/admin/settings"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'settings'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <KeyRound class="w-4 h-4" />
+            <span>Pengaturan Akun</span>
           </a>
 
           <div class="pt-4 text-[10px] uppercase tracking-wider text-[var(--color-ink-tertiary)] px-3 py-2 font-bold">
@@ -255,7 +281,7 @@ const errorMsg = urlParams.get('err');
 
         <a
           href="/admin/categories"
-          class={`flex flex-col items-center justify-center py-1 px-3 rounded-xl min-w-[64px] min-h-[48px] transition-all ${
+          class={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl min-w-[56px] min-h-[48px] transition-all ${
             activeNav === 'categories'
               ? 'text-[var(--color-vermilion)] font-bold'
               : 'text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)]'
@@ -263,6 +289,18 @@ const errorMsg = urlParams.get('err');
         >
           <Layers class={`w-5 h-5 mb-0.5 ${activeNav === 'categories' ? 'stroke-[2.5]' : ''}`} />
           <span class="text-[10px]">Kategori</span>
+        </a>
+
+        <a
+          href="/admin/settings"
+          class={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl min-w-[56px] min-h-[48px] transition-all ${
+            activeNav === 'settings'
+              ? 'text-[var(--color-vermilion)] font-bold'
+              : 'text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)]'
+          }`}
+        >
+          <KeyRound class={`w-5 h-5 mb-0.5 ${activeNav === 'settings' ? 'stroke-[2.5]' : ''}`} />
+          <span class="text-[10px]">Akun</span>
         </a>
       </nav>
 
