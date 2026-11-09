@@ -4,8 +4,8 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 
 > **STATUS PROGRES TERKINI (Updated: 2026-11-08):**
 > * [x] **Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare** — `SELESAI (Completed)`
-> * [ ] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SEDANG BERJALAN (In Progress)`
-> * [ ] **Fase 3: Seeding Data Awal & Kredensial Admin** — `Menunggu`
+> * [x] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SELESAI (Completed)`
+> * [ ] **Fase 3: Seeding Data Awal & Kredensial Admin** — `BERIKUTNYA (Next Up)`
 > * [ ] **Fase 4: Pengembangan Komponen Katalog Publik** — `Menunggu`
 > * [ ] **Fase 5: Pencarian Instan & Filter Interaktif** — `Menunggu`
 > * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `Menunggu`
@@ -21,10 +21,10 @@ gantt
     dateFormat  YYYY-MM-DD
     section Fase 1 (Selesai)
     Scaffolding Proyek & Config Astro Cloudflare :done, f1, 2026-11-08, 1d
-    section Fase 2 (In Progress)
-    Setup Database D1, Drizzle Schema & Client   :active, f2, 2026-11-09, 1d
-    section Fase 3
-    Kurasi Data Awal & Seeding SQL                :f3, after f2, 1d
+    section Fase 2 (Selesai)
+    Setup Database D1, Drizzle Schema & Client   :done, f2, 2026-11-08, 1d
+    section Fase 3 (Next)
+    Kurasi Data Awal & Seeding SQL                :active, f3, 2026-11-09, 1d
     section Fase 4
     Katalog Publik, Grid & Filter UI             :f4, after f3, 2d
     section Fase 5
@@ -51,16 +51,17 @@ gantt
 
 ---
 
-### [ ] Fase 2: Setup Database D1, Drizzle Schema & Client (STATUS: SEDANG BERJALAN)
-- [ ] Buat file skema Drizzle di `src/db/schema.ts` (mencakup tabel: `admin_users`, `categories`, `jlpt_levels`, `materials`, `tags`, `material_tags`).
-- [ ] Buat file penghubung database D1 di `src/db/index.ts` yang membaca runtime binding `Astro.locals.runtime.env.DB`.
-- [ ] Buat file `schema.sql` di root proyek untuk eksekusi migrasi D1 langsung via CLI.
-- [ ] Jalankan eksekusi migrasi lokal D1 menggunakan `wrangler d1 execute`.
-- [ ] Verifikasi skema tabel lokal berhasil terbentuk tanpa error.
+### [x] Fase 2: Setup Database D1, Drizzle Schema & Client (STATUS: SELESAI)
+- [x] Buat file skema Drizzle di `src/db/schema.ts` (mencakup tabel: `admin_users`, `categories`, `jlpt_levels`, `materials`, `tags`, `material_tags`).
+- [x] Buat file penghubung database D1 di `src/db/index.ts` dengan helper `getDb(d1: D1Database)` type-safe.
+- [x] Buat file migrasi `schema.sql` di root proyek.
+- [x] Eksekusi migrasi lokal D1 via `npx wrangler d1 execute nihongo-repo-db --local --file=./schema.sql`.
+- [x] Verifikasi 6 tabel berhasil terbuat di SQLite D1 lokal (`sqlite_master` check lulus).
+- [x] Verifikasi build TypeScript Drizzle lulus 100% tanpa type error.
 
 ---
 
-### [ ] Fase 3: Seeding Data Awal & Kredensial Admin (STATUS: MENUNGGU)
+### [ ] Fase 3: Seeding Data Awal & Kredensial Admin (STATUS: BERIKUTNYA)
 - [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
 - [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
 - [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).
