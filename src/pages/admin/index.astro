@@ -11,12 +11,10 @@ let totalClicksCount = 2132;
 let popularMaterials: any[] = [];
 let levelCounts: Record<string, number> = { N5: 2, N4: 1, N3: 2, N2: 2, N1: 1, ALL: 1 };
 
-// @ts-ignore
-const d1 = Astro.locals?.runtime?.env?.DB;
+const db = getDb();
 
-if (d1) {
+if (db) {
   try {
-    const db = getDb(d1);
 
     // 1. Total Materials
     const matRows = await db.select({ count: sql<number>`count(*)` }).from(materials);

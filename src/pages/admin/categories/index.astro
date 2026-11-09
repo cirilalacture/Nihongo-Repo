@@ -7,12 +7,10 @@ import { Layers, Plus, Trash2, Edit, AlertCircle } from '@lucide/astro';
 let allCategories: any[] = [];
 let errorMessage = '';
 
-// @ts-ignore
-const d1 = Astro.locals?.runtime?.env?.DB;
+const db = getDb();
 
-if (d1) {
+if (db) {
   try {
-    const db = getDb(d1);
 
     // Handle Form Submission (Add Category)
     if (Astro.request.method === 'POST') {

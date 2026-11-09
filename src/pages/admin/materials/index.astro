@@ -8,12 +8,10 @@ let allMaterials: any[] = [];
 let allCategories: any[] = [];
 let allLevels: any[] = [];
 
-// @ts-ignore
-const d1 = Astro.locals?.runtime?.env?.DB;
+const db = getDb();
 
-if (d1) {
+if (db) {
   try {
-    const db = getDb(d1);
     allCategories = await db.select().from(categories).all();
     allLevels = await db.select().from(jlptLevels).all();
 

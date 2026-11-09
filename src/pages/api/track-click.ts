@@ -16,10 +16,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
-    // @ts-ignore
-    const d1 = locals?.runtime?.env?.DB;
-    if (d1) {
-      const db = getDb(d1);
+    const db = getDb();
+    if (db) {
       await db
         .update(materials)
         .set({

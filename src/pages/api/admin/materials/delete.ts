@@ -21,10 +21,8 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
       return redirect('/admin/materials?err=ID materi tidak valid.');
     }
 
-    // @ts-ignore
-    const d1 = locals?.runtime?.env?.DB;
-    if (d1) {
-      const db = getDb(d1);
+    const db = getDb();
+    if (db) {
       await db.delete(materials).where(eq(materials.id, materialId));
     }
 

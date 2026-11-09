@@ -10,12 +10,10 @@ let allCategories: any[] = [];
 let allLevels: any[] = [];
 let errorMessage = '';
 
-// @ts-ignore
-const d1 = Astro.locals?.runtime?.env?.DB;
+const db = getDb();
 
-if (d1 && id) {
+if (db && id) {
   try {
-    const db = getDb(d1);
     allCategories = await db.select().from(categories).all();
     allLevels = await db.select().from(jlptLevels).all();
 
@@ -55,8 +53,7 @@ if (Astro.request.method === 'POST' && id) {
       const fileIdMatch = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/id=([a-zA-Z0-9_-]+)/);
       if (fileIdMatch) driveFileId = fileIdMatch[1];
 
-      if (d1) {
-        const db = getDb(d1);
+      if (db) {
         await db
           .update(materials)
           .set({
@@ -88,7 +85,7 @@ if (Astro.request.method === 'POST' && id) {
   }
 }
 
-if (!materialItem && d1) {
+if (!materialItem && db) {
   return Astro.redirect('/admin/materials?err=Materi tidak ditemukan.');
 }
 ---

@@ -33,14 +33,11 @@ let materialsList: any[] = [];
 let levelsList = fallbackLevels;
 let categoriesList = fallbackCategories;
 
-// Query live Cloudflare D1 database via Astro Locals runtime binding
-// @ts-ignore
-const d1 = Astro.locals?.runtime?.env?.DB;
+// Query live Cloudflare D1 database via cloudflare:workers binding
+const db = getDb();
 
-if (d1) {
+if (db) {
   try {
-    const db = getDb(d1);
-    
     // Fetch levels & categories from D1
     const fetchedLevels = await db.select().from(jlptLevels).all();
     if (fetchedLevels.length > 0) levelsList = fetchedLevels;

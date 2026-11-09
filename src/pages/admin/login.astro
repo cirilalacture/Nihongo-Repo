@@ -16,12 +16,10 @@ if (Astro.request.method === 'POST') {
     if (!username || !password) {
       errorMessage = 'Username dan password wajib diisi!';
     } else {
-      // @ts-ignore
-      const d1 = Astro.locals?.runtime?.env?.DB;
+      const db = getDb();
       let user = null;
 
-      if (d1) {
-        const db = getDb(d1);
+      if (db) {
         const users = await db.select().from(adminUsers).where(eq(adminUsers.username, username)).limit(1);
         if (users.length > 0) user = users[0];
       } else {
