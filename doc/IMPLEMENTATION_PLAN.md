@@ -5,8 +5,8 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > **STATUS PROGRES TERKINI (Updated: 2026-11-08):**
 > * [x] **Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare** — `SELESAI (Completed)`
 > * [x] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SELESAI (Completed)`
-> * [ ] **Fase 3: Seeding Data Awal & Kredensial Admin** — `BERIKUTNYA (Next Up)`
-> * [ ] **Fase 4: Pengembangan Komponen Katalog Publik** — `Menunggu`
+> * [x] **Fase 3: Seeding Data Awal & Kredensial Admin** — `SELESAI (Completed)`
+> * [ ] **Fase 4: Pengembangan Komponen Katalog Publik** — `BERIKUTNYA (Next Up)`
 > * [ ] **Fase 5: Pencarian Instan & Filter Interaktif** — `Menunggu`
 > * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `Menunggu`
 > * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `Menunggu`
@@ -23,10 +23,10 @@ gantt
     Scaffolding Proyek & Config Astro Cloudflare :done, f1, 2026-11-08, 1d
     section Fase 2 (Selesai)
     Setup Database D1, Drizzle Schema & Client   :done, f2, 2026-11-08, 1d
-    section Fase 3 (Next)
-    Kurasi Data Awal & Seeding SQL                :active, f3, 2026-11-09, 1d
-    section Fase 4
-    Katalog Publik, Grid & Filter UI             :f4, after f3, 2d
+    section Fase 3 (Selesai)
+    Kurasi Data Awal & Seeding SQL                :done, f3, 2026-11-08, 1d
+    section Fase 4 (Next)
+    Katalog Publik, Grid & Filter UI             :active, f4, 2026-11-09, 2d
     section Fase 5
     Pencarian Instan Client Island               :f5, after f4, 1d
     section Fase 6
@@ -61,7 +61,16 @@ gantt
 
 ---
 
-### [ ] Fase 3: Seeding Data Awal & Kredensial Admin (STATUS: BERIKUTNYA)
+### [x] Fase 3: Seeding Data Awal & Kredensial Admin (STATUS: SELESAI)
+- [x] Buat utility Web Crypto PBKDF2 di `src/utils/auth.ts` (`hashPassword` & `verifyPassword`) yang native kompatibel dengan Cloudflare Workers.
+- [x] Buat file `src/db/seed.sql` berisi data 6 level JLPT (N5 - N1, ALL), 6 kategori materi standar, 5 tags, dan 9 koleksi buku populer.
+- [x] Daftarkan akun admin default (username: `admin`, password: `admin123`) dengan hash terenkripsi.
+- [x] Eksekusi seeder ke database D1 lokal via `wrangler d1 execute`.
+- [x] Verifikasi jumlah data pada setiap tabel via D1 CLI.
+
+---
+
+### [ ] Fase 4: Pengembangan Komponen Katalog Publik (STATUS: BERIKUTNYA)
 - [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
 - [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
 - [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).
