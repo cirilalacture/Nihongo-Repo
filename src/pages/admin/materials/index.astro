@@ -1,0 +1,287 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getDb, materials, categories, jlptLevels } from '../../../db';
+import { eq, desc } from 'drizzle-orm';
+import { PlusCircle, Search, Edit2, Trash2, ExternalLink, Star } from '@lucide/astro';
+
+let allMaterials: any[] = [];
+let allCategories: any[] = [];
+let allLevels: any[] = [];
+
+// @ts-ignore
+const d1 = Astro.locals?.runtime?.env?.DB;
+
+if (d1) {
+  try {
+    const db = getDb(d1);
+    allCategories = await db.select().from(categories).all();
+    allLevels = await db.select().from(jlptLevels).all();
+
+    allMaterials = await db
+      .select({
+        id: materials.id,
+        title: materials.title,
+        romajiTitle: materials.romajiTitle,
+        originalTitle: materials.originalTitle,
+        author: materials.author,
+        publisher: materials.publisher,
+        publishYear: materials.publishYear,
+        driveUrl: materials.driveUrl,
+        fileType: materials.fileType,
+        fileSize: materials.fileSize,
+        isRecommended: materials.isRecommended,
+        isPublished: materials.isPublished,
+        clickCount: materials.clickCount,
+        categoryName: categories.name,
+        categorySlug: categories.slug,
+        levelCode: jlptLevels.code,
+        badgeBg: jlptLevels.badgeBg,
+        badgeText: jlptLevels.badgeText,
+      })
+      .from(materials)
+      .leftJoin(categories, eq(materials.categoryId, categories.id))
+      .leftJoin(jlptLevels, eq(materials.levelId, jlptLevels.id))
+      .orderBy(desc(materials.createdAt))
+      .all();
+  } catch (err) {
+    console.error('Error fetching materials for admin:', err);
+  }
+}
+---
+
+<AdminLayout title="Kelola Materi & Buku — Admin CMS" activeNav="materials">
+  
+  <div class="space-y-6">
+    
+    <!-- Header with Action -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+          Daftar Materi & Buku Pembelajaran
+        </h2>
+        <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+          Kelola metadata, link Google Drive, kategori, dan status publikasi buku.
+        </p>
+      </div>
+
+      <a
+        href="/admin/materials/new"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95 self-start sm:self-auto"
+      >
+        <PlusCircle class="w-4 h-4" />
+        <span>Tambah Buku Baru</span>
+      </a>
+    </div>
+
+    <!-- Filter & Search Bar in Admin -->
+    <div class="p-4 bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="relative flex-1 max-w-md">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
+          <Search class="w-4 h-4" />
+        </div>
+        <input
+          type="search"
+          id="admin-search-input"
+          placeholder="Cari judul, pengarang, atau romaji..."
+          class="w-full pl-9 pr-4 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs text-[var(--color-ink-primary)] focus:outline-none focus:border-[var(--color-vermilion)] transition-all"
+        />
+      </div>
+
+      <div class="flex items-center gap-2 text-xs">
+        <select
+          id="admin-filter-level"
+          class="px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-[var(--color-ink-secondary)] text-xs focus:outline-none"
+        >
+          <option value="ALL">Semua Level</option>
+          <option value="N5">JLPT N5</option>
+          <option value="N4">JLPT N4</option>
+          <option value="N3">JLPT N3</option>
+          <option value="N2">JLPT N2</option>
+          <option value="N1">JLPT N1</option>
+        </select>
+
+        <span class="text-neutral-400">|</span>
+        <span class="text-[var(--color-ink-tertiary)] font-medium">
+          Total: <strong>{allMaterials.length}</strong> buku
+        </span>
+      </div>
+    </div>
+
+    <!-- Materials Table -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl overflow-hidden shadow-2xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[var(--color-surface-subtle)] text-[var(--color-ink-tertiary)] uppercase font-semibold border-b border-[var(--color-border-washi)]">
+            <tr>
+              <th class="py-3 px-4">Level</th>
+              <th class="py-3 px-4">Judul Materi</th>
+              <th class="py-3 px-4 hidden md:table-cell">Kategori</th>
+              <th class="py-3 px-4 hidden sm:table-cell">Format</th>
+              <th class="py-3 px-4 text-center">Status</th>
+              <th class="py-3 px-4 text-center">Klik</th>
+              <th class="py-3 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border-washi)]">
+            {allMaterials.map((item) => (
+              <tr
+                class="admin-mat-row hover:bg-neutral-50/70 transition-colors"
+                data-title={item.title.toLowerCase()}
+                data-author={(item.author || '').toLowerCase()}
+                data-level={item.levelCode || 'ALL'}
+              >
+                <td class="py-3 px-4">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-neutral-300 bg-neutral-100 text-neutral-800">
+                    {item.levelCode || 'ALL'}
+                  </span>
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-1.5 font-bold text-[var(--color-ink-primary)]">
+                    <span>{item.title}</span>
+                    {item.isRecommended === 1 && (
+                      <Star class="w-3.5 h-3.5 fill-amber-500 text-amber-500 shrink-0" title="Rekomendasi Utama" />
+                    )}
+                  </div>
+                  {item.originalTitle && (
+                    <div class="text-[11px] font-japanese text-[var(--color-ink-tertiary)]">{item.originalTitle}</div>
+                  )}
+                  <div class="text-[10px] text-[var(--color-ink-tertiary)] sm:hidden">{item.author || '-'}</div>
+                </td>
+                <td class="py-3 px-4 hidden md:table-cell text-[var(--color-ink-secondary)]">
+                  {item.categoryName}
+                </td>
+                <td class="py-3 px-4 hidden sm:table-cell font-mono text-[11px] text-[var(--color-ink-tertiary)]">
+                  {item.fileType} ({item.fileSize || '-'})
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <span class={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${item.isPublished === 1 ? 'bg-emerald-50 text-emerald-700' : 'bg-neutral-100 text-neutral-600'}`}>
+                    {item.isPublished === 1 ? 'Publik' : 'Draft'}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-center font-bold text-neutral-700">
+                  {item.clickCount || 0}
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="inline-flex items-center gap-1.5 justify-end">
+                    <a
+                      href={`/admin/materials/edit/${item.id}`}
+                      class="p-1.5 rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 transition-colors"
+                      title="Edit Materi"
+                    >
+                      <Edit2 class="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href={item.driveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="p-1.5 rounded-lg border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-neutral-600 hover:text-neutral-900 transition-colors"
+                      title="Buka Drive"
+                    >
+                      <ExternalLink class="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      type="button"
+                      class="btn-delete-mat p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                      data-id={item.id}
+                      data-title={item.title}
+                      title="Hapus Materi"
+                    >
+                      <Trash2 class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div
+    id="delete-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-2xs"
+  >
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+      <h3 class="text-base font-bold text-red-600">
+        Konfirmasi Hapus Materi
+      </h3>
+      <p class="text-xs text-[var(--color-ink-secondary)] leading-relaxed">
+        Apakah Anda yakin ingin menghapus materi: <br />
+        <strong id="delete-mat-title" class="text-[var(--color-ink-primary)] block mt-1"></strong>
+      </p>
+      <form id="delete-form" method="POST" action="/api/admin/materials/delete" class="flex items-center justify-end gap-2 pt-2">
+        <input type="hidden" name="materialId" id="delete-mat-id" value="" />
+        <button
+          type="button"
+          id="btn-cancel-delete"
+          class="px-4 py-2 rounded-xl border border-[var(--color-border-washi)] text-xs font-semibold hover:bg-[var(--color-surface-subtle)]"
+        >
+          Batal
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-2xs"
+        >
+          Ya, Hapus
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const searchInput = document.getElementById('admin-search-input');
+      const filterLevel = document.getElementById('admin-filter-level');
+      const rows = document.querySelectorAll('.admin-mat-row');
+
+      function filterTable() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const level = filterLevel ? filterLevel.value : 'ALL';
+
+        rows.forEach((row) => {
+          const title = row.getAttribute('data-title') || '';
+          const author = row.getAttribute('data-author') || '';
+          const rowLevel = row.getAttribute('data-level') || 'ALL';
+
+          const matchQuery = !query || title.includes(query) || author.includes(query);
+          const matchLevel = level === 'ALL' || rowLevel === level;
+
+          if (matchQuery && matchLevel) {
+            row.style.display = 'table-row';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+
+      if (searchInput) searchInput.addEventListener('input', filterTable);
+      if (filterLevel) filterLevel.addEventListener('change', filterTable);
+
+      // Delete Modal Handling
+      const deleteModal = document.getElementById('delete-modal');
+      const deleteTitle = document.getElementById('delete-mat-title');
+      const deleteId = document.getElementById('delete-mat-id');
+      const btnCancel = document.getElementById('btn-cancel-delete');
+
+      document.querySelectorAll('.btn-delete-mat').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const title = btn.getAttribute('data-title');
+          if (deleteId) deleteId.value = id || '';
+          if (deleteTitle) deleteTitle.textContent = title || '';
+          if (deleteModal) deleteModal.classList.remove('hidden'), deleteModal.classList.add('flex');
+        });
+      });
+
+      if (btnCancel) {
+        btnCancel.addEventListener('click', () => {
+          if (deleteModal) deleteModal.classList.add('hidden'), deleteModal.classList.remove('flex');
+        });
+      }
+    })();
+  </script>
+
+</AdminLayout>

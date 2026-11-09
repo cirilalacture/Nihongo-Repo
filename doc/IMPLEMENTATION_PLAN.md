@@ -8,8 +8,8 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > * [x] **Fase 3: Seeding Data Awal & Kredensial Admin** — `SELESAI (Completed)`
 > * [x] **Fase 4: Pengembangan Komponen Katalog Publik** — `SELESAI (Completed)`
 > * [x] **Fase 5: Pencarian Instan & Filter Interaktif** — `SELESAI (Completed)`
-> * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `BERIKUTNYA (Next Up)`
-> * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `Menunggu`
+> * [x] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `SELESAI (Completed)`
+> * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `BERIKUTNYA (Next Up)`
 
 ---
 
@@ -29,10 +29,10 @@ gantt
     Katalog Publik, Grid & Filter UI             :done, f4, 2026-11-08, 1d
     section Fase 5 (Selesai)
     Pencarian Instan Client Island               :done, f5, 2026-11-08, 1d
-    section Fase 6 (Next)
-    Admin CMS Dashboard & CRUD Materi/Kategori   :active, f6, 2026-11-09, 2d
-    section Fase 7
-    Pengujian, Audit Perf/a11y & Deploy Pages    :f7, after f6, 1d
+    section Fase 6 (Selesai)
+    Admin CMS Dashboard & CRUD Materi/Kategori   :done, f6, 2026-11-08, 1d
+    section Fase 7 (Next)
+    Pengujian, Audit Perf/a11y & Deploy Pages    :active, f7, 2026-11-09, 1d
 ```
 
 ---
@@ -90,7 +90,21 @@ gantt
 
 ---
 
-### [ ] Fase 6: Pembangunan Admin CMS (STATUS: BERIKUTNYA)
+### [x] Fase 6: Pembangunan Admin CMS (STATUS: SELESAI)
+- [x] Sesi login aman dengan HMAC Web Crypto di `src/utils/auth.ts` (`createSessionToken` & `verifySessionToken`).
+- [x] Route guard middleware `src/middleware.ts` untuk memproteksi seluruh URL `/admin/*` via HTTP-only cookie.
+- [x] Halaman login admin `src/pages/admin/login.astro` dengan validasi kredensial D1 `admin_users` dan endpoint logout `src/pages/admin/logout.ts`.
+- [x] Layout dashboard admin `src/layouts/AdminLayout.astro` dengan sidebar desktop & mobile view.
+- [x] Dashboard Overview `src/pages/admin/index.astro` (Ringkasan total buku, total kategori, total klik Google Drive, distribusi level N5-N1, dan 5 materi terpopuler).
+- [x] Manajemen materi `src/pages/admin/materials/index.astro` (Tabel data lengkap, filter level, dialog modal konfirmasi hapus).
+- [x] Form penambahan buku baru `src/pages/admin/materials/new.astro` (Validasi input, auto-extract ID Google Drive, toggle rekomendasi & publikasi).
+- [x] Form edit buku `src/pages/admin/materials/edit/[id].astro` (Pre-populated form, update D1).
+- [x] Endpoint API hapus materi `src/pages/api/admin/materials/delete.ts`.
+- [x] Manajemen kategori `src/pages/admin/categories/index.astro` (Tabel kategori, form tambah kategori baru, proteksi pencegahan penghapusan jika kategori masih terpakai).
+
+---
+
+### [ ] Fase 7: Pengujian, Audit Perf/a11y & Deployment (STATUS: BERIKUTNYA)
 - [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
 - [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
 - [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).

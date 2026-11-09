@@ -1,0 +1,172 @@
+---
+import '../../styles/global.css';
+import { getDb, adminUsers } from '../../db';
+import { eq } from 'drizzle-orm';
+import { verifyPassword, createSessionToken } from '../../utils/auth';
+import { Lock, ArrowLeft, ShieldAlert } from '@lucide/astro';
+
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const username = (formData.get('username') || '').toString().trim();
+    const password = (formData.get('password') || '').toString().trim();
+
+    if (!username || !password) {
+      errorMessage = 'Username dan password wajib diisi!';
+    } else {
+      // @ts-ignore
+      const d1 = Astro.locals?.runtime?.env?.DB;
+      let user = null;
+
+      if (d1) {
+        const db = getDb(d1);
+        const users = await db.select().from(adminUsers).where(eq(adminUsers.username, username)).limit(1);
+        if (users.length > 0) user = users[0];
+      } else {
+        // Fallback check for local development if D1 not attached directly
+        if (username === 'admin' && password === 'admin123') {
+          user = { username: 'admin' };
+        }
+      }
+
+      if (!user) {
+        errorMessage = 'Kredensial tidak valid!';
+      } else {
+        let isPasswordCorrect = false;
+        if (user.passwordHash) {
+          isPasswordCorrect = await verifyPassword(password, user.passwordHash);
+        } else if (username === 'admin' && password === 'admin123') {
+          isPasswordCorrect = true;
+        }
+
+        if (isPasswordCorrect) {
+          const sessionToken = await createSessionToken(username);
+          Astro.cookies.set('nihongo_admin_session', sessionToken, {
+            path: '/',
+            httpOnly: true,
+            secure: false, // Set to true in production HTTPS
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7, // 7 days
+          });
+          return Astro.redirect('/admin');
+        } else {
+          errorMessage = 'Password yang Anda masukkan salah!';
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    errorMessage = 'Terjadi kesalahan sistem saat mencoba login.';
+  }
+}
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Masuk Admin CMS — Nihongo_repo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen bg-[var(--color-canvas)] text-[var(--color-ink-primary)] flex flex-col justify-between antialiased font-sans p-4">
+    
+    <!-- Top Back Link -->
+    <div class="max-w-md w-full mx-auto pt-6">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] transition-colors"
+      >
+        <ArrowLeft class="w-4 h-4" />
+        <span>Kembali ke Website Publik</span>
+      </a>
+    </div>
+
+    <!-- Login Box Card -->
+    <div class="max-w-md w-full mx-auto my-auto py-8">
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-3xl p-8 shadow-sm">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="w-12 h-12 rounded-2xl bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-2xl mx-auto mb-4 shadow-sm shadow-red-500/20">
+            日
+          </div>
+          <h1 class="text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+            Admin CMS Login
+          </h1>
+          <p class="text-xs text-[var(--color-ink-tertiary)] mt-1">
+            Masuk untuk mengelola materi, buku, dan kategori Nihongo_repo
+          </p>
+        </div>
+
+        <!-- Error Alert -->
+        {errorMessage && (
+          <div class="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700 flex items-center gap-2">
+            <ShieldAlert class="w-4 h-4 text-red-600 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        <!-- Form -->
+        <form method="POST" class="space-y-4">
+          <div>
+            <label for="username" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              autocomplete="username"
+              placeholder="admin"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full mt-2 py-3 px-4 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white font-bold text-sm shadow-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            <Lock class="w-4 h-4" />
+            <span>Masuk ke Dashboard</span>
+          </button>
+        </form>
+
+        <!-- Default Credentials Hint -->
+        <div class="mt-6 pt-5 border-t border-[var(--color-border-washi)] text-center text-[11px] text-[var(--color-ink-tertiary)]">
+          Kredensial default: <code class="bg-neutral-100 px-1.5 py-0.5 rounded font-mono text-neutral-800">admin</code> / <code class="bg-neutral-100 px-1.5 py-0.5 rounded font-mono text-neutral-800">admin123</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footnote -->
+    <div class="text-center pb-6 text-xs text-[var(--color-ink-tertiary)]">
+      Nihongo_repo CMS — Cloudflare D1 Authentication
+    </div>
+
+  </body>
+</html>

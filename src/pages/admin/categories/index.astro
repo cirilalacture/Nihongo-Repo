@@ -1,0 +1,276 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getDb, categories, materials } from '../../../db';
+import { eq, sql } from 'drizzle-orm';
+import { Layers, Plus, Trash2, Edit, AlertCircle } from '@lucide/astro';
+
+let allCategories: any[] = [];
+let errorMessage = '';
+
+// @ts-ignore
+const d1 = Astro.locals?.runtime?.env?.DB;
+
+if (d1) {
+  try {
+    const db = getDb(d1);
+
+    // Handle Form Submission (Add Category)
+    if (Astro.request.method === 'POST') {
+      const formData = await Astro.request.formData();
+      const action = formData.get('action');
+
+      if (action === 'create') {
+        const name = (formData.get('name') || '').toString().trim();
+        const japaneseName = (formData.get('japaneseName') || '').toString().trim();
+        const slug = (formData.get('slug') || '').toString().trim().toLowerCase().replace(/\s+/g, '-');
+        const icon = (formData.get('icon') || 'book-open').toString().trim();
+        const sortOrder = parseInt((formData.get('sortOrder') || '0').toString(), 10);
+
+        if (!name || !japaneseName || !slug) {
+          errorMessage = 'Nama, Nama Kanji Jepang, dan Slug wajib diisi!';
+        } else {
+          const newId = 'cat_' + slug;
+          await db.insert(categories).values({
+            id: newId,
+            name,
+            japaneseName,
+            slug,
+            icon,
+            sortOrder,
+          });
+          return Astro.redirect('/admin/categories?msg=Kategori berhasil ditambahkan!');
+        }
+      } else if (action === 'delete') {
+        const categoryId = (formData.get('categoryId') || '').toString();
+        // Check if materials exist in this category
+        const matCount = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(materials)
+          .where(eq(materials.categoryId, categoryId));
+        
+        if (matCount[0]?.count > 0) {
+          errorMessage = `Tidak dapat menghapus! Ada ${matCount[0].count} materi yang menggunakan kategori ini.`;
+        } else {
+          await db.delete(categories).where(eq(categories.id, categoryId));
+          return Astro.redirect('/admin/categories?msg=Kategori berhasil dihapus!');
+        }
+      }
+    }
+
+    // Fetch categories with material count
+    allCategories = await db
+      .select({
+        id: categories.id,
+        name: categories.name,
+        japaneseName: categories.japaneseName,
+        slug: categories.slug,
+        icon: categories.icon,
+        sortOrder: categories.sortOrder,
+        materialCount: sql<number>`count(${materials.id})`,
+      })
+      .from(categories)
+      .leftJoin(materials, eq(categories.id, materials.categoryId))
+      .groupBy(categories.id)
+      .orderBy(categories.sortOrder)
+      .all();
+  } catch (err) {
+    console.error('Error in categories management:', err);
+    errorMessage = 'Terjadi kesalahan sistem saat memproses kategori.';
+  }
+}
+
+// Fallback categories if D1 not attached
+if (allCategories.length === 0) {
+  allCategories = [
+    { id: 'cat_grammar', name: 'Tata Bahasa', japaneseName: '文法 (Bunpou)', slug: 'grammar', sortOrder: 1, materialCount: 4 },
+    { id: 'cat_kanji', name: 'Huruf & Kanji', japaneseName: '漢字 (Kanji)', slug: 'kanji', sortOrder: 2, materialCount: 1 },
+    { id: 'cat_vocab', name: 'Kosakata', japaneseName: '語彙 (Goi)', slug: 'vocab', sortOrder: 3, materialCount: 2 },
+    { id: 'cat_reading', name: 'Membaca', japaneseName: '読解 (Dokkai)', slug: 'reading', sortOrder: 4, materialCount: 1 },
+    { id: 'cat_listening', name: 'Menyimak & Audio', japaneseName: '聴解 (Choukai)', slug: 'listening', sortOrder: 5, materialCount: 1 },
+    { id: 'cat_exam', name: 'Bank Soal JLPT', japaneseName: '問題集 (Mondai)', slug: 'exam', sortOrder: 6, materialCount: 0 },
+  ];
+}
+---
+
+<AdminLayout title="Kelola Kategori — Admin CMS" activeNav="categories">
+  
+  <div class="space-y-6">
+    
+    <!-- Header -->
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+        Kelola Kategori Materi
+      </h2>
+      <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+        Atur pengelompokan buku (Bunpou, Kanji, Dokkai, Choukai, Mondai) dan urutan tampilan.
+      </p>
+    </div>
+
+    {errorMessage && (
+      <div class="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700 flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 shrink-0" />
+        <span>{errorMessage}</span>
+      </div>
+    )}
+
+    <!-- 2 Column Layout: Add Category Form + Category List Table -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Left Column: Add Category Form -->
+      <div class="lg:col-span-1 bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 shadow-2xs h-fit space-y-4">
+        <h3 class="text-sm font-bold text-[var(--color-ink-primary)] flex items-center gap-2">
+          <Plus class="w-4 h-4 text-[var(--color-vermilion)]" />
+          <span>Tambah Kategori Baru</span>
+        </h3>
+
+        <form method="POST" class="space-y-3.5 text-xs">
+          <input type="hidden" name="action" value="create" />
+
+          <div>
+            <label for="name" class="block font-bold text-[var(--color-ink-secondary)] mb-1">
+              Nama Kategori <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              placeholder="Contoh: Percakapan"
+              class="w-full px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="japaneseName" class="block font-bold text-[var(--color-ink-secondary)] mb-1">
+              Nama Kanji / Romaji <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="japaneseName"
+              name="japaneseName"
+              required
+              placeholder="Contoh: 会話 (Kaiwa)"
+              class="w-full px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs focus:outline-none focus:border-[var(--color-vermilion)] font-japanese"
+            />
+          </div>
+
+          <div>
+            <label for="slug" class="block font-bold text-[var(--color-ink-secondary)] mb-1">
+              Slug URL <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="slug"
+              name="slug"
+              required
+              placeholder="contoh: percakapan"
+              class="w-full px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs focus:outline-none focus:border-[var(--color-vermilion)] font-mono"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="sortOrder" class="block font-bold text-[var(--color-ink-secondary)] mb-1">
+                Urutan (Sort)
+              </label>
+              <input
+                type="number"
+                id="sortOrder"
+                name="sortOrder"
+                value="7"
+                class="w-full px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs focus:outline-none focus:border-[var(--color-vermilion)]"
+              />
+            </div>
+            <div>
+              <label for="icon" class="block font-bold text-[var(--color-ink-secondary)] mb-1">
+                Ikon
+              </label>
+              <input
+                type="text"
+                id="icon"
+                name="icon"
+                value="book-open"
+                class="w-full px-3 py-2 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs focus:outline-none focus:border-[var(--color-vermilion)] font-mono"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full mt-2 py-2.5 px-4 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white font-bold text-xs shadow-2xs transition-all active:scale-95 flex items-center justify-center gap-1.5"
+          >
+            <Plus class="w-4 h-4" />
+            <span>Simpan Kategori</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Category Table -->
+      <div class="lg:col-span-2 bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl overflow-hidden shadow-2xs">
+        <div class="px-5 py-4 border-b border-[var(--color-border-washi)] flex items-center justify-between">
+          <h3 class="text-sm font-bold text-[var(--color-ink-primary)]">
+            Daftar Kategori Aktif
+          </h3>
+          <span class="text-xs text-[var(--color-ink-tertiary)]">
+            Total <strong>{allCategories.length}</strong> Kategori
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[var(--color-surface-subtle)] text-[var(--color-ink-tertiary)] uppercase font-semibold border-b border-[var(--color-border-washi)]">
+              <tr>
+                <th class="py-2.5 px-4">Urutan</th>
+                <th class="py-2.5 px-4">Nama Kategori</th>
+                <th class="py-2.5 px-4">Slug</th>
+                <th class="py-2.5 px-4 text-center">Jumlah Buku</th>
+                <th class="py-2.5 px-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--color-border-washi)]">
+              {allCategories.map((cat) => (
+                <tr class="hover:bg-neutral-50/70 transition-colors">
+                  <td class="py-3 px-4 font-mono font-bold text-[var(--color-ink-tertiary)]">
+                    #{cat.sortOrder}
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-bold text-[var(--color-ink-primary)]">{cat.name}</div>
+                    <div class="text-[11px] font-japanese text-[var(--color-ink-tertiary)]">{cat.japaneseName}</div>
+                  </td>
+                  <td class="py-3 px-4 font-mono text-[11px] text-[var(--color-ink-tertiary)]">
+                    {cat.slug}
+                  </td>
+                  <td class="py-3 px-4 text-center">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full font-bold text-[11px] bg-neutral-100 text-neutral-800">
+                      {cat.materialCount || 0} buku
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    {cat.materialCount === 0 ? (
+                      <form method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="categoryId" value={cat.id} />
+                        <button
+                          type="submit"
+                          class="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                          title="Hapus Kategori"
+                        >
+                          <Trash2 class="w-3.5 h-3.5" />
+                        </button>
+                      </form>
+                    ) : (
+                      <span class="text-[10px] text-neutral-400 italic">Terpakai</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</AdminLayout>

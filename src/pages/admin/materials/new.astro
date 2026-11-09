@@ -1,0 +1,403 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getDb, materials, categories, jlptLevels } from '../../../db';
+import { ArrowLeft, Save, Sparkles, FolderDown } from '@lucide/astro';
+
+let errorMessage = '';
+let allCategories: any[] = [];
+let allLevels: any[] = [];
+
+// @ts-ignore
+const d1 = Astro.locals?.runtime?.env?.DB;
+
+if (d1) {
+  try {
+    const db = getDb(d1);
+    allCategories = await db.select().from(categories).all();
+    allLevels = await db.select().from(jlptLevels).all();
+  } catch (err) {
+    console.error('Error loading form options:', err);
+  }
+}
+
+// Fallback options if DB not attached
+if (allCategories.length === 0) {
+  allCategories = [
+    { id: 'cat_grammar', name: 'Tata Bahasa' },
+    { id: 'cat_kanji', name: 'Huruf & Kanji' },
+    { id: 'cat_vocab', name: 'Kosakata' },
+    { id: 'cat_reading', name: 'Membaca' },
+    { id: 'cat_listening', name: 'Menyimak & Audio' },
+    { id: 'cat_exam', name: 'Bank Soal JLPT' },
+  ];
+}
+
+if (allLevels.length === 0) {
+  allLevels = [
+    { id: 'lvl_n5', code: 'N5', label: 'N5 (Pemula)' },
+    { id: 'lvl_n4', code: 'N4', label: 'N4 (Dasar Lanjutan)' },
+    { id: 'lvl_n3', code: 'N3', label: 'N3 (Menengah)' },
+    { id: 'lvl_n2', code: 'N2', label: 'N2 (Pra-Mahir)' },
+    { id: 'lvl_n1', code: 'N1', label: 'N1 (Mahir)' },
+    { id: 'lvl_all', code: 'ALL', label: 'Semua Level' },
+  ];
+}
+
+// Handle Form Submission (POST)
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const title = (formData.get('title') || '').toString().trim();
+    const romajiTitle = (formData.get('romajiTitle') || '').toString().trim();
+    const originalTitle = (formData.get('originalTitle') || '').toString().trim();
+    const author = (formData.get('author') || '').toString().trim();
+    const publisher = (formData.get('publisher') || '').toString().trim();
+    const publishYear = parseInt((formData.get('publishYear') || '').toString(), 10) || null;
+    const categoryId = (formData.get('categoryId') || '').toString();
+    const levelId = (formData.get('levelId') || '').toString();
+    const driveUrl = (formData.get('driveUrl') || '').toString().trim();
+    const coverImageUrl = (formData.get('coverImageUrl') || '').toString().trim();
+    const fileType = (formData.get('fileType') || 'PDF').toString();
+    const fileSize = (formData.get('fileSize') || '').toString().trim();
+    const description = (formData.get('description') || '').toString().trim();
+    const isRecommended = formData.get('isRecommended') ? 1 : 0;
+    const isPublished = formData.get('isPublished') ? 1 : 0;
+
+    if (!title || !driveUrl || !categoryId || !levelId) {
+      errorMessage = 'Judul, Tautan Google Drive, Kategori, dan Level JLPT wajib diisi!';
+    } else {
+      // Auto-extract Google Drive File ID if possible
+      let driveFileId: string | null = null;
+      const fileIdMatch = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || driveUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (fileIdMatch) driveFileId = fileIdMatch[1];
+
+      const newId = 'mat_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+
+      if (d1) {
+        const db = getDb(d1);
+        await db.insert(materials).values({
+          id: newId,
+          title,
+          romajiTitle: romajiTitle || null,
+          originalTitle: originalTitle || null,
+          author: author || null,
+          publisher: publisher || null,
+          publishYear,
+          categoryId,
+          levelId,
+          driveUrl,
+          driveFileId,
+          coverImageUrl: coverImageUrl || null,
+          fileType,
+          fileSize: fileSize || null,
+          description: description || null,
+          isRecommended,
+          isPublished,
+          clickCount: 0,
+        });
+      }
+
+      return Astro.redirect('/admin/materials?msg=Materi baru berhasil ditambahkan!');
+    }
+  } catch (err) {
+    console.error('Error inserting material:', err);
+    errorMessage = 'Gagal menyimpan materi ke database.';
+  }
+}
+---
+
+<AdminLayout title="Tambah Buku Baru — Admin CMS" activeNav="new-material">
+  
+  <div class="max-w-3xl space-y-6">
+    
+    <!-- Top Back Navigation -->
+    <div>
+      <a
+        href="/admin/materials"
+        class="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] transition-colors mb-3"
+      >
+        <ArrowLeft class="w-4 h-4" />
+        <span>Kembali ke Daftar Materi</span>
+      </a>
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+        Tambah Materi / Buku Baru
+      </h2>
+      <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+        Isi detail informasi buku, tautan berkas di Google Drive, dan kategorisasi level.
+      </p>
+    </div>
+
+    {errorMessage && (
+      <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700">
+        {errorMessage}
+      </div>
+    )}
+
+    <!-- Form Container -->
+    <form method="POST" class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 sm:p-8 shadow-2xs space-y-6">
+      
+      <!-- Section 1: Basic Information -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-[var(--color-vermilion)] uppercase tracking-wider border-b border-[var(--color-border-washi)] pb-2">
+          1. Informasi Utama Buku
+        </h3>
+
+        <div>
+          <label for="title" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1.5">
+            Judul Buku / Materi <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            placeholder="Contoh: Minna no Nihongo Shokyu I (Second Edition)"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="romajiTitle" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Judul Romaji
+            </label>
+            <input
+              type="text"
+              id="romajiTitle"
+              name="romajiTitle"
+              placeholder="Contoh: Minna no Nihongo Shokyu 1"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="originalTitle" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Judul Asli Jepang (Kanji / Kana)
+            </label>
+            <input
+              type="text"
+              id="originalTitle"
+              name="originalTitle"
+              placeholder="Contoh: みんなの日本語 初級I 本冊"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)] font-japanese"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="author" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Pengarang
+            </label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              placeholder="Contoh: 3A Corporation"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="publisher" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Penerbit
+            </label>
+            <input
+              type="text"
+              id="publisher"
+              name="publisher"
+              placeholder="Contoh: 3A Network"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="publishYear" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Tahun Terbit
+            </label>
+            <input
+              type="number"
+              id="publishYear"
+              name="publishYear"
+              placeholder="2012"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Categorization & Level -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-[var(--color-vermilion)] uppercase tracking-wider border-b border-[var(--color-border-washi)] pb-2">
+          2. Level & Kategorisasi
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="levelId" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1.5">
+              Tingkat JLPT <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="levelId"
+              name="levelId"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            >
+              {allLevels.map((lvl) => (
+                <option value={lvl.id}>{lvl.label || lvl.code}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label for="categoryId" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1.5">
+              Kategori Materi <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            >
+              {allCategories.map((cat) => (
+                <option value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Google Drive & File Details -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-[var(--color-vermilion)] uppercase tracking-wider border-b border-[var(--color-border-washi)] pb-2">
+          3. Tautan Google Drive & Berkas
+        </h3>
+
+        <div>
+          <label for="driveUrl" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1.5">
+            Tautan Google Drive (Publik) <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="url"
+            id="driveUrl"
+            name="driveUrl"
+            required
+            placeholder="https://drive.google.com/file/d/xxxxx/view?usp=sharing"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+          />
+          <span class="text-[11px] text-[var(--color-ink-tertiary)] mt-1 block">
+            Pastikan setelan Google Drive: <em>Siapa saja yang memiliki link dapat melihat</em>.
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="fileType" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Format Berkas
+            </label>
+            <select
+              id="fileType"
+              name="fileType"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            >
+              <option value="PDF">PDF Ebook</option>
+              <option value="AUDIO_ZIP">Audio MP3 / ZIP</option>
+              <option value="ANKI">Anki Flashcard Deck</option>
+              <option value="EXCEL">Spreadsheet Latihan</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="fileSize" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              Ukuran Berkas
+            </label>
+            <input
+              type="text"
+              id="fileSize"
+              name="fileSize"
+              placeholder="Contoh: 48 MB"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+
+          <div>
+            <label for="coverImageUrl" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+              URL Gambar Cover (Opsional)
+            </label>
+            <input
+              type="url"
+              id="coverImageUrl"
+              name="coverImageUrl"
+              placeholder="https://..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="description" class="block text-xs font-bold text-[var(--color-ink-secondary)] mb-1.5">
+            Deskripsi Materi & Petunjuk Belajar
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            placeholder="Jelaskan isi pokok buku teks ini, bab yang dicakup, dan saran penggunaan..."
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm focus:outline-none focus:border-[var(--color-vermilion)] leading-relaxed"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Section 4: Settings & Publishing -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isRecommended"
+            name="isRecommended"
+            value="1"
+            class="w-4 h-4 rounded border-gray-300 text-[var(--color-vermilion)] focus:ring-red-500"
+          />
+          <label for="isRecommended" class="text-xs font-bold text-[var(--color-ink-primary)]">
+            Tandai sebagai "Rekomendasi Pilihan Sensei" (Tampil badge khusus bintang)
+          </label>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isPublished"
+            name="isPublished"
+            value="1"
+            checked
+            class="w-4 h-4 rounded border-gray-300 text-[var(--color-vermilion)] focus:ring-red-500"
+          />
+          <label for="isPublished" class="text-xs font-bold text-[var(--color-ink-primary)]">
+            Publikasikan langsung ke katalog publik (Aktif)
+          </label>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="pt-4 border-t border-[var(--color-border-washi)] flex items-center justify-end gap-3">
+        <a
+          href="/admin/materials"
+          class="px-5 py-2.5 rounded-xl border border-[var(--color-border-washi)] text-xs font-bold text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] transition-colors"
+        >
+          Batal
+        </a>
+
+        <button
+          type="submit"
+          class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95"
+        >
+          <Save class="w-4 h-4" />
+          <span>Simpan Materi</span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</AdminLayout>

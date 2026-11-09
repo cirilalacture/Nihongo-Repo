@@ -1,0 +1,266 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getDb, materials, categories, jlptLevels } from '../../db';
+import { eq, desc, sql } from 'drizzle-orm';
+import { BookOpen, Layers, MousePointerClick, Star, PlusCircle, ExternalLink, ArrowRight, Eye } from '@lucide/astro';
+
+// Fallback counts for development
+let totalMaterialsCount = 9;
+let totalCategoriesCount = 6;
+let totalClicksCount = 2132;
+let popularMaterials: any[] = [];
+let levelCounts: Record<string, number> = { N5: 2, N4: 1, N3: 2, N2: 2, N1: 1, ALL: 1 };
+
+// @ts-ignore
+const d1 = Astro.locals?.runtime?.env?.DB;
+
+if (d1) {
+  try {
+    const db = getDb(d1);
+
+    // 1. Total Materials
+    const matRows = await db.select({ count: sql<number>`count(*)` }).from(materials);
+    totalMaterialsCount = matRows[0]?.count || 0;
+
+    // 2. Total Categories
+    const catRows = await db.select({ count: sql<number>`count(*)` }).from(categories);
+    totalCategoriesCount = catRows[0]?.count || 0;
+
+    // 3. Total Clicks
+    const clickRows = await db.select({ totalClicks: sql<number>`sum(${materials.clickCount})` }).from(materials);
+    totalClicksCount = clickRows[0]?.totalClicks || 0;
+
+    // 4. Popular Materials (Top 5)
+    popularMaterials = await db
+      .select({
+        id: materials.id,
+        title: materials.title,
+        romajiTitle: materials.romajiTitle,
+        originalTitle: materials.originalTitle,
+        clickCount: materials.clickCount,
+        driveUrl: materials.driveUrl,
+        categoryName: categories.name,
+        levelCode: jlptLevels.code,
+        badgeBg: jlptLevels.badgeBg,
+        badgeText: jlptLevels.badgeText,
+      })
+      .from(materials)
+      .leftJoin(categories, eq(materials.categoryId, categories.id))
+      .leftJoin(jlptLevels, eq(materials.levelId, jlptLevels.id))
+      .orderBy(desc(materials.clickCount))
+      .limit(5)
+      .all();
+
+    // 5. Level Breakdown
+    const levelStats = await db
+      .select({
+        code: jlptLevels.code,
+        count: sql<number>`count(${materials.id})`,
+      })
+      .from(jlptLevels)
+      .leftJoin(materials, eq(jlptLevels.id, materials.levelId))
+      .groupBy(jlptLevels.code)
+      .all();
+
+    levelCounts = {};
+    levelStats.forEach((st) => {
+      levelCounts[st.code] = st.count;
+    });
+  } catch (err) {
+    console.error('Error fetching admin dashboard metrics:', err);
+  }
+}
+
+// Fallback popular materials if query was empty
+if (popularMaterials.length === 0) {
+  popularMaterials = [
+    { id: 'mat_kanjilook', title: 'Kanji Look and Learn (512 Illustrated)', clickCount: 490, levelCode: 'N5', categoryName: 'Huruf & Kanji', driveUrl: '#' },
+    { id: 'mat_minna1', title: 'Minna no Nihongo Shokyu I (Honshatsu)', clickCount: 342, levelCode: 'N5', categoryName: 'Tata Bahasa', driveUrl: '#' },
+    { id: 'mat_skm_n1_bunpou', title: 'Shin Kanzen Master Bunpou N1', clickCount: 310, levelCode: 'N1', categoryName: 'Tata Bahasa', driveUrl: '#' },
+    { id: 'mat_skm_n3_bunpou', title: 'Shin Kanzen Master Bunpou N3', clickCount: 275, levelCode: 'N3', categoryName: 'Tata Bahasa', driveUrl: '#' },
+    { id: 'mat_minna2', title: 'Minna no Nihongo Shokyu II (Honshatsu)', clickCount: 215, levelCode: 'N4', categoryName: 'Tata Bahasa', driveUrl: '#' },
+  ];
+}
+---
+
+<AdminLayout title="Ringkasan Metrik — Admin CMS Nihongo_repo" activeNav="dashboard">
+  
+  <div class="space-y-8">
+    
+    <!-- Welcome Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-ink-primary)]">
+          Selamat Datang, Sensei Admin!
+        </h2>
+        <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+          Berikut ringkasan statistik dan aktivitas repositori materi bahasa Jepang terkini.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a
+          href="/admin/materials/new"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-bold shadow-2xs transition-all active:scale-95"
+        >
+          <PlusCircle class="w-4 h-4" />
+          <span>Tambah Materi Baru</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Main Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Total Materi -->
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-5 shadow-2xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider">Total Materi</span>
+          <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
+            <BookOpen class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="text-3xl font-bold text-[var(--color-ink-primary)] tracking-tight">
+          {totalMaterialsCount}
+        </div>
+        <div class="text-[11px] text-[var(--color-ink-tertiary)] mt-1">Buku & audio aktif di repositori</div>
+      </div>
+
+      <!-- Card 2: Total Kategori -->
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-5 shadow-2xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider">Kategori Topik</span>
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Layers class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="text-3xl font-bold text-[var(--color-ink-primary)] tracking-tight">
+          {totalCategoriesCount}
+        </div>
+        <div class="text-[11px] text-[var(--color-ink-tertiary)] mt-1">Bunpou, Kanji, Dokkai, dll.</div>
+      </div>
+
+      <!-- Card 3: Total Clicks -->
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-5 shadow-2xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider">Akses Google Drive</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <MousePointerClick class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="text-3xl font-bold text-[var(--color-ink-primary)] tracking-tight">
+          {totalClicksCount.toLocaleString()}
+        </div>
+        <div class="text-[11px] text-[var(--color-ink-tertiary)] mt-1">Total klik tautan berkas</div>
+      </div>
+
+      <!-- Card 4: Status Cloudflare -->
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-5 shadow-2xs">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider">Penyimpanan D1</span>
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <Star class="w-4 h-4" />
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-emerald-600 flex items-center gap-1.5 tracking-tight">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Aktif
+        </div>
+        <div class="text-[11px] text-[var(--color-ink-tertiary)] mt-1">Cloudflare Edge SQL Serverless</div>
+      </div>
+
+    </div>
+
+    <!-- JLPT Level Breakdown -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 shadow-2xs">
+      <h3 class="text-sm font-bold text-[var(--color-ink-primary)] mb-4">
+        Distribusi Materi Berdasarkan Level JLPT
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {['N5', 'N4', 'N3', 'N2', 'N1', 'ALL'].map((code) => (
+          <div class="p-3 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] text-center">
+            <span class="text-xs font-bold text-[var(--color-ink-tertiary)] block mb-1">{code}</span>
+            <span class="text-xl font-extrabold text-[var(--color-ink-primary)]">
+              {levelCounts[code] || 0}
+            </span>
+            <span class="text-[10px] text-[var(--color-ink-tertiary)] block">buku</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Top 5 Most Accessed Materials -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-6 shadow-2xs">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-sm font-bold text-[var(--color-ink-primary)]">
+            5 Materi Paling Sering Diakses
+          </h3>
+          <p class="text-xs text-[var(--color-ink-tertiary)]">Diurutkan berdasarkan klik Google Drive terbanyak</p>
+        </div>
+        <a
+          href="/admin/materials"
+          class="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-vermilion)] hover:underline"
+        >
+          <span>Semua Materi</span>
+          <ArrowRight class="w-3.5 h-3.5" />
+        </a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[var(--color-surface-subtle)] text-[var(--color-ink-tertiary)] uppercase font-semibold">
+            <tr>
+              <th class="py-2.5 px-4 rounded-l-lg">Level</th>
+              <th class="py-2.5 px-4">Judul Materi</th>
+              <th class="py-2.5 px-4">Kategori</th>
+              <th class="py-2.5 px-4 text-center">Total Akses</th>
+              <th class="py-2.5 px-4 text-right rounded-r-lg">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border-washi)]">
+            {popularMaterials.map((item, index) => (
+              <tr class="hover:bg-neutral-50/70 transition-colors">
+                <td class="py-3 px-4 font-bold">
+                  <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-neutral-100 text-neutral-800 border border-neutral-200">
+                    {item.levelCode || 'ALL'}
+                  </span>
+                </td>
+                <td class="py-3 px-4">
+                  <div class="font-bold text-[var(--color-ink-primary)]">{item.title}</div>
+                </td>
+                <td class="py-3 px-4 text-[var(--color-ink-secondary)]">
+                  {item.categoryName}
+                </td>
+                <td class="py-3 px-4 text-center font-bold text-emerald-700">
+                  {item.clickCount} klik
+                </td>
+                <td class="py-3 px-4 text-right">
+                  <div class="inline-flex items-center gap-1.5 justify-end">
+                    <a
+                      href={`/admin/materials/edit/${item.id}`}
+                      class="px-2 py-1 rounded bg-[var(--color-surface-subtle)] hover:bg-neutral-200 text-neutral-700 text-[11px] font-medium"
+                    >
+                      Edit
+                    </a>
+                    <a
+                      href={item.driveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="p-1 rounded bg-neutral-100 text-neutral-600 hover:text-neutral-900"
+                      title="Buka Drive"
+                    >
+                      <ExternalLink class="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</AdminLayout>

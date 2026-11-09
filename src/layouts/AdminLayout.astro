@@ -1,0 +1,202 @@
+---
+import '../styles/global.css';
+import { LayoutDashboard, BookOpen, PlusCircle, Layers, Globe, LogOut, ShieldCheck, CheckCircle2, AlertCircle } from '@lucide/astro';
+
+interface Props {
+  title?: string;
+  activeNav?: 'dashboard' | 'materials' | 'new-material' | 'categories';
+}
+
+const { title = 'Admin Dashboard — Nihongo_repo', activeNav = 'dashboard' } = Astro.props;
+const currentUrl = Astro.url.pathname;
+const urlParams = Astro.url.searchParams;
+const successMsg = urlParams.get('msg');
+const errorMsg = urlParams.get('err');
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-neutral-50 text-[var(--color-ink-primary)] min-h-screen flex antialiased font-sans">
+    
+    <!-- Sidebar Desktop -->
+    <aside class="w-64 bg-[var(--color-surface)] border-r border-[var(--color-border-washi)] flex flex-col justify-between shrink-0 hidden md:flex sticky top-0 h-screen">
+      <div>
+        <!-- Admin Brand Header -->
+        <div class="h-16 px-6 border-b border-[var(--color-border-washi)] flex items-center justify-between">
+          <a href="/admin" class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              日
+            </div>
+            <div>
+              <span class="font-bold text-sm tracking-tight text-[var(--color-ink-primary)]">Admin CMS</span>
+              <span class="text-[10px] text-[var(--color-ink-tertiary)] block">Nihongo_repo</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-4 space-y-1 text-xs font-semibold">
+          <div class="text-[10px] uppercase tracking-wider text-[var(--color-ink-tertiary)] px-3 py-2 font-bold">
+            Menu Utama
+          </div>
+
+          <a
+            href="/admin"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'dashboard'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <LayoutDashboard class="w-4 h-4" />
+            <span>Ringkasan Metrik</span>
+          </a>
+
+          <a
+            href="/admin/materials"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'materials'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <BookOpen class="w-4 h-4" />
+            <span>Kelola Materi & Buku</span>
+          </a>
+
+          <a
+            href="/admin/materials/new"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'new-material'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <PlusCircle class="w-4 h-4" />
+            <span>Tambah Buku Baru</span>
+          </a>
+
+          <a
+            href="/admin/categories"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'categories'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <Layers class="w-4 h-4" />
+            <span>Kelola Kategori</span>
+          </a>
+
+          <div class="pt-4 text-[10px] uppercase tracking-wider text-[var(--color-ink-tertiary)] px-3 py-2 font-bold">
+            Akses Publik
+          </div>
+
+          <a
+            href="/"
+            target="_blank"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)] transition-all"
+          >
+            <Globe class="w-4 h-4" />
+            <span>Lihat Website</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Admin User Footnote & Logout -->
+      <div class="p-4 border-t border-[var(--color-border-washi)]">
+        <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">
+          <div class="flex items-center gap-2 overflow-hidden">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+              <ShieldCheck class="w-4 h-4" />
+            </div>
+            <div class="truncate text-xs">
+              <span class="font-bold text-[var(--color-ink-primary)] block truncate">Sensei Admin</span>
+              <span class="text-[10px] text-[var(--color-ink-tertiary)]">Superadmin</span>
+            </div>
+          </div>
+          <a
+            href="/admin/logout"
+            class="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+            title="Keluar / Logout"
+          >
+            <LogOut class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      
+      <!-- Topbar Header -->
+      <header class="h-16 px-4 sm:px-8 bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] flex items-center justify-between gap-4 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+          <!-- Mobile Menu Drawer Toggle Placeholder -->
+          <a href="/admin" class="md:hidden flex items-center gap-2">
+            <div class="w-7 h-7 rounded-md bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-xs">
+              日
+            </div>
+            <span class="font-bold text-sm">Admin CMS</span>
+          </a>
+          <h1 class="hidden md:block font-bold text-base text-[var(--color-ink-primary)]">
+            {title.split('—')[0]}
+          </h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Quick Mobile Actions -->
+          <a
+            href="/admin/materials/new"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-vermilion)] hover:bg-[var(--color-vermilion-hover)] text-white text-xs font-semibold shadow-2xs transition-all"
+          >
+            <PlusCircle class="w-3.5 h-3.5" />
+            <span>Tambah Materi</span>
+          </a>
+
+          <a
+            href="/admin/logout"
+            class="md:hidden p-2 rounded-lg text-neutral-500 hover:text-red-600"
+            title="Keluar"
+          >
+            <LogOut class="w-4 h-4" />
+          </a>
+        </div>
+      </header>
+
+      <!-- Alert Notification Banner (If query param msg or err exists) -->
+      {successMsg && (
+        <div class="mx-4 sm:mx-8 mt-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 class="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div class="mx-4 sm:mx-8 mt-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-800 flex items-center gap-2 animate-in fade-in">
+          <AlertCircle class="w-4 h-4 text-red-600 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      <!-- Page Content Stage -->
+      <main class="p-4 sm:p-8 flex-1">
+        <slot />
+      </main>
+
+    </div>
+
+  </body>
+</html>
