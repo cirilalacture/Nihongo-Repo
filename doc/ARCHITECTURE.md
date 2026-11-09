@@ -4,44 +4,53 @@
 
 ```mermaid
 flowchart TD
-    User([Pengguna / Pembelajar]) -->|Akses Web via HTTPS| CDN[Cloudflare Global Edge Network]
-    CDN -->|Route Request| Pages[Cloudflare Pages - Astro SSR App]
+    PublicUser([Pengguna Publik]) -->|Akses Katalog| CDN[Cloudflare Global Edge]
+    AdminUser([Administrator]) -->|Akses CMS /admin| CDN
+
+    CDN -->|SSR Pages & Static Cache| AstroApp[Astro v5 on Cloudflare Workers Runtime]
     
-    subgraph Cloudflare Infrastructure
-        Pages -->|Query Metadata via Binding DB| D1[(Cloudflare D1 SQLite Database)]
-        Pages -->|Cache Halaman & Static Assets| Cache[Cloudflare Edge Cache]
+    subgraph Astro Application Logic
+        AstroApp -->|Middleware Auth Check| AuthGuard{Admin Authenticated?}
+        AuthGuard -->|Ya| AdminCMS[Admin CMS Surface]
+        AuthGuard -->|Tidak| AdminLogin[Redirect to /admin/login]
+        AstroApp --> PublicCatalog[Public Catalog Surface]
+        AstroApp --> ApiEndpoints[API Endpoints /api/*]
     end
 
-    subgraph External Services
-        User -->|Klik Buka di Drive| GDrive[Google Drive File / Folder Preview]
+    subgraph Data Layer
+        AdminCMS -->|Drizzle ORM Queries| D1[(Cloudflare D1 SQLite DB)]
+        PublicCatalog -->|Drizzle ORM Queries| D1
+        ApiEndpoints -->|Drizzle ORM Queries| D1
+    end
+
+    subgraph External Storage
+        PublicUser -->|Download / Read PDF| GDrive[(Google Drive Cloud Storage)]
+        AdminCMS -->|Simpan URL & ID| GDrive
     end
 ```
 
 ---
 
-## 2. Pemilihan Framework & Komponen
+## 2. Pemilihan Framework & Alur Autentikasi Admin
 
-### 2.1 Mengapa Astro v5?
-Website katalog materi pembelajaran memiliki karakteristik:
-1. **Konten-sentris:** Membutuhkan SEO prima, halaman cepat terbuka, dan metadata yang ramah media sosial.
-2. **Interaktivitas Terisolasi:** Hanya butuh interaktivitas kecil pada kolom pencarian dan tombol filter.
-3. **Kompatibilitas Cloudflare:** Astro memiliki adapter resmi `@astrojs/cloudflare` yang sangat matang. Tidak seperti Next.js yang sering memerlukan polyfill Node.js runtime berat, Astro berjalan native di V8 isolate Cloudflare Workers.
+### 2.1 Mengapa Astro v5 untuk Publik + Admin CMS?
+* **Satu Repositori Terpadu:** Tidak perlu memisahkan backend CMS dan frontend katalog publik. Astro mendukung SSR halaman dinamis dan form actions server-side langsung dalam satu project.
+* **Server-Side Middleware:** Astro menyediakan file `src/middleware.ts` native yang dapat mengintersepsi setiap request ke `/admin/*` untuk memeriksa cookie token sesi admin sebelum merender halaman.
+* **Zero Overhead:** Admin CMS dibangun dengan komponen Astro + Tailwind ringan tanpa framework state manajemen yang membengkak, memuat seketika di koneksi seluler.
 
-### 2.2 Database: Cloudflare D1 + Drizzle ORM
-* **Cloudflare D1:** Database SQLite serverless yang didistribusikan mendekati pengguna secara global dengan latensi rendah (<15ms di edge).
-* **Drizzle ORM:** Dipilih karena:
-  * Zero-dependencies & bundle size <50KB.
-  * 100% type-safe TypeScript schema.
-  * Migrasi otomatis yang mudah dijalankan via CLI `wrangler d1 migrations apply`.
-
-### 2.3 Penyimpanan Materi: Google Drive Strategy
-Karena database Cloudflare D1 difokuskan untuk metadata (judul, kategori, level, deskripsi), seluruh file berat (buku PDF 50MB–500MB, audio MP3) disimpan di Google Drive:
-* **Format URL:** Menggunakan link publik berformat preview (`https://drive.google.com/file/d/{FILE_ID}/view?usp=sharing`).
-* **Cover Thumbnails:** Dapat menggunakan thumbnail Google Drive beresolusi optimal atau link gambar cover eksternal yang di-cache di Cloudflare.
+### 2.2 Alur Keamanan & Autentikasi Admin
+1. **Penyimpanan Kredensial:** Tabel `admin_users` menyimpan username dan password hash terenkripsi (atau token rahasia `ADMIN_SECRET` yang dapat diatur via Cloudflare Environment Variable).
+2. **Login Flow:**
+   * Admin memasukkan username & password pada form `/admin/login`.
+   * Endpoint server memverifikasi password dan mengenerate token sesi terenkripsi.
+   * Token disimpan dalam cookie berstatus `HttpOnly`, `SameSite=Strict`, dan `Secure`.
+3. **Guard Middleware:**
+   * Setiap request menuju `/admin` dan sub-routenya dicek oleh `src/middleware.ts`.
+   * Jika cookie valid, request dilanjutkan. Jika tidak, redirect ke `/admin/login`.
 
 ---
 
-## 3. Struktur Direktori Proyek Rekomendasi
+## 3. Struktur Direktori Proyek
 
 ```text
 nihongo_repo/
@@ -53,29 +62,42 @@ nihongo_repo/
 │   ├── DESIGN_RULES.md
 │   └── IMPLEMENTATION_PLAN.md
 ├── src/
-│   ├── components/             # UI Components (Astro & Island components)
+│   ├── components/             # UI Components Publik & Admin
 │   │   ├── Navbar.astro
 │   │   ├── HeroSection.astro
 │   │   ├── FilterChips.astro
 │   │   ├── MaterialCard.astro
 │   │   ├── MaterialDetailModal.astro
-│   │   └── SearchBar.tsx       # Interactive search island
+│   │   ├── SearchBar.tsx
+│   │   └── admin/              # Komponen khusus Admin
+│   │       ├── AdminSidebar.astro
+│   │       ├── AdminNavbar.astro
+│   │       ├── StatCard.astro
+│   │       └── ConfirmDeleteModal.astro
 │   ├── db/
-│   │   ├── schema.ts           # Drizzle ORM schema definition
-│   │   └── index.ts            # D1 database client connector
+│   │   ├── schema.ts           # Drizzle ORM schema (materials, categories, admin_users, dll.)
+│   │   ├── index.ts            # D1 database client connector
+│   │   └── seed.sql            # Initial seed data
 │   ├── layouts/
-│   │   └── BaseLayout.astro    # Layout utama dengan font Noto Sans JP
+│   │   ├── BaseLayout.astro    # Layout publik (Washi theme)
+│   │   └── AdminLayout.astro   # Layout admin (Clean Operate theme)
+│   ├── middleware.ts           # Route guard untuk /admin/*
 │   ├── pages/
-│   │   ├── index.astro         # Halaman utama katalog
-│   │   ├── level/[level].astro # Dynamic route per level JLPT
-│   │   ├── api/
-│   │   │   └── search.json.ts  # Endpoint API untuk pencarian
-│   │   └── admin/              # Halaman input data sederhana
+│   │   ├── index.astro         # Halaman utama publik
+│   │   ├── level/[level].astro # Filter halaman per level JLPT
+│   │   ├── admin/
+│   │   │   ├── index.astro     # Dashboard overview metrik
+│   │   │   ├── login.astro     # Form login admin
+│   │   │   ├── logout.ts       # Endpoint pembersih cookie sesi
+│   │   │   ├── materials/      # CRUD Materi (list, add, edit)
+│   │   │   ├── categories/     # CRUD Kategori (list, add, edit)
+│   │   │   └── tags/           # CRUD Tags
+│   │   └── api/
+│   │       ├── materials.json.ts
+│   │       └── track-click.ts  # Pencatat metrik popularitas buku
 │   └── styles/
-│       └── global.css          # Token warna Washi, Sumi-e & Tailwind
-├── public/                     # Favicon, logo, font, placeholder images
-├── astro.config.mjs            # Konfigurasi Astro + Cloudflare Adapter
-├── wrangler.toml               # Konfigurasi Cloudflare Pages & D1 binding
-├── package.json
-└── tsconfig.json
+│       └── global.css          # Tailwind CSS + Washi & Admin tokens
+├── wrangler.jsonc              # Konfigurasi Cloudflare Pages & D1 binding
+├── astro.config.mjs
+└── package.json
 ```

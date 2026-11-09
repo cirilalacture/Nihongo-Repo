@@ -4,11 +4,12 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 
 > **STATUS PROGRES TERKINI (Updated: 2026-11-08):**
 > * [x] **Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare** — `SELESAI (Completed)`
-> * [ ] **Fase 2: Setup Database D1 & Drizzle Schema** — `BERIKUTNYA (Next Up)`
-> * [ ] **Fase 3: Kurasi Data Awal & Seeding SQL** — `Menunggu`
-> * [ ] **Fase 4: Pengembangan Komponen UI & Desain Impeccable** — `Menunggu`
+> * [ ] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SEDANG BERJALAN (In Progress)`
+> * [ ] **Fase 3: Seeding Data Awal & Kredensial Admin** — `Menunggu`
+> * [ ] **Fase 4: Pengembangan Komponen Katalog Publik** — `Menunggu`
 > * [ ] **Fase 5: Pencarian Instan & Filter Interaktif** — `Menunggu`
-> * [ ] **Fase 6: Pengujian, Audit Perf/a11y & Deploy Pages** — `Menunggu`
+> * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `Menunggu`
+> * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `Menunggu`
 
 ---
 
@@ -20,16 +21,18 @@ gantt
     dateFormat  YYYY-MM-DD
     section Fase 1 (Selesai)
     Scaffolding Proyek & Config Astro Cloudflare :done, f1, 2026-11-08, 1d
-    section Fase 2 (Next)
-    Setup Database D1 & Drizzle Schema           :active, f2, 2026-11-09, 1d
+    section Fase 2 (In Progress)
+    Setup Database D1, Drizzle Schema & Client   :active, f2, 2026-11-09, 1d
     section Fase 3
     Kurasi Data Awal & Seeding SQL                :f3, after f2, 1d
     section Fase 4
-    Pengembangan Komponen UI & Layouting         :f4, after f3, 2d
+    Katalog Publik, Grid & Filter UI             :f4, after f3, 2d
     section Fase 5
-    Pencarian Instan & Filter Interaktif         :f5, after f4, 1d
+    Pencarian Instan Client Island               :f5, after f4, 1d
     section Fase 6
-    Pengujian, Audit Perf/a11y & Deploy Pages    :f6, after f5, 1d
+    Admin CMS Dashboard & CRUD Materi/Kategori   :f6, after f5, 2d
+    section Fase 7
+    Pengujian, Audit Perf/a11y & Deploy Pages    :f7, after f6, 1d
 ```
 
 ---
@@ -44,71 +47,60 @@ gantt
 - [x] Instalasi dependensi: `drizzle-orm`, `@lucide/astro`, `wrangler`, `drizzle-kit`.
 - [x] Konfigurasi `wrangler.jsonc` dengan binding D1 `DB` dan compatibility flags `nodejs_compat`.
 - [x] Pengujian build: `npm run build` sukses 100% tanpa error (`dist/` generated).
+- [x] Git repository inisialisasi pada branch `main` dengan commit awal.
 
 ---
 
-### [ ] Fase 2: Setup Database Cloudflare D1 & Drizzle (STATUS: BERIKUTNYA)
-1. Buat file `wrangler.toml` dengan binding D1:
-   ```toml
-   name = "nihongo-repo"
-   compatibility_date = "2024-09-23"
-   compatibility_flags = ["nodejs_compat"]
-
-   [[d1_databases]]
-   binding = "DB"
-   database_name = "nihongo-repo-db"
-   database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # Dibuat via wrangler d1 create
-   ```
-2. Buat skema Drizzle di `src/db/schema.ts` yang merefleksikan tabel `categories`, `jlpt_levels`, `materials`, dan `tags`.
-3. Buat database D1 lokal untuk development:
-   ```bash
-   npx wrangler d1 execute nihongo-repo-db --local --file=./doc/DATABASE_SCHEMA.md
-   ```
+### [ ] Fase 2: Setup Database D1, Drizzle Schema & Client (STATUS: SEDANG BERJALAN)
+- [ ] Buat file skema Drizzle di `src/db/schema.ts` (mencakup tabel: `admin_users`, `categories`, `jlpt_levels`, `materials`, `tags`, `material_tags`).
+- [ ] Buat file penghubung database D1 di `src/db/index.ts` yang membaca runtime binding `Astro.locals.runtime.env.DB`.
+- [ ] Buat file `schema.sql` di root proyek untuk eksekusi migrasi D1 langsung via CLI.
+- [ ] Jalankan eksekusi migrasi lokal D1 menggunakan `wrangler d1 execute`.
+- [ ] Verifikasi skema tabel lokal berhasil terbentuk tanpa error.
 
 ---
 
-### Fase 3: Kurasi Data Awal & Google Drive Linking
-1. Buat file seeder `src/db/seed.sql` berisi buku-buku referensi utama:
-   * **N5:** Minna no Nihongo I, Genki I, Kanji Look and Learn.
-   * **N4:** Minna no Nihongo II, Genki II.
-   * **N3:** Shin Kanzen Master Bunpou N3, Sou Matome Goi N3.
-   * **N2:** Shin Kanzen Master N2, Nihongo Sou Matome N2.
-   * **N1:** Shin Kanzen Master N1.
-2. Pastikan file tersimpan di folder Google Drive publik dan format link preview telah siap (`/view?usp=sharing`).
+### [ ] Fase 3: Seeding Data Awal & Kredensial Admin (STATUS: MENUNGGU)
+- [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
+- [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
+- [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).
+- [ ] Buat akun admin default (username `admin`, password ter-hash aman).
+- [ ] Eksekusi seeder ke database D1 lokal.
 
 ---
 
-### Fase 4: Pembangunan Komponen UI & Desain Visual
-1. Konfigurasikan token warna di `tailwind.config.mjs` atau `src/styles/global.css`:
-   * Warna Washi, Sumi Ink, dan Shu-iro Vermilion.
-2. Buat komponen UI:
-   * `src/components/Navbar.astro`
-   * `src/components/HeroSection.astro`
-   * `src/components/FilterBar.astro`
-   * `src/components/MaterialCard.astro`
-   * `src/components/MaterialModal.astro`
-   * `src/components/Footer.astro`
-3. Susun halaman utama di `src/pages/index.astro`.
+### [ ] Fase 4: Pengembangan Komponen Katalog Publik (STATUS: MENUNGGU)
+- [ ] Buat layout publik `src/layouts/BaseLayout.astro`.
+- [ ] Buat komponen header/navbar `src/components/Navbar.astro`.
+- [ ] Buat komponen hero section `src/components/HeroSection.astro`.
+- [ ] Buat komponen kartu buku `src/components/MaterialCard.astro`.
+- [ ] Buat modal/drawer detail materi `src/components/MaterialDetailModal.astro`.
+- [ ] Hubungkan halaman `src/pages/index.astro` dengan query D1 untuk menampilkan daftar materi secara SSR.
 
 ---
 
-### Fase 5: Pencarian Instan & Filter Interaktif (Client Island)
-1. Buat komponen pencarian reaktif (React Island atau Vanilla TS) di `src/components/SearchBar.tsx`.
-2. Pengguna dapat mengetik judul atau menekan tombol filter level JLPT (N5-N1) untuk menyaring kartu materi secara instan tanpa reload browser.
-3. Tambahkan URL query parameter sync (`?level=N3&q=kanzen`) agar hasil filter bisa dibagikan (*shareable URL*).
+### [ ] Fase 5: Pencarian Instan & Filter Interaktif (STATUS: MENUNGGU)
+- [ ] Buat komponen pencarian instan sisi klien (`src/components/SearchBar.tsx` atau lightweight script).
+- [ ] Implementasikan filtering instan berdasarkan level JLPT (N5–N1) dan kategori tanpa reload.
+- [ ] Sinkronisasi state pencarian dengan URL query parameters (`?level=N3&q=kanji`).
+- [ ] Buat endpoint API pelacak klik `src/pages/api/track-click.ts` untuk menghitung statistik popularitas.
 
 ---
 
-### Fase 6: Testing, Audit Kualitas & Deployment
-1. Jalankan testing build dan runtime lokal:
-   ```bash
-   npm run build
-   npx wrangler pages dev ./dist
-   ```
-2. Audit tampilan dengan kriteria **Impeccable**:
-   * Responsivitas pada ukuran layar Mobile (375px), Tablet (768px), dan Desktop (1440px).
-   * Keterbacaan teks dan rasio kontras warna.
-3. Hubungkan repository GitHub ke **Cloudflare Pages**:
-   * Build command: `npm run build`
-   * Output directory: `dist`
-   * Hubungkan binding database D1 production di pengaturan Pages.
+### [ ] Fase 6: Pembangunan Admin CMS (STATUS: MENUNGGU)
+- [ ] Buat layout admin `src/layouts/AdminLayout.astro` lengkap dengan sidebar dan breadcrumbs.
+- [ ] Buat route `src/middleware.ts` untuk memproteksi seluruh URL `/admin/*` via cookie session.
+- [ ] Buat halaman login admin `src/pages/admin/login.astro` dan endpoint autentikasi server.
+- [ ] Buat halaman overview metrik `src/pages/admin/index.astro` (Total Materi, Total Kategori, Klik Terbanyak, Distribusi Level).
+- [ ] Buat halaman manajemen materi `src/pages/admin/materials/index.astro` (Data table, filter, tombol delete).
+- [ ] Buat form tambah & edit materi `src/pages/admin/materials/new.astro` & `edit/[id].astro`.
+- [ ] Buat form manajemen kategori `src/pages/admin/categories/index.astro`.
+
+---
+
+### [ ] Fase 7: Pengujian, Audit Perf/a11y & Deployment (STATUS: MENUNGGU)
+- [ ] Jalankan testing simulasi lokal via `npx wrangler pages dev`.
+- [ ] Audit aksesibilitas (a11y) dan kontras rasio warna.
+- [ ] Verifikasi responsivitas pada layar mobile dan desktop.
+- [ ] Siapkan panduan pembuatan database D1 remote di Cloudflare Dashboard.
+- [ ] Deployment ke Cloudflare Pages dan migrasi skema production.

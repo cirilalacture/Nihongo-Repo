@@ -2,10 +2,9 @@
 
 ## 1. Filosofi & Arah Estetika: *Digital Washi & Sumi-e*
 
-Desain **Nihongo_repo** memadukan fungsionalitas direktori arsip modern dengan ketenangan estetika alat tulis Jepang (*Japanese Stationery & Washi Paper*):
-* **Konsep *Ma* (Ruang & Keheningan):** Menghindari banner yang terlalu padat atau elemen visual bising yang mengalihkan fokus pengguna dalam belajar.
-* **Keseimbangan Tinta (*Sumi*):** Menggunakan warna arang gelap bertekstur tinta daripada hitam pekat murni (#000000) untuk kenyamanan membaca dalam waktu lama.
-* **Aksen Stempel (*Shu-iro*):** Sentuhan merah vermilion tradisional hanya digunakan untuk stempel pengesahan, tombol aksi primer, dan status aktif.
+Desain **Nihongo_repo** memadukan estetika tradisional alat tulis Jepang (*Japanese Stationery & Washi Paper*) untuk permukaan publik dengan kepraktisan dashboard modern (*Clean Operate Mode*) untuk halaman admin:
+* **Halaman Publik (Experience / Read Mode):** Mengutamakan ketenangan mata, ruang bernapas luas (*Ma*), dan pemindaian kartu buku yang intuitif.
+* **Halaman Admin (Operate Mode):** Mengutamakan scanability data, densitas informasi yang seimbang, navigasi sidebar yang stabil, dan umpan balik aksi (success/delete modal) yang jelas.
 
 **Prototipe Stitch:** Telah ter-generate di Google Stitch Project ID: **`407598114321150448`**.
 
@@ -14,20 +13,23 @@ Desain **Nihongo_repo** memadukan fungsionalitas direktori arsip modern dengan k
 ## 2. Token Warna & Palet Visual
 
 ### 2.1 Warna Dasar & Permukaan (Canvas)
-* **`bg-canvas` (Porcelain Warm):** `#FFF8F5` / `#FAFAF9` — Latar belakang utama seluruh halaman.
-* **`bg-surface` (Washi Sheet):** `#FFFFFF` — Latar kartu materi dan kontainer.
-* **`bg-surface-subtle` (Paper Bed):** `#F5F5F0` — Latar belakang filter bar dan panel sekunder.
-* **`border-washi`:** `#E7E5E4` (atau `rgba(231, 229, 228, 0.8)`) — Garis tepi tipis 1px seperti tepian kertas washi.
+* **`bg-canvas` (Porcelain Warm):** `#FFF8F5` / `#FAFAF9` — Latar belakang utama seluruh halaman publik.
+* **`bg-admin` (Clean Neutral):** `#F8FAFC` / `#FFFFFF` — Latar belakang dashboard admin untuk kejernihan kontras data tabel.
+* **`bg-surface` (Washi Sheet):** `#FFFFFF` — Latar kartu materi, form input, dan kontainer tabel.
+* **`bg-surface-subtle` (Paper Bed):** `#F5F5F0` — Latar belakang filter bar dan panel sidebar admin.
+* **`border-washi`:** `#E7E5E4` (atau `#E2E8F0` untuk admin) — Garis tepi tipis 1px yang rapi.
 
 ### 2.2 Warna Teks & Tipografi (Ink)
 * **`text-ink-primary` (Sumi Deep Ink):** `#1C1917` — Judul halaman, judul buku, dan teks utama.
-* **`text-ink-secondary` (Charcoal Muted):** `#44403C` — Subjudul, deskripsi buku, dan label filter.
+* **`text-ink-secondary` (Charcoal Muted):** `#44403C` — Subjudul, deskripsi buku, dan label filter/tabel.
 * **`text-ink-tertiary` (Faint Mist):** `#78716C` — Metadata sekunder, tahun terbit, dan placeholder.
 
 ### 2.3 Warna Aksi & Brand (Shu-iro Vermilion)
-* **`primary`:** `#DC2626` — Tombol aksi utama (Buka di Drive, Filter Aktif).
+* **`primary`:** `#DC2626` — Tombol aksi utama (Buka di Drive, Simpan Form, Filter Aktif).
 * **`primary-hover`:** `#B91C1C` — State hover tombol primer.
 * **`primary-subtle`:** `#FEF2F2` — Latar belakang aksen ringan.
+* **`status-success`:** `#059669` — Status publikasi aktif, notifikasi berhasil.
+* **`status-danger`:** `#DC2626` — Tombol hapus materi, dialog konfirmasi hapus.
 
 ### 2.4 Matriks Warna Badge Level JLPT
 
@@ -46,25 +48,33 @@ Desain **Nihongo_repo** memadukan fungsionalitas direktori arsip modern dengan k
 
 * **Font Utama (Latin & Angka):** `Noto Sans` atau `Plus Jakarta Sans`
 * **Font CJK (Kanji, Hiragana, Katakana):** `Noto Sans JP`
-* **Skala Tipografi:**
-  * **Display (Hero Headline):** 32px – 40px, font-weight 600, line-height 1.25
-  * **Section Title:** 24px, font-weight 600
-  * **Card Title (Judul Buku):** 16px – 18px, font-weight 600
-  * **Body Copy:** 14px, font-weight 400, line-height 1.6
-  * **Badge & Microcopy:** 11px – 12px, font-weight 600, letter-spacing 0.04em
+* **Hierarki Teks:**
+  * **Hero Title:** 32px – 40px, font-weight 700, line-height 1.2
+  * **Admin Section Title:** 20px – 24px, font-weight 600
+  * **Card & Row Title:** 15px – 16px, font-weight 600
+  * **Table Cells & Form Input:** 13px – 14px, font-weight 400
+  * **Badge & Status Pills:** 11px – 12px, font-weight 600, letter-spacing 0.04em
 
 ---
 
 ## 4. Spesifikasi Komponen UI
 
-### 4.1 Kartu Buku (Material Card)
+### 4.1 Kartu Buku Publik (Material Card)
 * **Container:** Background `#FFFFFF`, rounded 8px (`rounded-lg`), border 1px solid `#E7E5E4`.
 * **Hover State:** Mengangkat sedikit (`translate-y-[-2px]`) dengan bayangan lembut: `box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.06)`.
-* **Area Cover:** Rasio 4:3 atau 3:4 dengan rounded 6px, menampilkan cover buku asli atau placeholder grafis kanji berlatar pastel.
 * **Tombol Google Drive:**
-  * Warna merah vermilion `#DC2626` atau outline washi berikon Drive.
-  * Teks: **"Buka di Drive"** + ikon panah eksternal (`↗`).
+  * Merah vermilion `#DC2626` berikon Google Drive atau panah eksternal.
+  * Teks: **"Buka di Drive"**.
 
-### 4.2 Search Bar & Filter Chips
-* **Search Input:** Latar putih, border 1px `#E7E5E4`, rounded 8px. Saat fokus: border berubah ke `#DC2626` dengan ring halus transparan (`ring-2 ring-red-500/20`).
-* **Filter Chips:** Berbentuk rounded-full (pill). State aktif memiliki border tegas dan background aksen. State tidak aktif menggunakan background netral washi `#F5F5F0`.
+### 4.2 Komponen Admin Dashboard (`/admin`)
+* **Admin Layout:**
+  * Sidebar persisten di desktop (lebar 240px) dengan link menu: `Ringkasan`, `Materi & Buku`, `Kategori`, `Tag & Label`, dan tombol `Ke Website`.
+  * Mobile header dengan drawer toggle hamburger.
+* **Tabel Manajemen (Data Table):**
+  * Baris padat (tinggi baris ~48px) dengan border bawah halus `#F1F5F9`.
+  * Kolom aksi: Tombol *Edit* (ikon pensil), Tombol *Preview* (buka Drive), dan Tombol *Hapus* (ikon tong sampah merah).
+* **Formulir Input (Create / Edit Material):**
+  * Input field dengan label jelas, placeholder kontekstual, dan focus ring vermilion (`focus:ring-2 focus:ring-red-500/20 focus:border-red-600`).
+  * Field link Google Drive otomatis memvalidasi format URL dan mengekstrak ID file jika memungkinkan.
+* **Dialog Konfirmasi Hapus (Delete Confirmation Modal):**
+  * Menampilkan nama materi yang akan dihapus untuk mencegah *accidental clicks*.

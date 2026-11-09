@@ -4,6 +4,15 @@
 
 ```mermaid
 erDiagram
+    ADMIN_USERS {
+        text id PK
+        text username UK
+        text password_hash
+        text name
+        datetime last_login_at
+        datetime created_at
+    }
+
     CATEGORIES ||--o{ MATERIALS : "mengelompokkan"
     JLPT_LEVELS ||--o{ MATERIALS : "menentukan level"
     MATERIALS ||--o{ MATERIAL_TAGS : "memiliki"
@@ -16,6 +25,7 @@ erDiagram
         text slug UK
         text icon
         integer sort_order
+        datetime created_at
     }
 
     JLPT_LEVELS {
@@ -43,7 +53,8 @@ erDiagram
         text cover_image_url
         text file_type "PDF, AUDIO, ANKI"
         text file_size
-        integer is_recommended
+        integer is_recommended "0 atau 1"
+        integer is_published "0 atau 1"
         integer click_count
         datetime created_at
         datetime updated_at
@@ -66,17 +77,28 @@ erDiagram
 ## 2. Definisi Skema SQL D1 (`schema.sql`)
 
 ```sql
--- 1. Kategori Materi
+-- 1. Tabel Administrator (CMS Authentication)
+CREATE TABLE IF NOT EXISTS admin_users (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    name TEXT,
+    last_login_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Kategori Materi
 CREATE TABLE IF NOT EXISTS categories (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     japanese_name TEXT NOT NULL,
     slug TEXT NOT NULL UNIQUE,
     icon TEXT,
-    sort_order INTEGER DEFAULT 0
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Level JLPT
+-- 3. Level JLPT
 CREATE TABLE IF NOT EXISTS jlpt_levels (
     id TEXT PRIMARY KEY,
     code TEXT NOT NULL UNIQUE, -- 'N5', 'N4', 'N3', 'N2', 'N1', 'ALL'
@@ -86,7 +108,7 @@ CREATE TABLE IF NOT EXISTS jlpt_levels (
     sort_order INTEGER DEFAULT 0
 );
 
--- 3. Data Materi Pembelajaran
+-- 4. Data Materi Pembelajaran
 CREATE TABLE IF NOT EXISTS materials (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
@@ -104,12 +126,13 @@ CREATE TABLE IF NOT EXISTS materials (
     file_type TEXT DEFAULT 'PDF',
     file_size TEXT,
     is_recommended INTEGER DEFAULT 0,
+    is_published INTEGER DEFAULT 1,
     click_count INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Tag & Relasi
+-- 5. Tag & Relasi
 CREATE TABLE IF NOT EXISTS tags (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
@@ -126,13 +149,18 @@ CREATE TABLE IF NOT EXISTS material_tags (
 CREATE INDEX IF NOT EXISTS idx_materials_category ON materials(category_id);
 CREATE INDEX IF NOT EXISTS idx_materials_level ON materials(level_id);
 CREATE INDEX IF NOT EXISTS idx_materials_title ON materials(title);
+CREATE INDEX IF NOT EXISTS idx_materials_published ON materials(is_published);
 ```
 
 ---
 
-## 3. Contoh Seed Data Awal (`seed.sql`)
+## 3. Seed Data Awal (`seed.sql`)
 
 ```sql
+-- Default Admin User (Password default di-hash, e.g. bcrypt/pbkdf2)
+INSERT OR IGNORE INTO admin_users (id, username, password_hash, name) VALUES
+('adm_master', 'admin', 'pbkdf2_sha256$nihongo_default_hash', 'Administrator Nihongo');
+
 -- Insert Data Level JLPT
 INSERT OR IGNORE INTO jlpt_levels (id, code, label, badge_bg, badge_text, sort_order) VALUES
 ('lvl_n5', 'N5', 'N5 (Pemula)', '#ECFDF5', '#065F46', 1),
@@ -154,7 +182,7 @@ INSERT OR IGNORE INTO categories (id, name, japanese_name, slug, icon, sort_orde
 -- Insert Contoh Materi Minna no Nihongo
 INSERT OR IGNORE INTO materials (
     id, title, romaji_title, original_title, author, publisher, publish_year,
-    description, category_id, level_id, drive_url, file_type, file_size, is_recommended
+    description, category_id, level_id, drive_url, file_type, file_size, is_recommended, is_published, click_count
 ) VALUES (
     'mat_minna1',
     'Minna no Nihongo Shokyu I (Second Edition)',
@@ -169,6 +197,8 @@ INSERT OR IGNORE INTO materials (
     'https://drive.google.com/file/d/sample-file-id/view?usp=sharing',
     'PDF',
     '45 MB',
-    1
+    1,
+    1,
+    128
 );
 ```
