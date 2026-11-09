@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-v5%20SSR-BC52EE?style=flat-square&logo=astro&logoColor=white" alt="Astro v5" /></a>
+  <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-v7%20SSR-BC52EE?style=flat-square&logo=astro&logoColor=white" alt="Astro v7" /></a>
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
@@ -59,7 +59,7 @@ flowchart TD
     User([Pengguna / Pembelajar]) -->|Akses Katalog| CDN[Cloudflare Global Edge]
     Admin([Administrator]) -->|Akses CMS /admin| CDN
 
-    CDN -->|Server-Side Rendering| AstroApp[Astro v5 SSR Runtime]
+    CDN -->|Server-Side Rendering| AstroApp[Astro v7 SSR Runtime]
     
     subgraph Astro App Logic
         AstroApp -->|Route Guard Middleware| AuthGuard{Admin Valid?}
@@ -82,7 +82,7 @@ flowchart TD
 
 ## 🛠️ Tech Stack & Ekosistem
 
-* **Framework:** [Astro v5](https://astro.build/) (`output: 'server'` dengan adapter `@astrojs/cloudflare`)
+* **Framework:** [Astro v7](https://astro.build/) (`^7.4.7`, `output: 'server'` dengan adapter `@astrojs/cloudflare` v14)
 * **Hosting & Runtime:** [Cloudflare Pages](https://pages.cloudflare.com/) (V8 Edge Isolate)
 * **Database:** [Cloudflare D1](https://developers.cloudflare.com/d1/) (Serverless SQL SQLite distributed globally)
 * **ORM:** [Drizzle ORM](https://orm.drizzle.team/) + Drizzle Kit

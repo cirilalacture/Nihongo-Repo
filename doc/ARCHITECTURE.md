@@ -7,7 +7,7 @@ flowchart TD
     PublicUser([Pengguna Publik]) -->|Akses Katalog| CDN[Cloudflare Global Edge]
     AdminUser([Administrator]) -->|Akses CMS /admin| CDN
 
-    CDN -->|SSR Pages & Static Cache| AstroApp[Astro v5 on Cloudflare Workers Runtime]
+    CDN -->|SSR Pages & Static Cache| AstroApp[Astro v7 on Cloudflare Workers Runtime]
     
     subgraph Astro Application Logic
         AstroApp -->|Middleware Auth Check| AuthGuard{Admin Authenticated?}
@@ -33,7 +33,7 @@ flowchart TD
 
 ## 2. Pemilihan Framework & Alur Autentikasi Admin
 
-### 2.1 Mengapa Astro v5 untuk Publik + Admin CMS?
+### 2.1 Mengapa Astro v7 untuk Publik + Admin CMS?
 * **Satu Repositori Terpadu:** Tidak perlu memisahkan backend CMS dan frontend katalog publik. Astro mendukung SSR halaman dinamis dan form actions server-side langsung dalam satu project.
 * **Server-Side Middleware:** Astro menyediakan file `src/middleware.ts` native yang dapat mengintersepsi setiap request ke `/admin/*` untuk memeriksa cookie token sesi admin sebelum merender halaman.
 * **Zero Overhead:** Admin CMS dibangun dengan komponen Astro + Tailwind ringan tanpa framework state manajemen yang membengkak, memuat seketika di koneksi seluler.

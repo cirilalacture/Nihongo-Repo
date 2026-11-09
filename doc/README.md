@@ -9,7 +9,7 @@ Selamat datang di direktori dokumentasi resmi proyek **Nihongo_repo**. Direktori
 | Dokumen | Deskripsi |
 | :--- | :--- |
 | **[1. PRD (Product Requirements Document)](./PRD.md)** | Visi produk, target audiens, fitur utama (grid view, filter JLPT N5–N1, quick preview modal, admin dashboard). |
-| **[2. Arsitektur & Tech Stack](./ARCHITECTURE.md)** | Alasan pemilihan Astro v5, Drizzle ORM, Cloudflare Pages/Workers, integrasi D1, dan integrasi Google Drive. |
+| **[2. Arsitektur & Tech Stack](./ARCHITECTURE.md)** | Alasan pemilihan Astro v7, Drizzle ORM, Cloudflare Pages/Workers, integrasi D1, dan integrasi Google Drive. |
 | **[3. Desain Skema Database](./DATABASE_SCHEMA.md)** | ERD Mermaid, skema tabel SQLite D1 (`categories`, `jlpt_levels`, `materials`, `tags`), dan script migrasi SQL. |
 | **[4. Aturan Desain Web (Design System)](./DESIGN_RULES.md)** | Panduan UI/UX (Digital Washi Minimalism), token warna, matriks warna badge JLPT, tipografi, dan referensi prototipe Stitch. |
 | **[5. Implementation Plan](./IMPLEMENTATION_PLAN.md)** | Rencana kerja bertahap dari Fase 1 hingga Fase 7 (Semua fase telah selesai 100%). |
@@ -23,5 +23,5 @@ Selamat datang di direktori dokumentasi resmi proyek **Nihongo_repo**. Direktori
 * **Hosting & Runtime:** Cloudflare Pages (Edge SSR via `@astrojs/cloudflare`)
 * **Database:** Cloudflare D1 (Serverless SQLite)
 * **File Storage:** Google Drive (Link publik + File ID preview)
-* **Framework:** Astro v5 + Tailwind CSS v4 + Drizzle ORM
+* **Framework:** Astro v7 + Tailwind CSS v4 + Drizzle ORM
 * **Stitch Prototype Project ID:** `407598114321150448`

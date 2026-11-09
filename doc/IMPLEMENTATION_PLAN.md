@@ -40,7 +40,7 @@ gantt
 ## 🛠 Rincian Teknis Tiap Fase
 
 ### [x] Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare (STATUS: SELESAI)
-- [x] Inisialisasi Astro v5 di direktori `nihongo_repo`.
+- [x] Inisialisasi Astro v7 di direktori `nihongo_repo`.
 - [x] Konfigurasi Cloudflare adapter (`@astrojs/cloudflare` v14) dengan mode SSR `output: 'server'`.
 - [x] Konfigurasi Tailwind CSS v4 via `@tailwindcss/vite` di `astro.config.mjs`.
 - [x] Konfigurasi tema warna Digital Washi & Sumi-e di `src/styles/global.css`.
