@@ -1,0 +1,59 @@
+---
+import { Lock, Search, BookMarked, Sparkles } from '@lucide/astro';
+---
+
+<header class="border-b border-[var(--color-border-washi)] bg-[var(--color-canvas)]/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <!-- Brand Logo -->
+    <a href="/" class="flex items-center gap-2.5 group">
+      <div class="w-9 h-9 rounded-lg bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-red-500/20 group-hover:scale-105 transition-transform duration-200">
+        日
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5">
+          <span class="font-bold text-base sm:text-lg tracking-tight text-[var(--color-ink-primary)] leading-none">
+            Nihongo_repo
+          </span>
+          <span class="text-[10px] font-semibold tracking-wider text-[var(--color-vermilion)] bg-red-50 px-1.5 py-0.5 rounded border border-red-200">
+            日本語
+          </span>
+        </div>
+        <span class="text-[11px] text-[var(--color-ink-tertiary)] font-medium leading-tight">
+          Repository Belajar Bahasa Jepang
+        </span>
+      </div>
+    </a>
+
+    <!-- Nav Links (Desktop) -->
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--color-ink-secondary)]">
+      <a href="#katalog" class="hover:text-[var(--color-vermilion)] transition-colors">Semua Buku</a>
+      <a href="#jlpt-filter" class="hover:text-[var(--color-vermilion)] transition-colors">Level JLPT</a>
+      <a href="#kategori" class="hover:text-[var(--color-vermilion)] transition-colors">Kategori</a>
+    </nav>
+
+    <!-- Actions: Search & Admin Link -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Search Shortcut Trigger -->
+      <a
+        href="#pencarian"
+        class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs text-[var(--color-ink-secondary)] hover:border-neutral-300 transition-colors shadow-2xs"
+      >
+        <Search class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
+        <span class="hidden sm:inline">Cari materi...</span>
+        <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[var(--color-ink-tertiary)] bg-neutral-100 rounded border border-neutral-200">
+          /
+        </kbd>
+      </a>
+
+      <!-- Admin Access Link -->
+      <a
+        href="/admin"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] bg-[var(--color-surface-subtle)] hover:bg-neutral-200/70 border border-[var(--color-border-washi)] transition-colors"
+        title="Masuk ke Halaman Admin CMS"
+      >
+        <Lock class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
+        <span class="hidden sm:inline">Admin</span>
+      </a>
+    </div>
+  </div>
+</header>

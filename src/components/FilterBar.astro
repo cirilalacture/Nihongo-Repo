@@ -1,0 +1,127 @@
+---
+import { Search, LayoutGrid, List, SlidersHorizontal, BookOpen, PenTool, Layers, FileText, Headphones, CheckCircle } from '@lucide/astro';
+
+interface Level {
+  id: string;
+  code: string;
+  label: string;
+  badgeBg: string;
+  badgeText: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  japaneseName: string;
+  slug: string;
+  icon: string | null;
+}
+
+interface Props {
+  levels: Level[];
+  categories: Category[];
+  activeLevel?: string;
+  activeCategory?: string;
+}
+
+const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL' } = Astro.props;
+---
+
+<div id="pencarian" class="bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] py-6 shadow-2xs">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-5">
+    
+    <!-- Top Row: Search Input & View Toggle -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <!-- Search Input Field -->
+      <div class="relative flex-1 max-w-xl">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-ink-tertiary)]">
+          <Search class="w-4 h-4" />
+        </div>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Cari judul buku, romaji, kanji, atau pengarang..."
+          class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all shadow-2xs"
+        />
+        <div id="search-count" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs text-[var(--color-ink-tertiary)]">
+        </div>
+      </div>
+
+      <!-- View Switcher Toggle -->
+      <div class="flex items-center self-end sm:self-auto gap-1 p-1 bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] rounded-lg">
+        <button
+          type="button"
+          id="view-grid-btn"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-[var(--color-surface)] text-[var(--color-ink-primary)] shadow-2xs transition-all"
+          title="Tampilan Kartu Visual"
+        >
+          <LayoutGrid class="w-3.5 h-3.5" />
+          <span>Grid</span>
+        </button>
+        <button
+          type="button"
+          id="view-list-btn"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] transition-all"
+          title="Tampilan Tabel Ringkas"
+        >
+          <List class="w-3.5 h-3.5" />
+          <span>Tabel</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Middle Row: JLPT Level Selector Chips -->
+    <div id="jlpt-filter" class="flex flex-wrap items-center gap-2">
+      <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1">
+        Level JLPT:
+      </span>
+      <button
+        type="button"
+        data-filter-level="ALL"
+        class="filter-level-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-ink-primary)] text-white border-[var(--color-ink-primary)] shadow-2xs"
+      >
+        Semua Level
+      </button>
+
+      {levels.filter(l => l.code !== 'ALL').map((lvl) => (
+        <button
+          type="button"
+          data-filter-level={lvl.code}
+          class="filter-level-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)]"
+          style={`--active-bg: ${lvl.badgeBg}; --active-text: ${lvl.badgeText};`}
+        >
+          <span class="font-bold">{lvl.code}</span>
+          <span class="text-[10px] ml-1 opacity-75 hidden sm:inline">{lvl.label.replace(lvl.code, '').trim()}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Bottom Row: Category Pills -->
+    <div id="kategori" class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+      <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 whitespace-nowrap">
+        Kategori:
+      </span>
+      <button
+        type="button"
+        data-filter-category="ALL"
+        class="filter-category-btn px-3 py-1 rounded-lg font-medium whitespace-nowrap transition-all bg-[var(--color-surface-subtle)] text-[var(--color-ink-primary)] border border-neutral-300 font-semibold"
+      >
+        Semua Kategori
+      </button>
+
+      {categories.map((cat) => (
+        <button
+          type="button"
+          data-filter-category={cat.slug}
+          class="filter-category-btn px-3 py-1 rounded-lg font-medium whitespace-nowrap transition-all bg-transparent text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)] border border-transparent"
+        >
+          <span>{cat.name}</span>
+          <span class="text-[10px] text-[var(--color-ink-tertiary)] font-japanese ml-1 opacity-80">
+            {cat.japaneseName.split(' ')[0]}
+          </span>
+        </button>
+      ))}
+    </div>
+
+  </div>
+</div>

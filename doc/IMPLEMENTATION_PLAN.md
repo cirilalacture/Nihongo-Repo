@@ -6,9 +6,9 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > * [x] **Fase 1: Scaffolding Proyek & Konfigurasi Cloudflare** — `SELESAI (Completed)`
 > * [x] **Fase 2: Setup Database D1, Drizzle Schema & Client** — `SELESAI (Completed)`
 > * [x] **Fase 3: Seeding Data Awal & Kredensial Admin** — `SELESAI (Completed)`
-> * [ ] **Fase 4: Pengembangan Komponen Katalog Publik** — `BERIKUTNYA (Next Up)`
-> * [ ] **Fase 5: Pencarian Instan & Filter Interaktif** — `Menunggu`
-> * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `Menunggu`
+> * [x] **Fase 4: Pengembangan Komponen Katalog Publik** — `SELESAI (Completed)`
+> * [x] **Fase 5: Pencarian Instan & Filter Interaktif** — `SELESAI (Completed)`
+> * [ ] **Fase 6: Pembangunan Admin CMS (Auth, CRUD Materi & Kategori)** — `BERIKUTNYA (Next Up)`
 > * [ ] **Fase 7: Pengujian, Audit Perf/a11y & Deploy Pages** — `Menunggu`
 
 ---
@@ -25,12 +25,12 @@ gantt
     Setup Database D1, Drizzle Schema & Client   :done, f2, 2026-11-08, 1d
     section Fase 3 (Selesai)
     Kurasi Data Awal & Seeding SQL                :done, f3, 2026-11-08, 1d
-    section Fase 4 (Next)
-    Katalog Publik, Grid & Filter UI             :active, f4, 2026-11-09, 2d
-    section Fase 5
-    Pencarian Instan Client Island               :f5, after f4, 1d
-    section Fase 6
-    Admin CMS Dashboard & CRUD Materi/Kategori   :f6, after f5, 2d
+    section Fase 4 (Selesai)
+    Katalog Publik, Grid & Filter UI             :done, f4, 2026-11-08, 1d
+    section Fase 5 (Selesai)
+    Pencarian Instan Client Island               :done, f5, 2026-11-08, 1d
+    section Fase 6 (Next)
+    Admin CMS Dashboard & CRUD Materi/Kategori   :active, f6, 2026-11-09, 2d
     section Fase 7
     Pengujian, Audit Perf/a11y & Deploy Pages    :f7, after f6, 1d
 ```
@@ -70,7 +70,27 @@ gantt
 
 ---
 
-### [ ] Fase 4: Pengembangan Komponen Katalog Publik (STATUS: BERIKUTNYA)
+### [x] Fase 4: Pengembangan Komponen Katalog Publik (STATUS: SELESAI)
+- [x] Buat layout publik `src/layouts/BaseLayout.astro` berpadu font Noto Sans JP + Plus Jakarta Sans & OpenGraph social meta.
+- [x] Buat komponen header/navbar `src/components/Navbar.astro` lengkap dengan brand stamp "日", link menu, dan shortcut search `/`.
+- [x] Buat hero section `src/components/HeroSection.astro` bernuansa kaligrafi Jepang minimalis, metric pills, dan tombol navigasi.
+- [x] Buat komponen kartu buku `src/components/MaterialCard.astro` lengkap dengan badge level JLPT terstandar, cover fallback kanji, dan tombol Google Drive.
+- [x] Buat modal detail `src/components/MaterialDetailModal.astro` dengan tombol salin tautan dan link direct Drive.
+- [x] Buat footer komprehensif `src/components/Footer.astro`.
+- [x] Hubungkan `src/pages/index.astro` dengan query Drizzle D1 SSR & fallback catalog.
+
+---
+
+### [x] Fase 5: Pencarian Instan & Filter Interaktif (STATUS: SELESAI)
+- [x] FilterBar interaktif `src/components/FilterBar.astro` dengan selector chip level N5-N1 dan kategori pills.
+- [x] Script instant reactive filtering sisi klien (judul, romaji, kanji, pengarang) tanpa perlu refresh browser.
+- [x] Toggle tampilan fleksibel: Grid View vs Compact Table View.
+- [x] State kosong (*Empty State*) ramah pengguna dengan tombol reset filter.
+- [x] Endpoint pencatat statistik klik `src/pages/api/track-click.ts`.
+
+---
+
+### [ ] Fase 6: Pembangunan Admin CMS (STATUS: BERIKUTNYA)
 - [ ] Buat file `src/db/seed.sql` berisi data level JLPT (N5 - N1, ALL).
 - [ ] Masukkan data kategori standar (Tata Bahasa, Huruf & Kanji, Kosakata, Membaca, Menyimak, Bank Soal).
 - [ ] Masukkan sampel buku referensi populer (Minna no Nihongo, Shin Kanzen Master, Genki, dll.).

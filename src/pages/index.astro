@@ -1,81 +1,676 @@
 ---
-import '../styles/global.css';
-import { BookOpen, Sparkles, FolderGit2 } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import HeroSection from '../components/HeroSection.astro';
+import FilterBar from '../components/FilterBar.astro';
+import MaterialCard from '../components/MaterialCard.astro';
+import MaterialDetailModal from '../components/MaterialDetailModal.astro';
+import Footer from '../components/Footer.astro';
+import { getDb, materials, categories, jlptLevels } from '../db';
+import { eq, desc } from 'drizzle-orm';
+import { ExternalLink, Info, SearchX, Layers, BookOpen } from '@lucide/astro';
+
+// Fallback seed catalog for static preview if D1 runtime binding is not attached
+const fallbackLevels = [
+  { id: 'lvl_n5', code: 'N5', label: 'N5 (Pemula)', badgeBg: '#ECFDF5', badgeText: '#065F46' },
+  { id: 'lvl_n4', code: 'N4', label: 'N4 (Dasar Lanjutan)', badgeBg: '#F0FDFA', badgeText: '#115E59' },
+  { id: 'lvl_n3', code: 'N3', label: 'N3 (Menengah)', badgeBg: '#FFFBEB', badgeText: '#92400E' },
+  { id: 'lvl_n2', code: 'N2', label: 'N2 (Pra-Mahir)', badgeBg: '#EEF2FF', badgeText: '#3730A3' },
+  { id: 'lvl_n1', code: 'N1', label: 'N1 (Mahir)', badgeBg: '#FEF2F2', badgeText: '#991B1B' },
+  { id: 'lvl_all', code: 'ALL', label: 'Semua Level', badgeBg: '#F5F5F4', badgeText: '#44403C' },
+];
+
+const fallbackCategories = [
+  { id: 'cat_grammar', name: 'Tata Bahasa', japaneseName: '文法 (Bunpou)', slug: 'grammar', icon: 'book-open' },
+  { id: 'cat_kanji', name: 'Huruf & Kanji', japaneseName: '漢字 (Kanji)', slug: 'kanji', icon: 'pen-tool' },
+  { id: 'cat_vocab', name: 'Kosakata', japaneseName: '語彙 (Goi)', slug: 'vocab', icon: 'layers' },
+  { id: 'cat_reading', name: 'Membaca', japaneseName: '読解 (Dokkai)', slug: 'reading', icon: 'file-text' },
+  { id: 'cat_listening', name: 'Menyimak & Audio', japaneseName: '聴解 (Choukai)', slug: 'listening', icon: 'headphones' },
+  { id: 'cat_exam', name: 'Bank Soal JLPT', japaneseName: '問題集 (Mondai)', slug: 'exam', icon: 'check-circle' },
+];
+
+let materialsList: any[] = [];
+let levelsList = fallbackLevels;
+let categoriesList = fallbackCategories;
+
+// Query live Cloudflare D1 database via Astro Locals runtime binding
+// @ts-ignore
+const d1 = Astro.locals?.runtime?.env?.DB;
+
+if (d1) {
+  try {
+    const db = getDb(d1);
+    
+    // Fetch levels & categories from D1
+    const fetchedLevels = await db.select().from(jlptLevels).all();
+    if (fetchedLevels.length > 0) levelsList = fetchedLevels;
+
+    const fetchedCategories = await db.select().from(categories).all();
+    if (fetchedCategories.length > 0) categoriesList = fetchedCategories;
+
+    // Fetch published materials joined with categories and levels
+    materialsList = await db
+      .select({
+        id: materials.id,
+        title: materials.title,
+        romajiTitle: materials.romajiTitle,
+        originalTitle: materials.originalTitle,
+        author: materials.author,
+        publisher: materials.publisher,
+        publishYear: materials.publishYear,
+        description: materials.description,
+        driveUrl: materials.driveUrl,
+        driveFileId: materials.driveFileId,
+        coverImageUrl: materials.coverImageUrl,
+        fileType: materials.fileType,
+        fileSize: materials.fileSize,
+        isRecommended: materials.isRecommended,
+        clickCount: materials.clickCount,
+        categoryName: categories.name,
+        categorySlug: categories.slug,
+        categoryIcon: categories.icon,
+        levelCode: jlptLevels.code,
+        levelLabel: jlptLevels.label,
+        badgeBg: jlptLevels.badgeBg,
+        badgeText: jlptLevels.badgeText,
+      })
+      .from(materials)
+      .leftJoin(categories, eq(materials.categoryId, categories.id))
+      .leftJoin(jlptLevels, eq(materials.levelId, jlptLevels.id))
+      .where(eq(materials.isPublished, 1))
+      .all();
+  } catch (err) {
+    console.error('Error querying Cloudflare D1:', err);
+  }
+}
+
+// Fallback sample data if D1 is not attached during build
+if (materialsList.length === 0) {
+  materialsList = [
+    {
+      id: 'mat_minna1',
+      title: 'Minna no Nihongo Shokyu I (Second Edition)',
+      romajiTitle: 'Minna no Nihongo Shokyu 1',
+      originalTitle: 'みんなの日本語 初級I 第2版 本冊',
+      author: '3A Corporation',
+      publisher: '3A Corporation',
+      publishYear: 2012,
+      description: 'Buku teks standar utama pembelajaran bahasa Jepang tingkat pemula (Bab 1 - Bab 25). Memuat tata bahasa dasar, pola kalimat, percakapan sehari-hari, dan latihan komprehensif.',
+      driveUrl: 'https://drive.google.com/file/d/sample1/view?usp=sharing',
+      driveFileId: 'sample1',
+      coverImageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '48 MB',
+      isRecommended: 1,
+      clickCount: 342,
+      categoryName: 'Tata Bahasa',
+      categorySlug: 'grammar',
+      levelCode: 'N5',
+      levelLabel: 'N5 (Pemula)',
+      badgeBg: '#ECFDF5',
+      badgeText: '#065F46',
+    },
+    {
+      id: 'mat_minna2',
+      title: 'Minna no Nihongo Shokyu II (Second Edition)',
+      romajiTitle: 'Minna no Nihongo Shokyu 2',
+      originalTitle: 'みんなの日本語 初級II 第2版 本冊',
+      author: '3A Corporation',
+      publisher: '3A Corporation',
+      publishYear: 2013,
+      description: 'Lanjutan resmi Minna no Nihongo I (Bab 26 - Bab 50). Sangat esensial untuk menyelesaikan seluruh silabus tata bahasa dasar menuju JLPT N4.',
+      driveUrl: 'https://drive.google.com/file/d/sample2/view?usp=sharing',
+      driveFileId: 'sample2',
+      coverImageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '52 MB',
+      isRecommended: 1,
+      clickCount: 215,
+      categoryName: 'Tata Bahasa',
+      categorySlug: 'grammar',
+      levelCode: 'N4',
+      levelLabel: 'N4 (Dasar Lanjutan)',
+      badgeBg: '#F0FDFA',
+      badgeText: '#115E59',
+    },
+    {
+      id: 'mat_kanjilook',
+      title: 'Kanji Look and Learn (512 Illustrated Kanji)',
+      romajiTitle: 'Kanji Look and Learn',
+      originalTitle: 'イメージで覚える[げんき]な漢字512',
+      author: 'Eri Banno, Yoko Ikeda',
+      publisher: 'The Japan Times',
+      publishYear: 2009,
+      description: 'Buku pengenalan 512 Kanji N5 & N4 menggunakan ilustrasi visual asosiatif dan mnemonic cerita yang sangat mudah diingat oleh pemula.',
+      driveUrl: 'https://drive.google.com/file/d/sample3/view?usp=sharing',
+      driveFileId: 'sample3',
+      coverImageUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '85 MB',
+      isRecommended: 1,
+      clickCount: 490,
+      categoryName: 'Huruf & Kanji',
+      categorySlug: 'kanji',
+      levelCode: 'N5',
+      levelLabel: 'N5 (Pemula)',
+      badgeBg: '#ECFDF5',
+      badgeText: '#065F46',
+    },
+    {
+      id: 'mat_skm_n3_bunpou',
+      title: 'Shin Kanzen Master Bunpou N3',
+      romajiTitle: 'Shin Kanzen Master Bunpou N3',
+      originalTitle: '新完全マスター文法 日本語能力試験N3',
+      author: 'Etsuko Tomomatsu',
+      publisher: '3A Corporation',
+      publishYear: 2010,
+      description: 'Standar emas persiapan ujian tata bahasa JLPT N3. Membahas nuansa perbedaan pola kalimat yang mirip secara tajam dan disertai latihan soal berbobot tinggi.',
+      driveUrl: 'https://drive.google.com/file/d/sample4/view?usp=sharing',
+      driveFileId: 'sample4',
+      coverImageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '38 MB',
+      isRecommended: 1,
+      clickCount: 275,
+      categoryName: 'Tata Bahasa',
+      categorySlug: 'grammar',
+      levelCode: 'N3',
+      levelLabel: 'N3 (Menengah)',
+      badgeBg: '#FFFBEB',
+      badgeText: '#92400E',
+    },
+    {
+      id: 'mat_skm_n2_dokkai',
+      title: 'Shin Kanzen Master Dokkai N2 (Membaca)',
+      romajiTitle: 'Shin Kanzen Master Dokkai N2',
+      originalTitle: '新完全マスター読解 日本語能力試験N2',
+      author: 'Etsuko Tomomatsu',
+      publisher: '3A Corporation',
+      publishYear: 2011,
+      description: 'Buku strategi pemahaman bacaan tingkat N2. Melatih kecepatan membaca esai opini, teks komparatif, dan penarikan kesimpulan logis.',
+      driveUrl: 'https://drive.google.com/file/d/sample6/view?usp=sharing',
+      driveFileId: 'sample6',
+      coverImageUrl: 'https://images.unsplash.com/photo-1532012164546-f432f2e3777f?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '44 MB',
+      isRecommended: 1,
+      clickCount: 164,
+      categoryName: 'Membaca',
+      categorySlug: 'reading',
+      levelCode: 'N2',
+      levelLabel: 'N2 (Pra-Mahir)',
+      badgeBg: '#EEF2FF',
+      badgeText: '#3730A3',
+    },
+    {
+      id: 'mat_skm_n1_bunpou',
+      title: 'Shin Kanzen Master Bunpou N1',
+      romajiTitle: 'Shin Kanzen Master Bunpou N1',
+      originalTitle: '新完全マスター文法 日本語能力試験N1',
+      author: 'Etsuko Tomomatsu',
+      publisher: '3A Corporation',
+      publishYear: 2011,
+      description: 'Referensi tertinggi penguasaan tata bahasa formal, sastra, dan ungkapan ekspresif tingkat mahir JLPT N1. Lengkap dengan latihan model ujian asli.',
+      driveUrl: 'https://drive.google.com/file/d/sample8/view?usp=sharing',
+      driveFileId: 'sample8',
+      coverImageUrl: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80',
+      fileType: 'PDF',
+      fileSize: '50 MB',
+      isRecommended: 1,
+      clickCount: 310,
+      categoryName: 'Tata Bahasa',
+      categorySlug: 'grammar',
+      levelCode: 'N1',
+      levelLabel: 'N1 (Mahir)',
+      badgeBg: '#FEF2F2',
+      badgeText: '#991B1B',
+    },
+  ];
+}
 ---
 
-<html lang="id">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Nihongo_repo (日本語レポ) — Direktori Materi Bahasa Jepang</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-	</head>
-	<body class="min-h-screen flex flex-col justify-between selection:bg-red-100 selection:text-red-900">
-		<header class="border-b border-[var(--color-border-washi)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-50">
-			<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-				<div class="flex items-center gap-2">
-					<div class="w-9 h-9 rounded-lg bg-[var(--color-vermilion)] text-white flex items-center justify-center font-bold text-lg shadow-sm">
-						日
-					</div>
-					<div>
-						<span class="font-bold text-lg tracking-tight text-[var(--color-ink-primary)]">Nihongo_repo</span>
-						<span class="text-xs text-[var(--color-ink-tertiary)] ml-1 font-medium">日本語レポ</span>
-					</div>
-				</div>
-				<div class="flex items-center gap-3">
-					<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-						<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-						Fase 1 Ready
-					</span>
-				</div>
-			</div>
-		</header>
+<BaseLayout
+  title="Nihongo_repo (日本語レポ) — Direktori Materi & Buku Bahasa Jepang"
+  description="Katalog kurasi buku teks, tata bahasa, kanji, audio, dan bank soal JLPT N5–N1 di Google Drive."
+>
+  <Navbar slot="header" />
 
-		<main class="max-w-6xl mx-auto px-4 py-16 flex-1 flex flex-col items-center justify-center text-center">
-			<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border-washi)] text-xs font-medium text-[var(--color-ink-secondary)] mb-6 shadow-xs">
-				<Sparkles class="w-3.5 h-3.5 text-amber-500" />
-				Cloudflare Pages + D1 Database Ready
-			</div>
+  <HeroSection
+    totalMaterials={materialsList.length}
+    totalCategories={categoriesList.length}
+  />
 
-			<h1 class="text-4xl md:text-5xl font-bold tracking-tight text-[var(--color-ink-primary)] max-w-2xl leading-tight mb-4">
-				Koleksi Terkurasi Materi & Buku Bahasa Jepang
-			</h1>
+  <FilterBar levels={levelsList} categories={categoriesList} />
 
-			<p class="text-base md:text-lg text-[var(--color-ink-secondary)] max-w-xl mb-8 leading-relaxed">
-				Platform katalog terpadu untuk mengakses buku teks, tata bahasa, kanji, dan bank soal JLPT N5–N1 yang tersimpan aman di Google Drive.
-			</p>
+  <!-- Main Catalog Section -->
+  <section id="katalog" class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-[var(--color-ink-primary)] tracking-tight">
+          Katalog Materi Pembelajaran
+        </h2>
+        <p class="text-xs text-[var(--color-ink-tertiary)] mt-0.5">
+          Menampilkan <span id="visible-count" class="font-bold text-[var(--color-ink-primary)]">{materialsList.length}</span> materi siap akses
+        </p>
+      </div>
+    </div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full text-left">
-				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
-					<div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center mb-3">
-						<BookOpen class="w-4 h-4" />
-					</div>
-					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Astro v5 + SSR</h3>
-					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Performa ultra-cepat di Cloudflare Edge dengan zero-JS baseline.</p>
-				</div>
-				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
-					<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
-						<FolderGit2 class="w-4 h-4" />
-					</div>
-					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Cloudflare D1 & Drizzle</h3>
-					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Database SQLite serverless terdistribusi global dan type-safe.</p>
-				</div>
-				<div class="p-5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs">
-					<div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
-						<Sparkles class="w-4 h-4" />
-					</div>
-					<h3 class="font-semibold text-sm text-[var(--color-ink-primary)] mb-1">Digital Washi UI</h3>
-					<p class="text-xs text-[var(--color-ink-tertiary)] leading-relaxed">Desain bertema kertas washi & tinta sumi yang ramah mata.</p>
-				</div>
-			</div>
-		</main>
+    <!-- 1. Grid View (Cards) -->
+    <div
+      id="grid-container"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      {materialsList.map((item) => (
+        <MaterialCard material={item} />
+      ))}
+    </div>
 
-		<footer class="border-t border-[var(--color-border-washi)] py-6 text-center text-xs text-[var(--color-ink-tertiary)] bg-[var(--color-surface)]">
-			Nihongo_repo © 2026 — Built with Astro, Cloudflare Pages & D1
-		</footer>
-	</body>
-</html>
+    <!-- 2. Compact Table View (Hidden by default) -->
+    <div id="table-container" class="hidden overflow-x-auto rounded-2xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] shadow-2xs">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-[var(--color-surface-subtle)] border-b border-[var(--color-border-washi)] text-[var(--color-ink-tertiary)] uppercase font-semibold">
+          <tr>
+            <th class="py-3 px-4">Level</th>
+            <th class="py-3 px-4">Judul Materi</th>
+            <th class="py-3 px-4 hidden md:table-cell">Kategori</th>
+            <th class="py-3 px-4 hidden sm:table-cell">Pengarang</th>
+            <th class="py-3 px-4 hidden sm:table-cell">Format</th>
+            <th class="py-3 px-4 text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[var(--color-border-washi)]">
+          {materialsList.map((item) => (
+            <tr
+              class="table-material-row hover:bg-neutral-50/70 transition-colors"
+              data-id={item.id}
+              data-title={item.title.toLowerCase()}
+              data-romaji={item.romajiTitle ? item.romajiTitle.toLowerCase() : ''}
+              data-original={item.originalTitle ? item.originalTitle.toLowerCase() : ''}
+              data-author={item.author ? item.author.toLowerCase() : ''}
+              data-level={item.levelCode || 'ALL'}
+              data-category={item.categorySlug || 'all'}
+            >
+              <td class="py-3.5 px-4 font-bold">
+                <span
+                  class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold border"
+                  style={`background-color: ${item.badgeBg || '#F5F5F4'}; color: ${item.badgeText || '#44403C'}; border-color: ${item.badgeText || '#44403C'}30;`}
+                >
+                  {item.levelCode || 'ALL'}
+                </span>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="font-bold text-[var(--color-ink-primary)] line-clamp-1">{item.title}</div>
+                {item.originalTitle && (
+                  <div class="text-[11px] font-japanese text-[var(--color-ink-tertiary)]">{item.originalTitle}</div>
+                )}
+              </td>
+              <td class="py-3.5 px-4 hidden md:table-cell text-[var(--color-ink-secondary)]">
+                {item.categoryName}
+              </td>
+              <td class="py-3.5 px-4 hidden sm:table-cell text-[var(--color-ink-tertiary)]">
+                {item.author || '-'}
+              </td>
+              <td class="py-3.5 px-4 hidden sm:table-cell font-mono text-[11px] text-[var(--color-ink-secondary)]">
+                {item.fileType} ({item.fileSize})
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                <div class="inline-flex items-center gap-1.5 justify-end">
+                  <button
+                    type="button"
+                    class="btn-open-detail p-1.5 rounded-lg border border-[var(--color-border-washi)] text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)]"
+                    data-id={item.id}
+                    title="Lihat Detail"
+                  >
+                    <Info class="w-3.5 h-3.5" />
+                  </button>
+                  <a
+                    href={item.driveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="p-1.5 rounded-lg bg-[var(--color-vermilion)] text-white hover:bg-[var(--color-vermilion-hover)]"
+                    title="Buka di Drive"
+                  >
+                    <ExternalLink class="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State (When Filter / Search yields zero results) -->
+    <div id="empty-state" class="hidden py-16 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-neutral-100 border border-[var(--color-border-washi)] flex items-center justify-center mx-auto mb-4 text-[var(--color-ink-tertiary)]">
+        <SearchX class="w-6 h-6" />
+      </div>
+      <h3 class="text-base font-bold text-[var(--color-ink-primary)] mb-1">
+        Materi Tidak Ditemukan
+      </h3>
+      <p class="text-xs text-[var(--color-ink-tertiary)] max-w-sm mx-auto mb-4">
+        Tidak ada materi yang sesuai dengan kata kunci atau filter yang Anda pilih. Coba gunakan kata kunci lain atau reset filter.
+      </p>
+      <button
+        type="button"
+        id="reset-filter-btn"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border-washi)] hover:bg-[var(--color-surface-subtle)] text-xs font-semibold text-[var(--color-ink-primary)] transition-colors"
+      >
+        Reset Semua Filter
+      </button>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+
+  <MaterialDetailModal slot="modals" />
+
+  <!-- Inject Materials Data as JSON for Modal Popups & Fast Client Filtering -->
+  <script is:inline id="materials-data" type="application/json" set:html={JSON.stringify(materialsList)} />
+
+  <!-- Client-Side Filtering & Modal Controller Script -->
+  <script is:inline>
+    (function () {
+      const dataEl = document.getElementById('materials-data');
+      const allMaterials = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+      const materialsMap = new Map(allMaterials.map((m) => [m.id, m]));
+
+      // Filter State
+      let selectedLevel = 'ALL';
+      let selectedCategory = 'ALL';
+      let searchKeyword = '';
+      let activeView = 'grid'; // 'grid' | 'table'
+
+      // DOM Elements
+      const searchInput = document.getElementById('search-input');
+      const levelButtons = document.querySelectorAll('.filter-level-btn');
+      const categoryButtons = document.querySelectorAll('.filter-category-btn');
+      const gridContainer = document.getElementById('grid-container');
+      const tableContainer = document.getElementById('table-container');
+      const viewGridBtn = document.getElementById('view-grid-btn');
+      const viewListBtn = document.getElementById('view-list-btn');
+      const visibleCountEl = document.getElementById('visible-count');
+      const emptyStateEl = document.getElementById('empty-state');
+      const resetFilterBtn = document.getElementById('reset-filter-btn');
+
+      // Modal Elements
+      const modal = document.getElementById('detail-modal');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+      const modalTitle = document.getElementById('modal-title');
+      const modalOriginalTitle = document.getElementById('modal-original-title');
+      const modalDescription = document.getElementById('modal-description');
+      const modalLevelBadge = document.getElementById('modal-level-badge');
+      const modalCategoryName = document.getElementById('modal-category-name');
+      const modalAuthor = document.getElementById('modal-author');
+      const modalPublisher = document.getElementById('modal-publisher');
+      const modalYear = document.getElementById('modal-year');
+      const modalSize = document.getElementById('modal-size');
+      const modalDriveBtn = document.getElementById('modal-drive-btn');
+      const modalCopyBtn = document.getElementById('modal-copy-btn');
+      const copyBtnText = document.getElementById('copy-btn-text');
+
+      // Filter Function
+      function applyFilters() {
+        const query = searchKeyword.toLowerCase().trim();
+        let visibleCount = 0;
+
+        const cards = document.querySelectorAll('.material-item');
+        const rows = document.querySelectorAll('.table-material-row');
+
+        cards.forEach((card) => {
+          const matchLevel = selectedLevel === 'ALL' || card.getAttribute('data-level') === selectedLevel;
+          const matchCategory = selectedCategory === 'ALL' || card.getAttribute('data-category') === selectedCategory;
+          
+          const title = card.getAttribute('data-title') || '';
+          const romaji = card.getAttribute('data-romaji') || '';
+          const orig = card.getAttribute('data-original') || '';
+          const author = card.getAttribute('data-author') || '';
+
+          const matchQuery =
+            !query ||
+            title.includes(query) ||
+            romaji.includes(query) ||
+            orig.includes(query) ||
+            author.includes(query);
+
+          if (matchLevel && matchCategory && matchQuery) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        rows.forEach((row) => {
+          const matchLevel = selectedLevel === 'ALL' || row.getAttribute('data-level') === selectedLevel;
+          const matchCategory = selectedCategory === 'ALL' || row.getAttribute('data-category') === selectedCategory;
+          
+          const title = row.getAttribute('data-title') || '';
+          const romaji = row.getAttribute('data-romaji') || '';
+          const orig = row.getAttribute('data-original') || '';
+          const author = row.getAttribute('data-author') || '';
+
+          const matchQuery =
+            !query ||
+            title.includes(query) ||
+            romaji.includes(query) ||
+            orig.includes(query) ||
+            author.includes(query);
+
+          if (matchLevel && matchCategory && matchQuery) {
+            row.style.display = 'table-row';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        // Update Visible Count Badge
+        if (visibleCountEl) visibleCountEl.textContent = String(visibleCount);
+
+        // Toggle Empty State
+        if (emptyStateEl) {
+          if (visibleCount === 0) {
+            emptyStateEl.classList.remove('hidden');
+            gridContainer.classList.add('hidden');
+            tableContainer.classList.add('hidden');
+          } else {
+            emptyStateEl.classList.add('hidden');
+            if (activeView === 'grid') {
+              gridContainer.classList.remove('hidden');
+              tableContainer.classList.add('hidden');
+            } else {
+              gridContainer.classList.add('hidden');
+              tableContainer.classList.remove('hidden');
+            }
+          }
+        }
+      }
+
+      // Search Event Listener
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchKeyword = e.target.value;
+          applyFilters();
+        });
+      }
+
+      // Keyboard Shortcut '/' to focus search
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      });
+
+      // Level Filter Click Handlers
+      levelButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedLevel = btn.getAttribute('data-filter-level') || 'ALL';
+
+          levelButtons.forEach((b) => {
+            b.classList.remove('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
+            b.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+          });
+
+          btn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+          btn.classList.add('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
+
+          applyFilters();
+        });
+      });
+
+      // Category Filter Click Handlers
+      categoryButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedCategory = btn.getAttribute('data-filter-category') || 'ALL';
+
+          categoryButtons.forEach((b) => {
+            b.classList.remove('bg-[var(--color-surface-subtle)]', 'border-neutral-300', 'font-semibold', 'text-[var(--color-ink-primary)]');
+            b.classList.add('bg-transparent', 'border-transparent', 'text-[var(--color-ink-secondary)]');
+          });
+
+          btn.classList.remove('bg-transparent', 'border-transparent', 'text-[var(--color-ink-secondary)]');
+          btn.classList.add('bg-[var(--color-surface-subtle)]', 'border-neutral-300', 'font-semibold', 'text-[var(--color-ink-primary)]');
+
+          applyFilters();
+        });
+      });
+
+      // View Switcher Handlers
+      if (viewGridBtn && viewListBtn) {
+        viewGridBtn.addEventListener('click', () => {
+          activeView = 'grid';
+          viewGridBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-primary)]', 'font-semibold');
+          viewGridBtn.classList.remove('font-medium', 'text-[var(--color-ink-secondary)]');
+          viewListBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-primary)]', 'font-semibold');
+          viewListBtn.classList.add('font-medium', 'text-[var(--color-ink-secondary)]');
+          applyFilters();
+        });
+
+        viewListBtn.addEventListener('click', () => {
+          activeView = 'table';
+          viewListBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-primary)]', 'font-semibold');
+          viewListBtn.classList.remove('font-medium', 'text-[var(--color-ink-secondary)]');
+          viewGridBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-primary)]', 'font-semibold');
+          viewGridBtn.classList.add('font-medium', 'text-[var(--color-ink-secondary)]');
+          applyFilters();
+        });
+      }
+
+      // Reset Filter Handler
+      if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', () => {
+          selectedLevel = 'ALL';
+          selectedCategory = 'ALL';
+          searchKeyword = '';
+          if (searchInput) searchInput.value = '';
+
+          // Reset buttons visual state
+          levelButtons.forEach((b) => {
+            if (b.getAttribute('data-filter-level') === 'ALL') {
+              b.classList.add('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
+              b.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+            } else {
+              b.classList.remove('bg-[var(--color-ink-primary)]', 'text-white', 'border-[var(--color-ink-primary)]');
+              b.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]');
+            }
+          });
+
+          categoryButtons.forEach((b) => {
+            if (b.getAttribute('data-filter-category') === 'ALL') {
+              b.classList.add('bg-[var(--color-surface-subtle)]', 'border-neutral-300', 'font-semibold', 'text-[var(--color-ink-primary)]');
+              b.classList.remove('bg-transparent', 'border-transparent', 'text-[var(--color-ink-secondary)]');
+            } else {
+              b.classList.remove('bg-[var(--color-surface-subtle)]', 'border-neutral-300', 'font-semibold', 'text-[var(--color-ink-primary)]');
+              b.classList.add('bg-transparent', 'border-transparent', 'text-[var(--color-ink-secondary)]');
+            }
+          });
+
+          applyFilters();
+        });
+      }
+
+      // Detail Modal Handlers
+      function openModal(materialId) {
+        const item = materialsMap.get(materialId);
+        if (!item) return;
+
+        if (modalTitle) modalTitle.textContent = item.title;
+        if (modalOriginalTitle) modalOriginalTitle.textContent = item.originalTitle || item.romajiTitle || '';
+        if (modalDescription) modalDescription.textContent = item.description || 'Tidak ada deskripsi rinci.';
+        if (modalAuthor) modalAuthor.textContent = item.author || '-';
+        if (modalPublisher) modalPublisher.textContent = item.publisher || '-';
+        if (modalYear) modalYear.textContent = item.publishYear ? String(item.publishYear) : '-';
+        if (modalSize) modalSize.textContent = `${item.fileType || 'PDF'} (${item.fileSize || 'Ukuran tidak tertera'})`;
+
+        if (modalLevelBadge) {
+          modalLevelBadge.textContent = item.levelCode || 'ALL';
+          modalLevelBadge.style.backgroundColor = item.badgeBg || '#F5F5F4';
+          modalLevelBadge.style.color = item.badgeText || '#44403C';
+          modalLevelBadge.style.borderColor = (item.badgeText || '#44403C') + '30';
+        }
+
+        if (modalCategoryName) {
+          modalCategoryName.textContent = item.categoryName || 'Materi Belajar';
+        }
+
+        if (modalDriveBtn) {
+          modalDriveBtn.href = item.driveUrl;
+        }
+
+        if (modalCopyBtn) {
+          modalCopyBtn.onclick = () => {
+            navigator.clipboard.writeText(item.driveUrl).then(() => {
+              if (copyBtnText) copyBtnText.textContent = 'Link Disalin!';
+              setTimeout(() => {
+                if (copyBtnText) copyBtnText.textContent = 'Salin Link';
+              }, 2000);
+            });
+          };
+        }
+
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeModal() {
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Delegate click for open detail buttons
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-open-detail');
+        if (btn) {
+          const id = btn.getAttribute('data-id');
+          if (id) openModal(id);
+        }
+      });
+
+      if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+
+      // Close modal on backdrop click
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      // Close modal on Escape
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+    })();
+  </script>
+</BaseLayout>
