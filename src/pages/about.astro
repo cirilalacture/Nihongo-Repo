@@ -134,13 +134,10 @@ const avatarPoses = [
 
         <!-- Name, Role & Pills -->
         <div class="flex-1 min-w-0">
-          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-[var(--color-vermilion)] border border-red-200">
-              Sensei & Author
-            </span>
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--color-surface-subtle)] text-[var(--color-ink-secondary)] border border-[var(--color-border-washi)]">
-              {creatorProfile.japaneseName}
-            </span>
+          <div class="flex items-center justify-center sm:justify-start gap-2 mb-2 text-xs font-semibold">
+            <span class="text-[var(--color-vermilion)]">Sensei & Author</span>
+            <span class="text-[var(--color-ink-tertiary)] opacity-40">•</span>
+            <span class="font-japanese text-[var(--color-ink-secondary)]">{creatorProfile.japaneseName}</span>
           </div>
 
           <h1 class="text-2xl sm:text-3xl font-extrabold text-[var(--color-ink-primary)] tracking-tight mb-1.5">

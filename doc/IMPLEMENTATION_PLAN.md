@@ -229,3 +229,18 @@ gantt
     2. Alur pembukaan modal request dari navbar, pengisian form, pengiriman, dan validasi sukses.
     3. Akses admin ke `/admin/requests`, verifikasi metrik statistik, dan pengecekan data pengajuan.
   - Hasil eksekusi: **22/22 passed (100% lulus)**.
+
+---
+
+### [x] Fase 16: Penyempurnaan Tipografi Bersih (Anti-AI-Slop) & Proteksi Akses Admin (STATUS: SELESAI)
+- [x] **Penyembunyian Tombol Admin dari Antarmuka Publik:**
+  - Menghapus tombol link "Admin" dari header desktop dan tautan "Admin CMS Dashboard" pada drawer navigasi mobile (`Navbar.astro`).
+  - Menghapus tautan admin di area footer (`Footer.astro`) dan menggantinya dengan tautan publik ("Request Buku Baru", "Katalog Materi", "Tentang Pembuat", "Pencarian Cepat").
+  - Seluruh akses CMS diarahkan manual via pengetikan URL `/admin` atau `/admin/login` secara langsung oleh pemilik/sensei untuk memperketat keamanan.
+- [x] **Eliminasi Kotak Badge Berlebih (Pembersihan Desain AI Slop):**
+  - Mengganti badge kotak pada judul brand header (`日本語` di `Navbar.astro`) dengan tipografi font Jepang yang rapi tanpa kotak/border.
+  - Mengganti status pill box di atas headline hero (`HeroSection.astro`) menjadi teks subtitle minimalis.
+  - Menghapus badge box warna-warni level JLPT (N5–N1) dan format berkas di kartu materi (`MaterialCard.astro`), tabel katalog (`index.astro`), modal detail (`MaterialDetailModal.astro`), halaman detail mandiri (`/materi/[id]`), dan kartu profil pembuat (`about.astro`). Digantikan dengan teks tipografi editorial yang natural, elegan, dan profesional.
+- [x] **Verifikasi E2E & Build:**
+  - Pengujian 22 skenario Playwright E2E: **22/22 passed (100% lulus)**, memastikan privasi admin di mobile drawer terverifikasi dan filter materi tetap bekerja presisi.
+  - Astro build Cloudflare Pages berhasil tanpa kendala.

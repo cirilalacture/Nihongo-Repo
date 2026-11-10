@@ -50,9 +50,10 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
 * **Washi Night Mode (*Sumi-e Dark Mode*):** Dukungan tema terang kertas Washi dan tema gelap tinta arang Sumi-e dengan script anti-FOUC (Flash of Unstyled Content).
 * **SEO, Sitemap & RSS Feed:** Dynamic XML Sitemap (`/sitemap.xml`) dan RSS 2.0 Feed (`/rss.xml`) untuk sindikasi konten dan auto-indexing.
 * **Desain Responsif Adaptif (Mobile, Tablet, Desktop):** Drawer menu navigasi mobile yang rapi, bar filter sentuh horizontal tanpa overflow, target sentuhan jari minimal 44px, dan modal detail adaptif (berubah menjadi *bottom sheet* di smartphone dan kartu terpusat di tablet/desktop).
+* **Tipografi Bersih & Elegan (Bebas Box AI Slop):** Tampilan metadata level JLPT (N5–N1) dan format materi disajikan dalam tipografi natural tanpa kotak-kotak badge berlebih yang mengganggu estetika.
 
 ### 2. Admin CMS Dashboard (`/admin`)
-* **Keamanan Edge Middleware:** Seluruh rute `/admin/*` diproteksi middleware server-side dengan session token terenkripsi HMAC-SHA256 (`HttpOnly` cookie).
+* **Keamanan Edge Middleware & Akses Tersembunyi:** Seluruh rute `/admin/*` diproteksi middleware server-side dengan session token terenkripsi HMAC-SHA256 (`HttpOnly` cookie). Tautan login disembunyikan total dari navbar dan footer publik sehingga akses CMS dilakukan manual via URL langsung (`/admin`).
 * **Pengaturan Akun & Ganti Kata Sandi (`/admin/settings`):** Form ganti password aman dengan enkripsi Web Crypto PBKDF2 (SHA-256, 100.000 iterasi).
 * **Ekspor & Impor Koleksi CSV:**
   * **Ekspor CSV (`/api/admin/materials/export`):** Unduh seluruh basis data materi lengkap ke format CSV dalam satu klik.

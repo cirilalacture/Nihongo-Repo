@@ -392,7 +392,10 @@ test.describe('Nihongo_repo Responsive & Mobile/Tablet UX Tests', () => {
     await expect(mobileMenu.locator('text=Semua Buku & Materi')).toBeVisible();
     await expect(mobileMenu.locator('text=Level JLPT')).toBeVisible();
     await expect(mobileMenu.locator('text=Tentang Pembuat')).toBeVisible();
-    await expect(mobileMenu.locator('text=Admin CMS Dashboard')).toBeVisible();
+    await expect(mobileMenu.locator('text=Request Buku / Lapor Link')).toBeVisible();
+
+    // Verify admin link is hidden from public mobile navigation
+    await expect(mobileMenu.locator('a[href="/admin"]')).toBeHidden();
 
     // Close mobile menu
     await toggleBtn.click();

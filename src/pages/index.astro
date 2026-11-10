@@ -288,13 +288,8 @@ if (materialsList.length === 0) {
               data-category={item.categorySlug || 'all'}
               data-file-type={item.fileType || 'PDF'}
             >
-              <td class="py-3.5 px-4 font-bold">
-                <span
-                  class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold border"
-                  style={`background-color: ${item.badgeBg || '#F5F5F4'}; color: ${item.badgeText || '#44403C'}; border-color: ${item.badgeText || '#44403C'}30;`}
-                >
-                  {item.levelCode || 'ALL'}
-                </span>
+              <td class="py-3.5 px-4 font-bold text-[var(--color-ink-primary)]">
+                {item.levelCode || 'ALL'}
               </td>
               <td class="py-3.5 px-4">
                 <div class="font-bold text-[var(--color-ink-primary)] line-clamp-1">{item.title}</div>
@@ -779,9 +774,6 @@ if (materialsList.length === 0) {
 
         if (modalLevelBadge) {
           modalLevelBadge.textContent = item.levelCode || 'ALL';
-          modalLevelBadge.style.backgroundColor = item.badgeBg || '#F5F5F4';
-          modalLevelBadge.style.color = item.badgeText || '#44403C';
-          modalLevelBadge.style.borderColor = (item.badgeText || '#44403C') + '30';
         }
 
         if (modalCategoryName) {

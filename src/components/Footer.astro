@@ -1,5 +1,5 @@
 ---
-import { Lock, Heart, Globe } from '@lucide/astro';
+// Footer Component
 ---
 
 <footer class="border-t border-[var(--color-border-washi)] bg-[var(--color-surface)] py-12 text-sm text-[var(--color-ink-secondary)]">
@@ -43,21 +43,24 @@ import { Lock, Heart, Globe } from '@lucide/astro';
         </ul>
       </div>
 
-      <!-- Administration & Links -->
+      <!-- Navigation & Links -->
       <div>
         <h4 class="text-xs font-bold text-[var(--color-ink-primary)] uppercase tracking-wider mb-3">
-          Kelola & Akses
+          Tautan Cepat
         </h4>
         <ul class="space-y-1 text-xs text-[var(--color-ink-secondary)]">
           <li>
-            <a href="/admin" class="inline-flex items-center gap-1.5 py-1 hover:text-[var(--color-vermilion)] transition-colors">
-              <Lock class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
-              <span>Admin Dashboard</span>
-            </a>
+            <button
+              type="button"
+              data-open-request
+              class="inline-block py-1 text-left hover:text-[var(--color-vermilion)] transition-colors cursor-pointer"
+            >
+              Request Buku Baru
+            </button>
           </li>
           <li>
-            <a href="/admin/materials/new" class="inline-block py-1 hover:text-[var(--color-vermilion)] transition-colors">
-              Tambah Buku Baru
+            <a href="/#katalog" class="inline-block py-1 hover:text-[var(--color-vermilion)] transition-colors">
+              Katalog Materi
             </a>
           </li>
           <li>

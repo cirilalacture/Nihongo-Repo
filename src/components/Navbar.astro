@@ -1,5 +1,5 @@
 ---
-import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@lucide/astro';
+import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@lucide/astro';
 ---
 
 <header class="border-b border-[var(--color-border-washi)] bg-[var(--color-canvas)]/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
@@ -14,7 +14,7 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
           <span class="font-bold text-base sm:text-lg tracking-tight text-[var(--color-ink-primary)] leading-none">
             Nihongo_repo
           </span>
-          <span class="text-[10px] font-semibold tracking-wider text-[var(--color-vermilion)] bg-red-50 px-1.5 py-0.5 rounded border border-red-200">
+          <span class="text-xs font-japanese font-medium text-[var(--color-ink-tertiary)] ml-0.5">
             日本語
           </span>
         </div>
@@ -66,16 +66,6 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
         <Sun class="w-4 h-4 theme-icon-sun hidden" />
         <Moon class="w-4 h-4 theme-icon-moon" />
       </button>
-
-      <!-- Admin Access Link (Desktop/Tablet) -->
-      <a
-        href="/admin"
-        class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] bg-[var(--color-surface-subtle)] hover:bg-neutral-200/70 border border-[var(--color-border-washi)] transition-colors min-h-[40px] sm:min-h-0"
-        title="Masuk ke Halaman Admin CMS"
-      >
-        <Lock class="w-3.5 h-3.5 text-[var(--color-ink-tertiary)]" />
-        <span>Admin</span>
-      </a>
 
       <!-- Mobile Menu Toggle Button -->
       <button
@@ -140,7 +130,7 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
       </button>
     </div>
 
-    <div class="pt-2 border-t border-[var(--color-border-washi)] space-y-2">
+    <div class="pt-2 border-t border-[var(--color-border-washi)]">
       <!-- Mobile Theme Switcher Row -->
       <button
         type="button"
@@ -154,17 +144,6 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
         </span>
         <span id="mobile-theme-label" class="text-xs font-bold text-[var(--color-ink-tertiary)]">Terang</span>
       </button>
-
-      <a
-        href="/admin"
-        class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold bg-[var(--color-surface-subtle)] text-[var(--color-ink-primary)] border border-[var(--color-border-washi)] transition-colors"
-      >
-        <div class="flex items-center gap-3">
-          <Lock class="w-4 h-4 text-[var(--color-vermilion)]" />
-          <span>Admin CMS Dashboard</span>
-        </div>
-        <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-neutral-200/60 text-neutral-600">Sensei</span>
-      </a>
     </div>
   </div>
 </header>

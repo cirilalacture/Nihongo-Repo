@@ -154,8 +154,8 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 ---
 
 ## 5. Kebutuhan Non-Fungsional (Non-Functional Requirements)
-* **Keamanan:** Proteksi route `/admin/*` via SSR Middleware. Input form divalidasi ketat untuk mencegah SQL injection dan XSS.
+* **Keamanan:** Proteksi route `/admin/*` via SSR Middleware. Input form divalidasi ketat untuk mencegah SQL injection dan XSS. Tautan admin disembunyikan sepenuhnya dari seluruh antarmuka publik (navbar, mobile drawer, dan footer) sehingga akses panel dikhususkan manual langsung via URL (`/admin`).
 * **Performa:** Waktu muat halaman publik < 1 detik. Halaman admin responsif dan cepat dibuka di mobile saat admin ingin menambah link via HP.
 * **Desain UI/UX:**
-  * Halaman publik: Nuansa *Digital Washi & Sumi-e* (tenang, fokus belajar).
+  * Halaman publik: Nuansa *Digital Washi & Sumi-e* (tenang, fokus belajar). Tipografi bersih editorial tanpa kotak badge berlebih pada judul atau katalog kartu materi.
   * Halaman admin: Gaya *Clean Dashboard Operate Mode* (tata letak bersih, tabel padat dan informatif, form input terstruktur dengan validasi visual jelas).
