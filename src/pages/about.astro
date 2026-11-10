@@ -26,22 +26,22 @@ const creatorProfile = {
   role: 'Pengembang Web & Penggiat Bahasa Jepang',
   location: 'Indonesia',
   jlptLevel: 'JLPT N2 (Persiapan N1)',
-  avatarUrl: '/avatar/1.png',
+  avatarUrl: '/avatar/1.webp',
   bio: 'Seorang software engineer dan pembelajar bahasa Jepang mandiri yang mendirikan Nihongo_repo untuk mempermudah akses buku teks, kanji, tata bahasa, dan audio persiapan JLPT secara cuma-cuma dan tertata rapi.',
   githubUrl: 'https://github.com/cirilalacture',
   repositoryUrl: 'https://github.com/cirilalacture/Nihongo-Repo',
   email: 'contact@ciril.dev',
 };
 
-// 7 Variasi pose karakter avatar interaktif
+// 7 Variasi pose karakter avatar interaktif (WebP optimized)
 const avatarPoses = [
-  '/avatar/1.png',
-  '/avatar/2.png',
-  '/avatar/3.png',
-  '/avatar/4.png',
-  '/avatar/5.png',
-  '/avatar/6.png',
-  '/avatar/7.png',
+  '/avatar/1.webp',
+  '/avatar/2.webp',
+  '/avatar/3.webp',
+  '/avatar/4.webp',
+  '/avatar/5.webp',
+  '/avatar/6.webp',
+  '/avatar/7.webp',
 ];
 ---
 
@@ -106,6 +106,9 @@ const avatarPoses = [
                   id="avatar-image"
                   src={avatarPoses[0]}
                   alt={creatorProfile.name}
+                  width="240"
+                  height="288"
+                  decoding="async"
                   class="w-full h-full object-contain object-bottom filter drop-shadow-md group-hover:drop-shadow-xl transition-all duration-200 ease-out"
                   loading="eager"
                   data-pose-index="0"
@@ -283,13 +286,13 @@ const avatarPoses = [
 
   <script>
     const poses = [
-      '/avatar/1.png',
-      '/avatar/2.png',
-      '/avatar/3.png',
-      '/avatar/4.png',
-      '/avatar/5.png',
-      '/avatar/6.png',
-      '/avatar/7.png',
+      '/avatar/1.webp',
+      '/avatar/2.webp',
+      '/avatar/3.webp',
+      '/avatar/4.webp',
+      '/avatar/5.webp',
+      '/avatar/6.webp',
+      '/avatar/7.webp',
     ];
 
     function initAvatarPose() {

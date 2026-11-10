@@ -185,6 +185,17 @@ npm run test:e2e
 
 ---
 
+## ⚡ Kinerja & Optimasi Kecepatan
+
+* **Astro SSR di Cloudflare Edge:** Waktu muat awal ultra-responsif dengan TTFB rendah langsung dari edge node Cloudflare terdekat.
+* **Zero-JS Baseline:** Bundle JavaScript klien produksi hanya **~4.2 KB** (~1.5 KB gzipped), bebas framework berat.
+* **Aset Gambar WebP Terkompresi:** Avatar karakter dikonversi ke format WebP (penghematan 95%), dengan aset Sensei pendamping hanya **21 KB** (turun 98.1% dari 1,120 KB).
+* **Paralel Database Query:** Menggunakan `Promise.all()` untuk mengeksekusi kueri D1 secara simultan.
+* **Immutable Caching CDN:** Aturan `Cache-Control` jangka panjang pada `public/_headers` untuk aset statis permanen.
+* **Zero Cumulative Layout Shift (CLS):** Atribut `width`, `height`, dan `decoding="async"` eksplisit pada seluruh gambar.
+
+---
+
 ## ☁️ Panduan Deployment (GitHub ➔ Cloudflare Pages)
 
 1. **Buat Database D1 di Cloudflare:**

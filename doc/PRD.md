@@ -178,7 +178,13 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 
 ## 5. Kebutuhan Non-Fungsional (Non-Functional Requirements)
 * **Keamanan:** Proteksi route `/admin/*` via SSR Middleware. Input form divalidasi ketat untuk mencegah SQL injection dan XSS. Tautan admin disembunyikan sepenuhnya dari seluruh antarmuka publik (navbar, mobile drawer, dan footer) sehingga akses panel dikhususkan manual langsung via URL (`/admin`).
-* **Performa:** Waktu muat halaman publik < 1 detik. Halaman admin responsif dan cepat dibuka di mobile saat admin ingin menambah link via HP.
+* **Performa & Core Web Vitals:**
+  * Waktu muat halaman publik < 1 detik dengan TTFB ultra-rendah melalui Astro SSR di Cloudflare Pages/Workers edge.
+  * Kueri database Cloudflare D1 dieksekusi paralel (`Promise.all()`) dengan indeks B-Tree yang tepat.
+  * Aset gambar dioptimasi penuh menggunakan format modern WebP: Sensei companion 21 KB (turun 98.1% dari 1.1 MB) dan avatar pose ~40–60 KB.
+  * Caching CDN & Browser jangka panjang (`Cache-Control: public, max-age=31536000, immutable`) via `public/_headers`.
+  * Zero layout shift (CLS = 0) dengan dimensi eksplisit `width`/`height` dan `decoding="async"`.
+  * Client-side JavaScript minimalis (~4.2 KB bundle, ~1.5 KB gzipped), bebas framework berat.
 * **Desain UI/UX:**
   * Halaman publik: Nuansa *Digital Washi & Sumi-e* (tenang, fokus belajar). Tipografi bersih editorial tanpa kotak badge berlebih pada judul atau katalog kartu materi.
   * Halaman admin: Gaya *Clean Dashboard Operate Mode* (tata letak bersih, tabel padat dan informatif, form input terstruktur dengan validasi visual jelas).

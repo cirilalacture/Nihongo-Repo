@@ -95,7 +95,10 @@ const levelCode = material.levelCode || 'ALL';
         <img
           src={material.coverImageUrl}
           alt={material.title}
+          width="400"
+          height="160"
           loading="lazy"
+          decoding="async"
           class="w-full h-full object-cover"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
         />

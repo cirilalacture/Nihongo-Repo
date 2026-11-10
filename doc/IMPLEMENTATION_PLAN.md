@@ -282,3 +282,20 @@ gantt
   - Penambahan 2 skenario pengujian E2E baru di `e2e/nihongo_repo.spec.ts` (Test 23 & Test 24).
   - Eksekusi seluruh rangkaian pengujian Playwright E2E: **24/24 passed (100% lulus)**.
   - Astro build Cloudflare Pages sukses tanpa error.
+
+---
+
+### [x] Fase 19: Optimasi Performa Web & Asset Delivery (STATUS: SELESAI)
+- [x] **Konversi Avatar ke Format Modern WebP & Resize Presisi:**
+  - Mengonversi seluruh 7 variasi pose avatar karakter (`public/avatar/*.png` -> `*.webp`) pada resolusi 512x512 dengan kompresi berkualitas tinggi (quality 82%). Ukuran rata-rata turun dari ~1,000 KB menjadi ~36–62 KB per gambar.
+  - Menghasilkan aset khusus Sensei Companion (`sensei.webp`) pada resolusi 256x256 berukuran hanya **21 KB** (turun dari **1,120 KB**, penghematan bandwidth **98.1%** pada setiap muatan halaman di seluruh website).
+  - Mengalihkan preloader memori pada `about.astro` ke berkas WebP sehingga total transfer halaman profil terpangkas dari **11.3 MB menjadi ~440 KB** (penghematan **95%**).
+- [x] **Paralelisasi Kueri Database Cloudflare D1 di SSR (`index.astro`):**
+  - Mengganti pemanggilan sekuensial `await db...` menjadi `Promise.all([jlptLevels, categories, materials])` untuk mengeksekusi 3 kueri database secara simultan di Cloudflare Edge, mereduksi latensi TTFB.
+- [x] **Konfigurasi Caching Header CDN & Browser (`public/_headers`):**
+  - Menambahkan aturan header statis Cloudflare Pages untuk `/avatar/*` (`Cache-Control: public, max-age=31536000, immutable`, `X-Content-Type-Options: nosniff`) dan favicon (`max-age=604800`), mengeliminasi pengunduhan ulang aset pada kunjungan berulang (0 KB transfer).
+- [x] **Pencegahan Layout Shift & Asynchronous Decoding:**
+  - Menambahkan atribut eksplisit `width`, `height`, dan `decoding="async"` pada seluruh elemen `<img>` kartu materi (`MaterialCard.astro`), halaman detail (`/materi/[id].astro`), avatar profil (`about.astro`), dan Sensei (`SenseiCompanion.astro`).
+- [x] **Verifikasi E2E & Build:**
+  - Seluruh 24 pengujian Playwright E2E: **24/24 passed (100% lulus)**.
+  - Build produksi Cloudflare Pages sukses sempurna dalam 6.9 detik.

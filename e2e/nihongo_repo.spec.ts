@@ -223,20 +223,20 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     // Verify avatar image is visible and starts at pose 1
     const avatarImg = page.locator('#avatar-image');
     await expect(avatarImg).toBeVisible();
-    await expect(avatarImg).toHaveAttribute('src', '/avatar/1.png');
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/1.webp');
 
     const poseBadge = page.locator('#avatar-pose-label');
     await expect(poseBadge).toHaveText('Pose 1/7');
 
-    // Click avatar button to switch pose to 2.png
+    // Click avatar button to switch pose to 2.webp
     const avatarBtn = page.locator('#avatar-pose-btn');
     await avatarBtn.click();
-    await expect(avatarImg).toHaveAttribute('src', '/avatar/2.png');
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/2.webp');
     await expect(poseBadge).toHaveText('Pose 2/7');
 
-    // Click again to switch pose to 3.png
+    // Click again to switch pose to 3.webp
     await avatarBtn.click();
-    await expect(avatarImg).toHaveAttribute('src', '/avatar/3.png');
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/3.webp');
     await expect(poseBadge).toHaveText('Pose 3/7');
 
     // Verify story section
@@ -247,16 +247,16 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(githubBtn).toBeVisible();
   });
 
-  test('Sensei companion (Avatar #7) in bottom-right corner displays speech bubble with encouraging quotes on click', async ({ page }) => {
+  test('Sensei companion in bottom-right corner displays speech bubble with encouraging quotes on click', async ({ page }) => {
     await page.goto('/');
 
-    // Sensei container and avatar #7 should be visible in bottom-right
+    // Sensei container and avatar should be visible in bottom-right
     const senseiContainer = page.locator('#sensei-companion-container');
     await expect(senseiContainer).toBeVisible();
 
     const senseiImg = page.locator('#sensei-avatar-img');
     await expect(senseiImg).toBeVisible();
-    await expect(senseiImg).toHaveAttribute('src', '/avatar/7.png');
+    await expect(senseiImg).toHaveAttribute('src', '/avatar/sensei.webp');
 
     // Speech bubble is initially hidden
     const speechBubble = page.locator('#sensei-speech-bubble');

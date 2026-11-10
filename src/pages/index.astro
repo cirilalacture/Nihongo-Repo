@@ -38,44 +38,45 @@ const db = getDb();
 
 if (db) {
   try {
-    // Fetch levels & categories from D1
-    const fetchedLevels = await db.select().from(jlptLevels).all();
-    if (fetchedLevels.length > 0) levelsList = fetchedLevels;
+    // Fetch levels, categories, and published materials concurrently via Promise.all
+    const [fetchedLevels, fetchedCategories, fetchedMaterials] = await Promise.all([
+      db.select().from(jlptLevels).all(),
+      db.select().from(categories).all(),
+      db
+        .select({
+          id: materials.id,
+          title: materials.title,
+          romajiTitle: materials.romajiTitle,
+          originalTitle: materials.originalTitle,
+          author: materials.author,
+          publisher: materials.publisher,
+          publishYear: materials.publishYear,
+          description: materials.description,
+          driveUrl: materials.driveUrl,
+          driveFileId: materials.driveFileId,
+          coverImageUrl: materials.coverImageUrl,
+          fileType: materials.fileType,
+          fileSize: materials.fileSize,
+          isRecommended: materials.isRecommended,
+          clickCount: materials.clickCount,
+          categoryName: categories.name,
+          categorySlug: categories.slug,
+          categoryIcon: categories.icon,
+          levelCode: jlptLevels.code,
+          levelLabel: jlptLevels.label,
+          badgeBg: jlptLevels.badgeBg,
+          badgeText: jlptLevels.badgeText,
+        })
+        .from(materials)
+        .leftJoin(categories, eq(materials.categoryId, categories.id))
+        .leftJoin(jlptLevels, eq(materials.levelId, jlptLevels.id))
+        .where(eq(materials.isPublished, 1))
+        .all(),
+    ]);
 
-    const fetchedCategories = await db.select().from(categories).all();
-    if (fetchedCategories.length > 0) categoriesList = fetchedCategories;
-
-    // Fetch published materials joined with categories and levels
-    materialsList = await db
-      .select({
-        id: materials.id,
-        title: materials.title,
-        romajiTitle: materials.romajiTitle,
-        originalTitle: materials.originalTitle,
-        author: materials.author,
-        publisher: materials.publisher,
-        publishYear: materials.publishYear,
-        description: materials.description,
-        driveUrl: materials.driveUrl,
-        driveFileId: materials.driveFileId,
-        coverImageUrl: materials.coverImageUrl,
-        fileType: materials.fileType,
-        fileSize: materials.fileSize,
-        isRecommended: materials.isRecommended,
-        clickCount: materials.clickCount,
-        categoryName: categories.name,
-        categorySlug: categories.slug,
-        categoryIcon: categories.icon,
-        levelCode: jlptLevels.code,
-        levelLabel: jlptLevels.label,
-        badgeBg: jlptLevels.badgeBg,
-        badgeText: jlptLevels.badgeText,
-      })
-      .from(materials)
-      .leftJoin(categories, eq(materials.categoryId, categories.id))
-      .leftJoin(jlptLevels, eq(materials.levelId, jlptLevels.id))
-      .where(eq(materials.isPublished, 1))
-      .all();
+    if (fetchedLevels && fetchedLevels.length > 0) levelsList = fetchedLevels;
+    if (fetchedCategories && fetchedCategories.length > 0) categoriesList = fetchedCategories;
+    if (fetchedMaterials && fetchedMaterials.length > 0) materialsList = fetchedMaterials;
   } catch (err) {
     console.error('Error querying Cloudflare D1:', err);
   }

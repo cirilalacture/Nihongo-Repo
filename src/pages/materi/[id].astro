@@ -146,6 +146,10 @@ if (materialItem.driveFileId) {
             <img
               src={materialItem.coverImageUrl}
               alt={materialItem.title}
+              width="192"
+              height="256"
+              loading="eager"
+              decoding="async"
               class="w-full h-full object-cover"
               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
             />
