@@ -258,3 +258,27 @@ gantt
   - 100% vector SVG & text CSS, 0 byte file gambar eksternal, 0 layout shift (CLS: 0).
   - Verifikasi responsivitas pada viewport smartphone (390px) memastikan nol *horizontal scroll overflow*.
   - Eksekusi 22 test Playwright E2E: **22/22 passed (100% lulus)**.
+
+---
+
+### [x] Fase 18: Aksesibilitas Tipografi (Font Sizing Steppers & Japanese Font Switcher) (STATUS: SELESAI)
+- [x] **Pilihan Tiga Variasi Font Jepang Tradisional & Modern:**
+  - Memuat Google Fonts *Noto Serif JP* (Mincho 400, 600, 700) dan *Klee One* (Handwritten Textbook 400, 600) via preconnect optimal.
+  - Mengonfigurasi selektor CSS di `global.css`:
+    - `html[data-font="gothic"]` -> Noto Sans JP + Plus Jakarta Sans (Gothic Digital Modern).
+    - `html[data-font="mincho"]` -> Noto Serif JP + Noto Serif (Mincho Sastra Klasik).
+    - `html[data-font="klee"]` -> Klee One + sans-serif (Klee Buku Teks Sekolah).
+- [x] **Kontrol Penskalaan Ukuran Teks Fleksibel (Font Sizing):**
+  - Opsi penskalaan 4 tingkat: A- (90%), A (100%), A+ (112%), A++ (125%).
+  - Tombol reset kembali ke normal 100%.
+  - Transisi CSS halus pada `font-size` dan `font-family` untuk kenyamanan visual pembelajar.
+- [x] **Komponen Antarmuka di Navbar & Drawer Mobile:**
+  - **Desktop:** Tombol popover dropdown di header (`#font-settings-btn`) dengan trigger ikon `ALargeSmall`, badge persentase aktif, dan penutup popover otomatis saat klik luar/tombol Esc.
+  - **Mobile:** Menu khusus di dalam drawer navigasi hamburger mobile (`#mobile-nav-menu`), mencegah kepadatan header dan memastikan nol horizontal scroll overflow pada viewport 390px.
+- [x] **Persistensi & Anti-FOUC:**
+  - Menyimpan preferensi di `localStorage` (`nihongo_font_scale` & `nihongo_font_family`).
+  - Script inisialisasi sinkron di `<head>` pada `BaseLayout.astro` yang mengaplikasikan `data-font` dan `fontSize` sebelum rendering awal, meniadakan kedipan tampilan (FOUC).
+- [x] **Pengujian E2E & Build Verification:**
+  - Penambahan 2 skenario pengujian E2E baru di `e2e/nihongo_repo.spec.ts` (Test 23 & Test 24).
+  - Eksekusi seluruh rangkaian pengujian Playwright E2E: **24/24 passed (100% lulus)**.
+  - Astro build Cloudflare Pages sukses tanpa error.

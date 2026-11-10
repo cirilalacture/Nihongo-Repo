@@ -1,5 +1,5 @@
 ---
-import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@lucide/astro';
+import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User, ALargeSmall } from '@lucide/astro';
 ---
 
 <header class="border-b border-[var(--color-border-washi)] bg-[var(--color-canvas)]/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
@@ -59,13 +59,138 @@ import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@luci
       <button
         type="button"
         id="theme-toggle-btn"
-        class="flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] active:scale-90 transition-all"
+        class="flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] active:scale-90 transition-all cursor-pointer"
         title="Ganti Tema (Washi Terang / Sumi Gelap)"
         aria-label="Ganti Tema"
       >
         <Sun class="w-4 h-4 theme-icon-sun hidden" />
         <Moon class="w-4 h-4 theme-icon-moon" />
       </button>
+
+      <!-- Accessibility Font & Size Settings Popover Trigger -->
+      <div class="relative hidden sm:block" id="font-settings-container">
+        <button
+          type="button"
+          id="font-settings-btn"
+          class="flex items-center justify-center w-10 h-10 sm:w-9 sm:h-9 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-secondary)] hover:text-[var(--color-vermilion)] active:scale-90 transition-all cursor-pointer group"
+          title="Pengaturan Ukuran & Jenis Font (Aksesibilitas)"
+          aria-label="Pengaturan Ukuran dan Jenis Font Aksesibilitas"
+          aria-expanded="false"
+          aria-controls="font-settings-dropdown"
+        >
+          <ALargeSmall class="w-4 h-4 transition-transform group-hover:scale-105" />
+        </button>
+
+        <!-- Floating Popover Dropdown Panel (Desktop) -->
+        <div
+          id="font-settings-dropdown"
+          class="hidden absolute right-0 top-full mt-2 w-72 sm:w-80 bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl shadow-xl p-4 z-50 text-xs"
+          role="region"
+          aria-label="Pengaturan Font dan Ukuran Teks"
+        >
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-[var(--color-border-washi)]">
+            <div class="flex items-center gap-2">
+              <ALargeSmall class="w-4 h-4 text-[var(--color-vermilion)]" />
+              <span class="font-bold text-[var(--color-ink-primary)] text-xs">Aksesibilitas Teks</span>
+            </div>
+            <span id="font-scale-current-badge" class="px-2 py-0.5 rounded-md bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] text-[10px] font-mono text-[var(--color-ink-tertiary)]">
+              100%
+            </span>
+          </div>
+
+          <!-- Section 1: Font Size Steppers -->
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center justify-between text-[11px] font-semibold text-[var(--color-ink-tertiary)]">
+              <span>Ukuran Teks</span>
+              <button
+                type="button"
+                id="font-scale-reset-btn"
+                class="text-[10px] text-[var(--color-vermilion)] hover:underline cursor-pointer"
+              >
+                Reset Normal
+              </button>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5 p-1 bg-[var(--color-surface-subtle)] rounded-xl border border-[var(--color-border-washi)]">
+              <button
+                type="button"
+                data-scale="90"
+                class="font-scale-btn py-1.5 px-2 rounded-lg text-center font-bold transition-all text-xs cursor-pointer hover:bg-[var(--color-surface)]"
+                title="Kecil (90%)"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                data-scale="100"
+                class="font-scale-btn py-1.5 px-2 rounded-lg text-center font-bold transition-all text-xs cursor-pointer bg-[var(--color-surface)] text-[var(--color-vermilion)] shadow-2xs"
+                title="Normal (100%)"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                data-scale="112"
+                class="font-scale-btn py-1.5 px-2 rounded-lg text-center font-bold transition-all text-xs cursor-pointer hover:bg-[var(--color-surface)]"
+                title="Besar (112%)"
+              >
+                A+
+              </button>
+              <button
+                type="button"
+                data-scale="125"
+                class="font-scale-btn py-1.5 px-2 rounded-lg text-center font-bold transition-all text-xs cursor-pointer hover:bg-[var(--color-surface)]"
+                title="Ekstra Besar (125%)"
+              >
+                A++
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 2: Font Family Options -->
+          <div class="space-y-2">
+            <div class="text-[11px] font-semibold text-[var(--color-ink-tertiary)]">
+              Pilihan Jenis Huruf (Font)
+            </div>
+            <div class="space-y-1.5">
+              <button
+                type="button"
+                data-font="gothic"
+                class="font-family-btn w-full flex items-center justify-between p-2 rounded-xl border transition-all text-left cursor-pointer border-[var(--color-vermilion)] bg-red-50/50 dark:bg-red-950/30 text-[var(--color-vermilion)]"
+              >
+                <div>
+                  <span class="font-bold text-xs block text-[var(--color-ink-primary)]">Gothic Modern</span>
+                  <span class="text-[10px] text-[var(--color-ink-tertiary)]">Noto Sans JP (Standar Digital)</span>
+                </div>
+                <span class="font-japanese text-sm font-semibold">あア</span>
+              </button>
+
+              <button
+                type="button"
+                data-font="mincho"
+                class="font-family-btn w-full flex items-center justify-between p-2 rounded-xl border border-[var(--color-border-washi)] hover:border-neutral-300 dark:hover:border-neutral-600 transition-all text-left cursor-pointer"
+              >
+                <div>
+                  <span class="font-bold text-xs block text-[var(--color-ink-primary)] font-serif">Mincho Sastra</span>
+                  <span class="text-[10px] text-[var(--color-ink-tertiary)]">Noto Serif JP (Buku Novel)</span>
+                </div>
+                <span class="font-serif text-sm font-semibold">あア</span>
+              </button>
+
+              <button
+                type="button"
+                data-font="klee"
+                class="font-family-btn w-full flex items-center justify-between p-2 rounded-xl border border-[var(--color-border-washi)] hover:border-neutral-300 dark:hover:border-neutral-600 transition-all text-left cursor-pointer"
+              >
+                <div>
+                  <span class="font-bold text-xs block text-[var(--color-ink-primary)]">Klee Buku Teks</span>
+                  <span class="text-[10px] text-[var(--color-ink-tertiary)]">Klee One (Gaya Pensil Sekolah)</span>
+                </div>
+                <span class="text-sm font-semibold" style="font-family: 'Klee One', cursive, sans-serif;">あア</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Mobile Menu Toggle Button -->
       <button
@@ -144,6 +269,60 @@ import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@luci
         </span>
         <span id="mobile-theme-label" class="text-xs font-bold text-[var(--color-ink-tertiary)]">Terang</span>
       </button>
+
+      <!-- Mobile Accessibility Settings (Ukuran Teks & Pilihan Font) -->
+      <div class="pt-3 border-t border-[var(--color-border-washi)] space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-[var(--color-ink-primary)] flex items-center gap-1.5">
+            <ALargeSmall class="w-4 h-4 text-[var(--color-vermilion)]" />
+            <span>Ukuran Teks</span>
+          </span>
+          <span id="mobile-font-scale-badge" class="px-2 py-0.5 rounded-md bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] text-[10px] font-mono text-[var(--color-ink-tertiary)]">
+            100%
+          </span>
+        </div>
+
+        <!-- Mobile Size Stepper -->
+        <div class="grid grid-cols-4 gap-1.5 p-1 bg-[var(--color-surface-subtle)] rounded-xl border border-[var(--color-border-washi)] text-xs">
+          <button type="button" data-scale="90" class="mobile-font-scale-btn py-2 rounded-lg font-bold text-center transition-all cursor-pointer">A-</button>
+          <button type="button" data-scale="100" class="mobile-font-scale-btn py-2 rounded-lg font-bold text-center transition-all cursor-pointer bg-[var(--color-surface)] text-[var(--color-vermilion)] shadow-2xs">A</button>
+          <button type="button" data-scale="112" class="mobile-font-scale-btn py-2 rounded-lg font-bold text-center transition-all cursor-pointer">A+</button>
+          <button type="button" data-scale="125" class="mobile-font-scale-btn py-2 rounded-lg font-bold text-center transition-all cursor-pointer">A++</button>
+        </div>
+
+        <div class="text-xs font-bold text-[var(--color-ink-primary)] pt-1">
+          Pilihan Font
+        </div>
+
+        <!-- Mobile Font Family Picker -->
+        <div class="grid grid-cols-3 gap-1.5 text-xs">
+          <button
+            type="button"
+            data-font="gothic"
+            class="mobile-font-family-btn py-2 px-1 rounded-xl border transition-all text-center font-bold cursor-pointer border-[var(--color-vermilion)] bg-red-50/50 dark:bg-red-950/30 text-[var(--color-vermilion)]"
+          >
+            <span class="block">Gothic</span>
+            <span class="text-[10px] opacity-75 font-normal block">Noto Sans</span>
+          </button>
+          <button
+            type="button"
+            data-font="mincho"
+            class="mobile-font-family-btn py-2 px-1 rounded-xl border border-[var(--color-border-washi)] transition-all text-center font-bold font-serif cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+          >
+            <span class="block">Mincho</span>
+            <span class="text-[10px] opacity-75 font-normal block font-serif">Serif</span>
+          </button>
+          <button
+            type="button"
+            data-font="klee"
+            class="mobile-font-family-btn py-2 px-1 rounded-xl border border-[var(--color-border-washi)] transition-all text-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+            style="font-family: 'Klee One', cursive, sans-serif;"
+          >
+            <span class="block">Klee</span>
+            <span class="text-[10px] opacity-75 font-normal block">Tulisan</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </header>
@@ -215,5 +394,135 @@ import { Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from '@luci
     if (mobileThemeBtn) mobileThemeBtn.addEventListener('click', toggleDarkMode);
 
     syncThemeIcons();
+
+    // 3. Accessibility Typography (Font Size & Font Family) Controller
+    const fontBtn = document.getElementById('font-settings-btn');
+    const fontDropdown = document.getElementById('font-settings-dropdown');
+    const fontContainer = document.getElementById('font-settings-container');
+    const resetScaleBtn = document.getElementById('font-scale-reset-btn');
+    const scaleBadge = document.getElementById('font-scale-current-badge');
+    const mobileScaleBadge = document.getElementById('mobile-font-scale-badge');
+
+    if (fontBtn && fontDropdown) {
+      fontBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = fontDropdown.classList.contains('hidden');
+        if (isHidden) {
+          fontDropdown.classList.remove('hidden');
+          fontBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          fontDropdown.classList.add('hidden');
+          fontBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+        if (fontContainer && !fontContainer.contains(e.target)) {
+          fontDropdown.classList.add('hidden');
+          fontBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !fontDropdown.classList.contains('hidden')) {
+          fontDropdown.classList.add('hidden');
+          fontBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Apply & Sync Font Scale
+    function applyFontScale(scale) {
+      document.documentElement.style.fontSize = scale === '100' ? '' : scale + '%';
+      try {
+        localStorage.setItem('nihongo_font_scale', scale);
+      } catch (e) {}
+
+      if (scaleBadge) scaleBadge.textContent = scale + '%';
+      if (mobileScaleBadge) mobileScaleBadge.textContent = scale + '%';
+
+      // Desktop buttons
+      document.querySelectorAll('.font-scale-btn').forEach((btn) => {
+        const btnScale = btn.getAttribute('data-scale');
+        if (btnScale === scale) {
+          btn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs');
+          btn.classList.remove('hover:bg-[var(--color-surface)]');
+        } else {
+          btn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs');
+          btn.classList.add('hover:bg-[var(--color-surface)]');
+        }
+      });
+
+      // Mobile buttons
+      document.querySelectorAll('.mobile-font-scale-btn').forEach((btn) => {
+        const btnScale = btn.getAttribute('data-scale');
+        if (btnScale === scale) {
+          btn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs');
+        } else {
+          btn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs');
+        }
+      });
+    }
+
+    // Apply & Sync Font Family
+    function applyFontFamily(font) {
+      document.documentElement.setAttribute('data-font', font);
+      try {
+        localStorage.setItem('nihongo_font_family', font);
+      } catch (e) {}
+
+      // Desktop buttons
+      document.querySelectorAll('.font-family-btn').forEach((btn) => {
+        const btnFont = btn.getAttribute('data-font');
+        if (btnFont === font) {
+          btn.classList.add('border-[var(--color-vermilion)]', 'bg-red-50/50', 'dark:bg-red-950/30', 'text-[var(--color-vermilion)]');
+          btn.classList.remove('border-[var(--color-border-washi)]');
+        } else {
+          btn.classList.remove('border-[var(--color-vermilion)]', 'bg-red-50/50', 'dark:bg-red-950/30', 'text-[var(--color-vermilion)]');
+          btn.classList.add('border-[var(--color-border-washi)]');
+        }
+      });
+
+      // Mobile buttons
+      document.querySelectorAll('.mobile-font-family-btn').forEach((btn) => {
+        const btnFont = btn.getAttribute('data-font');
+        if (btnFont === font) {
+          btn.classList.add('border-[var(--color-vermilion)]', 'bg-red-50/50', 'dark:bg-red-950/30', 'text-[var(--color-vermilion)]');
+          btn.classList.remove('border-[var(--color-border-washi)]');
+        } else {
+          btn.classList.remove('border-[var(--color-vermilion)]', 'bg-red-50/50', 'dark:bg-red-950/30', 'text-[var(--color-vermilion)]');
+          btn.classList.add('border-[var(--color-border-washi)]');
+        }
+      });
+    }
+
+    // Event listeners
+    document.querySelectorAll('[data-scale]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const scale = btn.getAttribute('data-scale');
+        if (scale) applyFontScale(scale);
+      });
+    });
+
+    if (resetScaleBtn) {
+      resetScaleBtn.addEventListener('click', () => applyFontScale('100'));
+    }
+
+    document.querySelectorAll('[data-font]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const font = btn.getAttribute('data-font');
+        if (font) applyFontFamily(font);
+      });
+    });
+
+    // Initial state
+    try {
+      const initialScale = localStorage.getItem('nihongo_font_scale') || '100';
+      const initialFont = localStorage.getItem('nihongo_font_family') || 'gothic';
+      applyFontScale(initialScale);
+      applyFontFamily(initialFont);
+    } catch (e) {}
   })();
 </script>

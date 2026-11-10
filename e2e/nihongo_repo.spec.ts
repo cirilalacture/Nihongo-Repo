@@ -290,8 +290,8 @@ test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
     await page.goto('/admin');
     await expect(page).toHaveURL(/\/admin\/login/);
 
-    const loginTitle = page.locator('h1');
-    await expect(loginTitle).toContainText('Admin CMS Login');
+    const loginTitle = page.getByRole('heading', { name: 'Admin CMS Login' });
+    await expect(loginTitle).toBeVisible();
   });
 
   test('Admin login with valid credentials opens dashboard overview', async ({ page }) => {
@@ -533,6 +533,88 @@ test.describe('Nihongo_repo Media Format Filter & User Requests/Reports E2E Test
 
     // Verify the previously submitted request appears in the table or list
     await expect(page.locator('text=Tobira: Gateway to Advanced Japanese').first()).toBeVisible();
+  });
+
+});
+
+test.describe('Nihongo_repo Accessibility Typography & Font Switcher E2E Tests', () => {
+
+  test('Font settings dropdown toggles, scales root font size, and switches font family with persistence', async ({ page }) => {
+    await page.goto('/');
+
+    // Check trigger button exists
+    const fontBtn = page.locator('#font-settings-btn');
+    await expect(fontBtn).toBeVisible();
+
+    // Open dropdown
+    await fontBtn.click();
+    const dropdown = page.locator('#font-settings-dropdown');
+    await expect(dropdown).toBeVisible();
+
+    // Verify initial scale badge is 100%
+    await expect(page.locator('#font-scale-current-badge')).toHaveText('100%');
+
+    // Click A+ (112%)
+    await page.locator('#font-settings-dropdown button[data-scale="112"]').click();
+    await expect(page.locator('#font-scale-current-badge')).toHaveText('112%');
+
+    // Check html font-size
+    const fontSize = await page.evaluate(() => document.documentElement.style.fontSize);
+    expect(fontSize).toBe('112%');
+
+    // Check localStorage
+    const savedScale = await page.evaluate(() => localStorage.getItem('nihongo_font_scale'));
+    expect(savedScale).toBe('112');
+
+    // Switch Font Family to Mincho
+    await page.locator('#font-settings-dropdown button[data-font="mincho"]').click();
+    const activeFont = await page.evaluate(() => document.documentElement.getAttribute('data-font'));
+    expect(activeFont).toBe('mincho');
+
+    const savedFont = await page.evaluate(() => localStorage.getItem('nihongo_font_family'));
+    expect(savedFont).toBe('mincho');
+
+    // Switch Font Family to Klee
+    await page.locator('#font-settings-dropdown button[data-font="klee"]').click();
+    const kleeFont = await page.evaluate(() => document.documentElement.getAttribute('data-font'));
+    expect(kleeFont).toBe('klee');
+
+    // Reset font scale
+    await page.locator('#font-scale-reset-btn').click();
+    await expect(page.locator('#font-scale-current-badge')).toHaveText('100%');
+    const resetSize = await page.evaluate(() => document.documentElement.style.fontSize);
+    expect(resetSize).toBe('');
+
+    // Close on click outside
+    await page.mouse.click(10, 10);
+    await expect(dropdown).toBeHidden();
+  });
+
+  test('Mobile drawer provides typography accessibility controls', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    // Open mobile menu
+    await page.locator('#mobile-nav-toggle').click();
+    const mobileMenu = page.locator('#mobile-nav-menu');
+    await expect(mobileMenu).toBeVisible();
+
+    // Check mobile font scale button A+ (112%)
+    const mobileScaleBtn = mobileMenu.locator('.mobile-font-scale-btn[data-scale="112"]');
+    await expect(mobileScaleBtn).toBeVisible();
+    await mobileScaleBtn.click();
+
+    await expect(mobileMenu.locator('#mobile-font-scale-badge')).toHaveText('112%');
+    const fontSize = await page.evaluate(() => document.documentElement.style.fontSize);
+    expect(fontSize).toBe('112%');
+
+    // Check mobile font family button
+    const minchoBtn = mobileMenu.locator('.mobile-font-family-btn[data-font="mincho"]');
+    await expect(minchoBtn).toBeVisible();
+    await minchoBtn.click();
+
+    const activeFont = await page.evaluate(() => document.documentElement.getAttribute('data-font'));
+    expect(activeFont).toBe('mincho');
   });
 
 });

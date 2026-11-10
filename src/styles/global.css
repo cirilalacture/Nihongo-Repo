@@ -44,13 +44,43 @@ html.dark {
   --color-vermilion-subtle: #2D1414;
 }
 
+html {
+  transition: font-size 0.15s ease;
+}
+
+/* Accessible Font Family Variations */
+html[data-font="mincho"] {
+  --font-sans: "Plus Jakarta Sans", "Georgia", serif;
+  --font-japanese: "Noto Serif JP", "Shippori Mincho", serif;
+}
+html[data-font="mincho"] body {
+  font-family: var(--font-japanese), var(--font-sans), serif;
+}
+
+html[data-font="klee"] {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-japanese: "Klee One", "Zen Maru Gothic", cursive, sans-serif;
+}
+html[data-font="klee"] body {
+  font-family: var(--font-japanese), var(--font-sans), cursive, sans-serif;
+}
+
+html[data-font="gothic"],
+html:not([data-font]) {
+  --font-sans: "Plus Jakarta Sans", "Noto Sans", system-ui, sans-serif;
+  --font-japanese: "Noto Sans JP", "Zen Kaku Gothic New", sans-serif;
+}
+html[data-font="gothic"] body {
+  font-family: var(--font-japanese), var(--font-sans), sans-serif;
+}
+
 body {
   background-color: var(--color-canvas);
   color: var(--color-ink-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-japanese), var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, font-family 0.15s ease;
 }
 
 /* Prevent auto-zoom on iOS when focusing inputs */

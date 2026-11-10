@@ -157,7 +157,7 @@ Proyek ini telah dilengkapi dengan suite pengujian otomatis end-to-end yang meng
 npm run test:e2e
 ```
 
-**Cakupan Skenario Uji (18/18 Passed):**
+**Cakupan Skenario Uji (24/24 Passed - 100% Lulus):**
 * ✅ Tampilan tema visual & branding Washi Paper
 * ✅ Pencarian reaktif instan berdasarkan keyword
 * ✅ Filter chip level JLPT (N5 - N1)
@@ -168,6 +168,7 @@ npm run test:e2e
 * ✅ Pemuatan halaman permalink mandiri `/materi/[id]` & OpenGraph tags
 * ✅ Validasi endpoint Dynamic XML Sitemap (`/sitemap.xml`) & RSS 2.0 Feed (`/rss.xml`)
 * ✅ Pemuatan halaman profil pembuat `/about` (avatar, bio, story, visi & tautan sosial)
+* ✅ Sensei companion di sudut kanan bawah dengan balon percakapan interaktif
 * ✅ Route guard redirection untuk akses yang belum terautentikasi
 * ✅ Alur login admin dengan kredensial valid
 * ✅ Navigasi admin, tabel materi, dan penambahan kategori
@@ -176,6 +177,11 @@ npm run test:e2e
 * ✅ Bebas dari scroll horizontal berlebih (*zero horizontal scroll overflow*) di mobile
 * ✅ Tampilan *sticky bottom navigation bar* admin di viewport mobile
 * ✅ Tata letak responsif fluid pada layar tablet (768x1024)
+* ✅ Filter cepat tipe format media (PDF & Audio MP3)
+* ✅ Modal Request Buku & Lapor Link Mati dengan validasi formulir
+* ✅ Review dan manajemen pengajuan pengguna di panel admin (`/admin/requests`)
+* ✅ Pengaturan aksesibilitas ukuran font (A-, A, A+, A++) & 3 pilihan jenis font Jepang (Gothic, Mincho, Klee)
+* ✅ Kontrol tipografi di drawer navigasi mobile dengan persistensi `localStorage` & anti-FOUC
 
 ---
 

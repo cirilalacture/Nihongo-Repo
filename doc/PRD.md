@@ -158,6 +158,24 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 
 ---
 
+### 4.4 Aksesibilitas Tipografi & Pilihan Font Jepang
+* **Kontrol Penskalaan Ukuran Teks (Font Sizing):**
+  * Menyediakan 4 tingkat ukuran font proporsional: **A-** (90% - Kompak), **A** (100% - Normal Default), **A+** (112% - Besar / Nyaman Baca), dan **A++** (125% - Ekstra Besar / Aksesibilitas Penglihatan).
+  * Tersedia tombol reset cepat "Reset Normal" (100%).
+  * Menggunakan penskalaan berbasis root CSS `document.documentElement.style.fontSize` dengan transisi halus (`transition: font-size 0.2s cubic-bezier(0.16, 1, 0.3, 1)`), sehingga seluruh tata letak halaman (`rem`-based) membesar/mengecil secara harmonis tanpa layout shift.
+* **Tiga Variasi Font Jepang & Latin:**
+  1. **Gothic Modern (Default):** *Noto Sans JP* (Standar antarmuka digital modern, tegas, dan mudah dibaca pada berbagai resolusi layar).
+  2. **Mincho Sastra (Serif):** *Noto Serif JP* (Karakteristik goresan kuas klasik khas novel, majalah, dan literatur sastra Jepang).
+  3. **Klee Buku Teks (Handwritten / Textbook):** *Klee One* (Gaya pensil dan kuas khas buku teks sekolah SD/SMP Jepang (*kyokashotai*), sangat ideal untuk pemula yang sedang mempelajari urutan goresan kanji).
+* **Penempatan Kontrol Ergonomis:**
+  * **Desktop:** Tombol popover dropdown di header (`ALargeSmall` icon) dengan klik di luar / tombol Escape untuk menutup.
+  * **Mobile:** Panel kontrol terdedikasi di dalam hamburger drawer navigasi, rapi tanpa memadati header seluler.
+* **Persistensi & Anti-FOUC:**
+  * Pengaturan disimpan di `localStorage` (`nihongo_font_scale` & `nihongo_font_family`).
+  * Inisialisasi sinkron di `<head>` HTML mencegah kedipan perubahan font (*Flash of Unstyled Content* / FOUC).
+
+---
+
 ## 5. Kebutuhan Non-Fungsional (Non-Functional Requirements)
 * **Keamanan:** Proteksi route `/admin/*` via SSR Middleware. Input form divalidasi ketat untuk mencegah SQL injection dan XSS. Tautan admin disembunyikan sepenuhnya dari seluruh antarmuka publik (navbar, mobile drawer, dan footer) sehingga akses panel dikhususkan manual langsung via URL (`/admin`).
 * **Performa:** Waktu muat halaman publik < 1 detik. Halaman admin responsif dan cepat dibuka di mobile saat admin ingin menambah link via HP.
