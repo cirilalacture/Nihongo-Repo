@@ -218,7 +218,10 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
 
     // Verify creator name and headline
     const creatorName = page.locator('main h1');
-    await expect(creatorName).toContainText('Ciril Alacture');
+    await expect(creatorName).toContainText('Jo');
+    await expect(page.locator('text=ジョ')).toBeVisible();
+    await expect(page.locator('text=Tokyo, Japan & Solo, Indonesia')).toBeVisible();
+    await expect(page.getByText('JLPT N3', { exact: true })).toBeVisible();
 
     // Verify avatar image is visible and starts at pose 1
     const avatarImg = page.locator('#avatar-image');

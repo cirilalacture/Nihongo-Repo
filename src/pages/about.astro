@@ -19,15 +19,15 @@ import {
   Terminal,
 } from '@lucide/astro';
 
-// Creator Profile Data (Placeholder/Random - mudah diedit oleh pemilik proyek)
+// Creator Profile Data
 const creatorProfile = {
-  name: 'Ciril Alacture',
-  japaneseName: 'シリル',
-  role: 'Pengembang Web & Penggiat Bahasa Jepang',
-  location: 'Indonesia',
-  jlptLevel: 'JLPT N2 (Persiapan N1)',
+  name: 'Jo',
+  japaneseName: 'ジョ',
+  role: 'Inisiator & Penggiat Bahasa Jepang',
+  location: 'Tokyo, Japan & Solo, Indonesia',
+  jlptLevel: 'JLPT N3',
   avatarUrl: '/avatar/1.webp',
-  bio: 'Seorang software engineer dan pembelajar bahasa Jepang mandiri yang mendirikan Nihongo_repo untuk mempermudah akses buku teks, kanji, tata bahasa, dan audio persiapan JLPT secara cuma-cuma dan tertata rapi.',
+  bio: 'Seorang pembelajar bahasa Jepang mandiri yang mendirikan Nihongo_repo untuk mempermudah akses buku teks, kanji, tata bahasa, dan audio persiapan JLPT secara cuma-cuma dan tertata rapi.',
   githubUrl: 'https://github.com/cirilalacture',
   repositoryUrl: 'https://github.com/cirilalacture/Nihongo-Repo',
   email: 'contact@ciril.dev',
@@ -212,27 +212,13 @@ const avatarPoses = [
           </div>
 
           <div class="p-4 rounded-2xl bg-[var(--color-canvas)] border border-[var(--color-border-washi)]">
-            <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2.5">
-              <Code2 class="w-4 h-4" />
+            <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2.5">
+              <Sparkles class="w-4 h-4" />
             </div>
-            <h4 class="text-xs font-bold text-[var(--color-ink-primary)] mb-1">Modern & Cepat</h4>
+            <h4 class="text-xs font-bold text-[var(--color-ink-primary)] mb-1">Rapi & Tanpa Iklan</h4>
             <p class="text-[11px] text-[var(--color-ink-tertiary)] leading-relaxed">
-              Dibangun dengan Astro v7 & Cloudflare D1 untuk performa edge super instan.
+              Koleksi bersih tanpa iklan mengganggu, pop-up, atau shortlink yang membingungkan pembaca.
             </p>
-          </div>
-        </div>
-
-        <!-- Tech Stack Badge Strip -->
-        <div class="pt-2">
-          <span class="text-[11px] font-bold text-[var(--color-ink-tertiary)] uppercase tracking-wider block mb-2">
-            Teknologi yang Menggerakkan Situs Ini
-          </span>
-          <div class="flex flex-wrap gap-2 text-[11px] font-mono text-[var(--color-ink-secondary)]">
-            <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">Astro v7 SSR</span>
-            <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">Cloudflare D1 SQLite</span>
-            <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">Tailwind CSS v4</span>
-            <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">Playwright E2E Tests</span>
-            <span class="px-2.5 py-1 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)]">Google Drive Cloud</span>
           </div>
         </div>
 
@@ -274,11 +260,6 @@ const avatarPoses = [
 
       </div>
     </article>
-
-    <!-- Subtle Note for Admin / Site Owner -->
-    <div class="p-4 rounded-2xl border border-dashed border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-center text-xs text-[var(--color-ink-tertiary)]">
-      <span>💡 <strong>Catatan Pengelola:</strong> Avatar karakter memiliki 7 variasi pose interaktif dari berkas <code class="px-1.5 py-0.5 rounded bg-[var(--color-surface-subtle)] font-mono text-[11px] text-[var(--color-ink-secondary)]">public/avatar/</code>. Klik avatar untuk beralih pose. Informasi profil dapat disesuaikan pada variabel <code class="px-1.5 py-0.5 rounded bg-[var(--color-surface-subtle)] font-mono text-[11px] text-[var(--color-ink-secondary)]">creatorProfile</code> di berkas <code class="px-1.5 py-0.5 rounded bg-[var(--color-surface-subtle)] font-mono text-[11px] text-[var(--color-ink-secondary)]">src/pages/about.astro</code>.</span>
-    </div>
 
   </div>
 
