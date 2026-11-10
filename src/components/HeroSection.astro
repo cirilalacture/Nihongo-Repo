@@ -10,15 +10,79 @@ const { totalMaterials = 9, totalCategories = 6 } = Astro.props;
 ---
 
 <section class="relative pt-12 pb-14 md:pt-16 md:pb-20 overflow-hidden border-b border-[var(--color-border-washi)]">
-  <!-- Subtle Japanese Pattern Background / Torii Mist Glow -->
-  <div class="absolute inset-0 pointer-events-none -z-10 flex items-center justify-center opacity-[0.03]">
-    <span class="text-[280px] font-bold select-none text-[var(--color-ink-primary)] font-serif leading-none">
-      日本
+  <!-- 1. Traditional Japanese Seigaiha Wave Pattern (Vector SVG, 0 HTTP Requests) -->
+  <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-[0.035] dark:opacity-[0.045] -z-10" aria-hidden="true">
+    <defs>
+      <pattern id="hero-seigaiha" width="60" height="30" patternUnits="userSpaceOnUse">
+        <path
+          d="M 0,30 A 30,30 0 0,1 60,30 M 10,30 A 20,20 0 0,1 50,30 M 20,30 A 10,10 0 0,1 40,30 M -30,15 A 30,30 0 0,1 30,15 M -20,15 A 20,20 0 0,1 20,15 M -10,15 A 10,10 0 0,1 10,15 M 30,15 A 30,30 0 0,1 90,15 M 40,15 A 20,20 0 0,1 80,15 M 50,15 A 10,10 0 0,1 70,15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="0.8"
+        />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#hero-seigaiha)" />
+  </svg>
+
+  <!-- 2. Soft Torii Amber & Vermilion Mist Glow -->
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-red-500/8 via-amber-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" aria-hidden="true"></div>
+
+  <!-- 3. Central Zen Ensō (円相) Brush Circle Watermark -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none -z-10 opacity-[0.04] dark:opacity-[0.055]" aria-hidden="true">
+    <svg viewBox="0 0 400 400" class="w-[320px] h-[320px] sm:w-[460px] sm:h-[460px] text-[var(--color-ink-primary)]" fill="currentColor">
+      <path d="M 200 40 C 290 35, 365 110, 368 200 C 372 295, 298 368, 200 370 C 108 372, 38 298, 42 202 C 45 112, 118 48, 190 44 C 201 43, 205 52, 196 57 C 132 90, 76 142, 76 210 C 76 280, 132 336, 200 336 C 268 336, 324 280, 324 200 C 324 128, 272 68, 184 62 C 172 61, 172 49, 176 40 Z" />
+    </svg>
+  </div>
+
+  <!-- 4. Grand Japanese Kanji Calligraphy Watermark (日本語) -->
+  <div class="absolute inset-0 pointer-events-none select-none -z-10 flex items-center justify-center overflow-hidden opacity-[0.045] dark:opacity-[0.06]" aria-hidden="true">
+    <span class="text-[160px] xs:text-[210px] sm:text-[270px] md:text-[320px] font-bold text-[var(--color-ink-primary)] font-japanese tracking-[0.2em] leading-none select-none pl-6">
+      日本語
     </span>
   </div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-red-500/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-  <div class="max-w-4xl mx-auto px-4 text-center">
+  <!-- 5. Traditional Red Seal Hanko Watermark (Top Right) -->
+  <div class="absolute right-[8%] sm:right-[14%] top-8 sm:top-10 pointer-events-none select-none opacity-[0.10] dark:opacity-[0.08] -rotate-12 hidden sm:block -z-10" aria-hidden="true">
+    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 border-[var(--color-vermilion)] p-1 flex items-center justify-center">
+      <div class="w-full h-full border border-dashed border-[var(--color-vermilion)] rounded-lg flex flex-col items-center justify-center text-[var(--color-vermilion)] font-japanese font-bold text-[11px] sm:text-xs tracking-widest leading-tight">
+        <span>日本</span>
+        <span class="mt-0.5">文庫</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Left Flank Vertical Calligraphy Couplet (縦書き / Tategaki - Study Proverb) -->
+  <aside class="hidden lg:flex flex-col items-center gap-3 absolute left-6 xl:left-14 top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 opacity-40 hover:opacity-80 transition-opacity duration-300" aria-hidden="true">
+    <div class="w-px h-10 bg-gradient-to-b from-transparent to-[var(--color-border-washi)]"></div>
+    <span class="[writing-mode:vertical-rl] font-japanese font-serif text-xs tracking-[0.45em] text-[var(--color-ink-secondary)]">
+      継続は力なり
+    </span>
+    <span class="text-[9px] text-[var(--color-ink-tertiary)] [writing-mode:vertical-rl] tracking-[0.2em] opacity-60">
+      keizoku wa chikara nari
+    </span>
+    <div class="w-5 h-5 rounded border border-[var(--color-vermilion)]/60 text-[var(--color-vermilion)] text-[9px] font-japanese font-bold flex items-center justify-center rotate-3 shadow-2xs">
+      力
+    </div>
+    <div class="w-px h-10 bg-gradient-to-t from-transparent to-[var(--color-border-washi)]"></div>
+  </aside>
+
+  <!-- 7. Right Flank Vertical Calligraphy Couplet (縦書き / Tategaki - Journey Proverb) -->
+  <aside class="hidden lg:flex flex-col items-center gap-3 absolute right-6 xl:right-14 top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 opacity-40 hover:opacity-80 transition-opacity duration-300" aria-hidden="true">
+    <div class="w-px h-10 bg-gradient-to-b from-transparent to-[var(--color-border-washi)]"></div>
+    <span class="[writing-mode:vertical-rl] font-japanese font-serif text-xs tracking-[0.45em] text-[var(--color-ink-secondary)]">
+      千里の道も一歩から
+    </span>
+    <span class="text-[9px] text-[var(--color-ink-tertiary)] [writing-mode:vertical-rl] tracking-[0.2em] opacity-60">
+      senri no michi mo ippo kara
+    </span>
+    <div class="w-5 h-5 rounded border border-[var(--color-vermilion)]/60 text-[var(--color-vermilion)] text-[9px] font-japanese font-bold flex items-center justify-center -rotate-6 shadow-2xs">
+      道
+    </div>
+    <div class="w-px h-10 bg-gradient-to-t from-transparent to-[var(--color-border-washi)]"></div>
+  </aside>
+
+  <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
     <!-- Subtitle / Meta Text -->
     <div class="flex items-center justify-center gap-2 text-xs font-medium text-[var(--color-ink-tertiary)] mb-4 select-none">
       <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>

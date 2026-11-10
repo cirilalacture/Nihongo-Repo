@@ -29,6 +29,11 @@
 ## 4. Spesifikasi Fitur Utama
 
 ### 4.1 Halaman Publik (Public Catalog Surface)
+* **Hero Section Kaligrafi Tradisional & Tekstur Washi Berkinerja Tinggi:**
+  * Latar hero diperkaya dengan motif gelombang tradisional *Seigaiha* (vektor SVG murni, 0 HTTP request, performa instan).
+  * Lingkaran kuas Zen *Ensō* (円相) dan watermark kaligrafi kanji raksasa *日本語*.
+  * Stempel segel merah tradisional *Hanko* (*日本文庫*).
+  * Kaligrafi vertikal (*tategaki*) peribahasa belajar di sayap kiri dan kanan pada layar lebar (`継続は力なり` dan `千里の道も一歩から`).
 * **Mode Tampilan Katalog:**
   * *Card Grid View* (Default): Kartu buku visual dengan cover, badge level JLPT, tag kategori, tombol "Buka di Drive", tombol "Detail", dan tombol cepat "Favorit / Bookmark".
   * *Compact Table View*: Tampilan tabel ringkas untuk pemindaian cepat puluhan item.

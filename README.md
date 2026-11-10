@@ -32,6 +32,7 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
 ## ✨ Fitur Utama
 
 ### 1. Katalog Publik (Public Catalog)
+* **Latar Belakang Hero Artistik Kaligrafi Jepang:** Diperkaya dengan motif gelombang Seigaiha vektor SVG murni (0 HTTP request), lingkaran kuas Zen Ensō (円相), watermark kaligrafi raksasa 日本語, stempel merah Hanko, dan sepasang kaligrafi vertikal (*tategaki*) peribahasa belajar di layar desktop.
 * **Pencarian Reaktif Instan:** Cari materi berdasarkan judul Latin, Romaji, Kanji Jepang asli, maupun nama pengarang seketika tanpa perlu memuat ulang halaman (Shortcut pencarian: <kbd>/</kbd>).
 * **Filter Multifaset JLPT & Topik:**
   * **Level JLPT:** `N5 (Pemula)`, `N4 (Dasar Lanjutan)`, `N3 (Menengah)`, `N2 (Pra-Mahir)`, `N1 (Tingkat Mahir)`, dan `ALL (Semua Level / Materi Umum)`.

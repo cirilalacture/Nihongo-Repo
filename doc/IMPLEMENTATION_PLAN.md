@@ -244,3 +244,17 @@ gantt
 - [x] **Verifikasi E2E & Build:**
   - Pengujian 22 skenario Playwright E2E: **22/22 passed (100% lulus)**, memastikan privasi admin di mobile drawer terverifikasi dan filter materi tetap bekerja presisi.
   - Astro build Cloudflare Pages berhasil tanpa kendala.
+
+---
+
+### [x] Fase 17: Background Hero Kaligrafi Tradisional & Tekstur Washi Berkinerja Tinggi (STATUS: SELESAI)
+- [x] **Peningkatan Latar Belakang Hero (`HeroSection.astro`):**
+  - Mengatasi kekosongan visual pada area hero tanpa mengorbankan performa kecepatan web.
+  - Mengintegrasikan motif gelombang tradisional Jepang *Seigaiha* menggunakan pola SVG inline murni (ukuran < 400 bytes, 0 HTTP network request).
+  - Lingkaran kuas Zen *Ensō* (円相) dan watermark tipografi kanji *日本語* berskala besar dengan transparansi halus (opacity 4–6%) yang harmonis di mode terang Washi maupun mode gelap Sumi-e.
+  - Stempel segel merah tradisional *Hanko* (*日本文庫*) dengan orientasi artistik miring.
+  - Kaligrafi vertikal (*tategaki*) peribahasa motivasi belajar bahasa Jepang di sisi kiri dan kanan untuk layar lebar/desktop (`継続は力なり` & `千里の道も一歩から`).
+- [x] **Optimasi & Pengujian Performa:**
+  - 100% vector SVG & text CSS, 0 byte file gambar eksternal, 0 layout shift (CLS: 0).
+  - Verifikasi responsivitas pada viewport smartphone (390px) memastikan nol *horizontal scroll overflow*.
+  - Eksekusi 22 test Playwright E2E: **22/22 passed (100% lulus)**.
