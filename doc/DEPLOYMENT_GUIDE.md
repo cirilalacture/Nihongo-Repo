@@ -1,28 +1,46 @@
-# Panduan Deployment Cloudflare Pages & D1 — Nihongo_repo
+# 🚀 Panduan Lengkap Deployment Cloudflare Pages & D1 — Nihongo_repo
 
-Dokumen ini memuat panduan lengkap langkah demi langkah untuk mendeploy **Nihongo_repo** ke **Cloudflare Pages** secara global dengan database serverless **Cloudflare D1**.
+Dokumen ini memuat panduan komprehensif langkah demi langkah untuk mendeploy website **Nihongo_repo** ke jaringan edge global **Cloudflare Pages** dengan database serverless **Cloudflare D1 (SQLite)**.
 
 ---
 
-## 1. Prasyarat (Prerequisites)
-1. Akun [Cloudflare](https://dash.cloudflare.com/) aktif (tersedia tier gratis).
-2. [Node.js](https://nodejs.org/) versi 20+ atau 22+.
-3. Akun GitHub atau GitLab untuk repository kode.
-4. Login ke Cloudflare via terminal:
+## 🗺️ Alur Arsitektur Deployment
+
+```mermaid
+flowchart LR
+    A["💻 Kode Sumber (GitHub Repository)"] -->|Otomatis Git Push| B["⚡ Cloudflare Pages CI/CD"]
+    B -->|Build: Astro SSR + Tailwind v4| C["📦 Edge Serverless Worker"]
+    C <-->|Binding: DB| D["🗄️ Cloudflare D1 (nihongo-repo-db)"]
+    C -->|Aset Statis & WebP Caching| E["🌍 Global Edge CDN"]
+    E --> F["📱 Pengunjung & Pembelajar"]
+```
+
+---
+
+## 📋 1. Prasyarat (Prerequisites)
+
+Sebelum memulai, pastikan Anda memiliki:
+1. **Akun Cloudflare:** Daftar gratis di [dash.cloudflare.com](https://dash.cloudflare.com/).
+2. **Repository GitHub:** Kode proyek sudah berada di repository GitHub Anda (`https://github.com/cirilalacture/Nihongo-Repo.git`).
+3. **Node.js:** Versi 20+ atau 22+ terinstal di komputer.
+4. **Wrangler CLI:** Login ke akun Cloudflare melalui terminal komputer:
    ```bash
    npx wrangler login
    ```
+   *(Browser akan terbuka untuk konfirmasi otorisasi akses).*
 
 ---
 
-## 2. Langkah 1: Buat Database D1 di Cloudflare
+## 🗄️ 2. Langkah 1: Buat Database D1 di Cloudflare
+
+Cloudflare D1 adalah database relasional SQLite serverless berlatensi sangat rendah di edge.
 
 Jalankan perintah berikut di terminal:
 ```bash
 npx wrangler d1 create nihongo-repo-db
 ```
 
-Output terminal akan memberikan informasi konfigurasi database, misalnya:
+Output terminal akan menampilkan detail konfigurasi database:
 ```text
 ✅ Successfully created DB 'nihongo-repo-db'!
 
@@ -32,101 +50,136 @@ database_name = "nihongo-repo-db"
 database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
-Salin `database_id` yang didapatkan, lalu perbarui file [`wrangler.jsonc`](../wrangler.jsonc):
-```json
-"d1_databases": [
-  {
-    "binding": "DB",
-    "database_name": "nihongo-repo-db",
-    "database_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  }
-]
-```
-
----
-
-## 3. Langkah 2: Jalankan Migrasi Skema & Seeding ke Production
-
-Setelah database D1 production terbuat, eksekusi migrasi tabel dan data awal dengan flag `--remote`:
-
-### A. Migrasi Skema Tabel:
-```bash
-npx wrangler d1 execute nihongo-repo-db --remote --file=./schema.sql
-```
-
-### B. Seeding Data Awal (Level JLPT, Kategori & Buku Populer):
-```bash
-npx wrangler d1 execute nihongo-repo-db --remote --file=./src/db/seed.sql
-```
-
-> **Verifikasi Production DB:**
-> ```bash
-> npx wrangler d1 execute nihongo-repo-db --remote --command="SELECT count(*) as total_buku FROM materials;"
+> 💡 **Catatan:** Salin nilai `database_id` yang Anda dapatkan (deretan UUID seperti `a1b2c3d4-...`), lalu buka file [`wrangler.jsonc`](../wrangler.jsonc) dan perbarui bagian `database_id`:
+> ```json
+> "d1_databases": [
+>   {
+>     "binding": "DB",
+>     "database_name": "nihongo-repo-db",
+>     "database_id": "PASTE_DATABASE_ID_ANDA_DI_SINI"
+>   }
+> ]
 > ```
 
 ---
 
-## 4. Langkah 3: Deploy ke Cloudflare Pages
+## 📦 3. Langkah 2: Jalankan Migrasi Skema & Seeding Data Awal
 
-### Metode A: Menghubungkan Repository GitHub (Direkomendasikan / Otomatis CI/CD)
-1. Push repository lokal ke GitHub:
-   ```bash
-   git remote add origin https://github.com/USERNAME/nihongo_repo.git
-   git push -u origin main
-   ```
-2. Buka [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
-3. Pilih repository `nihongo_repo`.
-4. Masukkan konfigurasi build:
-   * **Framework preset:** `Astro`
-   * **Build command:** `npm run build`
-   * **Build output directory:** `dist`
-   * **Environment Variables:**
-     * `NODE_VERSION` = `22`
-5. Klik **Save and Deploy**.
+Eksekusi skema tabel D1 dan koleksi data kurasi awal ke database Cloudflare **production** menggunakan flag `--remote`:
 
-### Metode B: Deploy Langsung via CLI Wrangler
-Jika tidak menggunakan GitHub, Anda bisa langsung mendeploy build lokal:
+### A. Migrasi Skema Tabel (`schema.sql`):
 ```bash
-npm run build
-npx wrangler pages deploy ./dist --project-name=nihongo-repo
+npx wrangler d1 execute nihongo-repo-db --remote --file=./schema.sql
+```
+*Perintah ini membuat tabel `admin_users`, `categories`, `jlpt_levels`, `materials`, `material_tags`, dan `material_requests` lengkap dengan indeks performa.*
+
+### B. Masukkan Data Awal / Seeding (`src/db/seed.sql`):
+```bash
+npx wrangler d1 execute nihongo-repo-db --remote --file=./src/db/seed.sql
+```
+*Perintah ini mengisi level JLPT (N5–N1), kategori buku, dan materi kurasi awal lengkap.*
+
+### C. Verifikasi Database Remote:
+```bash
+npx wrangler d1 execute nihongo-repo-db --remote --command="SELECT count(*) as total_materi FROM materials;"
+```
+Jika menampilkan angka (misalnya `9` atau lebih), database production Anda telah aktif dan siap!
+
+---
+
+## ☁️ 4. Langkah 3: Hubungkan Repository ke Cloudflare Pages
+
+1. Buka [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. Pada menu navigasi sebelah kiri, pilih **Workers & Pages**.
+3. Klik tombol **Create application** ➔ pilih tab **Pages** ➔ klik **Connect to Git**.
+4. Pilih akun GitHub Anda dan pilih repository: **`Nihongo-Repo`**.
+5. Pada halaman **Set up builds and deployments**, atur parameter berikut:
+   - **Project name:** `nihongo-repo` (atau nama pilihan Anda)
+   - **Production branch:** `main`
+   - **Framework preset:** `Astro`
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+   - **Root directory:** `/` (biarkan kosong / default)
+6. Buka bagian **Environment variables (advanced)** dan tambahkan variabel Node:
+   - **Variable name:** `NODE_VERSION`
+   - **Value:** `22`
+7. Klik tombol **Save and Deploy**.
+
+*(Cloudflare akan menjalankan proses build pertama selama ~1–2 menit).*
+
+---
+
+## 🔗 5. Langkah 4: Hubungkan Binding Database D1 (Wajib)
+
+Agar aplikasi Astro SSR yang berjalan di serverless worker dapat membaca database D1 di production, Anda wajib memasang binding:
+
+1. Di Cloudflare Dashboard, buka project Pages yang baru dibuat (**nihongo-repo**).
+2. Masuk ke tab **Settings** ➔ klik menu **Functions** di sebelah kiri.
+3. Gulir ke bawah ke bagian **D1 Database Bindings**.
+4. Klik tombol **Add binding**:
+   - **Variable name:** `DB` *(Wajib menggunakan huruf kapital `DB` persis sesuai kode sumber).*
+   - **D1 database:** Pilih **`nihongo-repo-db`** dari dropdown.
+5. Klik **Save**.
+6. **Lakukan Deploy Ulang:**
+   - Masuk ke tab **Deployments**.
+   - Pada deployment terakhir, klik tombol titik tiga (`...`) di kanan ➔ pilih **Retry deployment**.
+   - Atau lakukan commit baru di repository Anda untuk memicu build otomatis.
+
+---
+
+## 🔐 6. Langkah 5: Login & Pengamanan Admin CMS Production
+
+Setelah deployment selesai, website Anda dapat diakses di domain bawaan: `https://nihongo-repo.pages.dev`.
+
+1. **Akses Login Admin:**
+   Buka URL:
+   ```text
+   https://nihongo-repo.pages.dev/admin/login
+   ```
+2. **Kredensial Default:**
+   - **Username:** `admin`
+   - **Password:** `admin123`
+3. **Segera Ganti Password Admin di Production:**
+   - Setelah masuk ke dashboard, navigasi ke menu **Pengaturan** (`/admin/settings`).
+   - Masukkan password lama (`admin123`) dan buat password baru yang kuat.
+   - Sistem akan otomatis mengenkripsi password baru menggunakan Web Crypto PBKDF2 (SHA-256 dengan 100.000 iterasi) langsung ke database D1.
+
+---
+
+## 🌐 7. Langkah 6 (Opsional): Pasang Custom Domain
+
+Jika Anda memiliki domain pribadi (misal: `nihongo.domainanda.com`):
+1. Di project Cloudflare Pages Anda, buka tab **Custom domains**.
+2. Klik **Set up a custom domain**.
+3. Masukkan nama domain atau subdomain Anda.
+4. Cloudflare akan secara otomatis mengelola DNS dan menerbitkan **Sertifikat SSL (HTTPS)** gratis.
+
+---
+
+## 🛠️ 8. Operasional Harian & Pemeliharaan
+
+### A. Menambah & Mengelola Buku
+- Cukup buka `/admin/materials/new` dari browser HP atau laptop.
+- Masukkan judul, kategori, level JLPT, link Google Drive, dan simpan.
+
+### B. Meninjau Permintaan Pengguna & Laporan Link
+- Buka `/admin/requests` untuk memantau request buku baru atau laporan link Google Drive yang bermasalah dari pembaca.
+
+### C. Cadangkan Data (Backup Database D1)
+Jalankan perintah ini sewaktu-waktu di terminal komputer untuk mencadangkan database remote:
+```bash
+npx wrangler d1 export nihongo-repo-db --remote --output=./backup-nihongo-$(date +%F).sql
 ```
 
----
-
-## 5. Langkah 4: Hubungkan Binding Database D1 di Dashboard Cloudflare Pages
-
-Ini adalah langkah krusial agar aplikasi Astro SSR di Cloudflare Pages dapat berkomunikasi dengan database D1:
-
-1. Di Cloudflare Dashboard, buka project Pages **nihongo-repo**.
-2. Masuk ke tab **Settings** > **Functions**.
-3. Gulir ke bawah ke bagian **D1 Database Bindings**.
-4. Klik **Add binding**:
-   * **Variable name:** `DB` *(Wajib huruf besar sesuai kode `Astro.locals.runtime.env.DB`)*
-   * **D1 Database:** Pilih `nihongo-repo-db`
-5. Klik **Save**.
-6. Lakukan redeploy ulang (*Retry deployment* atau buat commit baru) agar binding aktif di production.
+### D. Ekspor Koleksi ke Format CSV
+- Di panel admin `/admin/materials`, klik tombol **"Ekspor CSV"** untuk mengunduh seluruh katalog dalam berkas spreadsheet `.csv`.
 
 ---
 
-## 6. Langkah 5: Keamanan & Akun Admin Production
+## ❓ FAQ & Solusi Kendala (Troubleshooting)
 
-1. Kredensial bawaan setelah seeder:
-   * **URL Admin:** `https://DOMAIN-ANDA.pages.dev/admin/login`
-   * **Username:** `admin`
-   * **Password:** `admin123`
-2. **Ganti Password Admin untuk Production:**
-   Anda dapat mengubah password dengan mengenerate hash PBKDF2 baru dan memperbarui baris di tabel `admin_users`:
-   ```bash
-   # Ganti hash password di remote database
-   npx wrangler d1 execute nihongo-repo-db --remote --command="UPDATE admin_users SET password_hash = 'HASH_BARU_ANDA' WHERE username = 'admin';"
-   ```
-
----
-
-## 7. Perawatan & Operasional Harian
-
-* **Menambah Buku Baru:** Cukup login ke `/admin/materials/new` melalui browser di HP atau laptop, masukkan link Google Drive, dan simpan.
-* **Backup Database D1:**
-  ```bash
-  npx wrangler d1 export nihongo-repo-db --remote --output=./backup-nihongo-db.sql
-  ```
+| Kendala | Penyebab | Solusi |
+| :--- | :--- | :--- |
+| **Error: `D1_ERROR` / Database tidak ditemukan** | Binding `DB` belum dipasang di dashboard Pages | Buka Settings ➔ Functions ➔ D1 Database Bindings ➔ Tambahkan `DB` mengarah ke `nihongo-repo-db`, lalu klik *Retry deployment*. |
+| **Build Gagal: `Node version mismatch`** | Cloudflare Pages menggunakan versi Node default lama | Pastikan Environment Variable `NODE_VERSION` diset ke `22` di Settings ➔ Environment variables. |
+| **Gambar avatar lambat diakses** | Cache browser belum aktif | Website sudah menyertakan `public/_headers` dengan konfigurasi `max-age=31536000, immutable`. Cloudflare CDN akan menyimpannya secara permanen setelah request pertama. |
