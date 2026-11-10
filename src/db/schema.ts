@@ -75,3 +75,18 @@ export const materialTags = sqliteTable('material_tags', {
     .notNull()
     .references(() => tags.id, { onDelete: 'cascade' }),
 });
+
+// 6. Tabel Permintaan Buku & Laporan Link Rusak
+export const materialRequests = sqliteTable('material_requests', {
+  id: text('id').primaryKey(),
+  type: text('type').notNull().default('REQUEST'), // 'REQUEST' (Request Buku) | 'BROKEN_LINK' (Lapor Link Rusak)
+  title: text('title').notNull(),
+  materialId: text('material_id'),
+  authorOrPublisher: text('author_or_publisher'),
+  jlptLevel: text('jlpt_level').default('ALL'),
+  notes: text('notes'),
+  contactEmail: text('contact_email'),
+  status: text('status').notNull().default('PENDING'), // 'PENDING' | 'RESOLVED' | 'REJECTED'
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(strftime('%s', 'now'))`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).default(sql`(strftime('%s', 'now'))`),
+});

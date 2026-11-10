@@ -13,7 +13,7 @@
   <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
-  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-19%2F19%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-22%2F22%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
 </p>
 
@@ -36,6 +36,8 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
 * **Filter Multifaset JLPT & Topik:**
   * **Level JLPT:** `N5 (Pemula)`, `N4 (Dasar Lanjutan)`, `N3 (Menengah)`, `N2 (Pra-Mahir)`, `N1 (Tingkat Mahir)`, dan `ALL (Semua Level / Materi Umum)`.
   * **Kategori Topik:** `Tata Bahasa (Bunpou)`, `Huruf & Kanji`, `Kosakata (Goi)`, `Membaca (Dokkai)`, `Menyimak & Audio (Choukai)`, dan `Bank Soal (Mondai)`.
+* **Filter Cepat Tipe Media (Fast Format Chips):** Saring koleksi materi berdasarkan format berkas secara instan: Dokumen PDF (📄), Audio MP3 (🎧), Deck Anki (🎴), dan Lembar Latihan (📊) dengan badge visual pada setiap kartu.
+* **Formulir Permintaan Buku & Pelaporan Tautan Rusak:** Modal interaktif dwitab ("Request Buku Baru" & "Lapor Link Rusak") yang dapat diakses langsung dari header navigasi dan modal detail materi (dengan auto-prefill judul/ID buku).
 * **Sistem Bookmark Mandiri (*Favorites*):** Simpan materi favorit ke `localStorage` tanpa perlu registrasi/login, lengkap dengan tombol filter *"Tersimpan"* dan badge counter real-time.
 * **Dua Mode Tampilan Fleksibel:** Beralih antara **Grid View** (kartu visual estetik) dan **Compact Table View** (tabel padat untuk pemindaian cepat puluhan buku).
 * **Modal Detail Materi dengan PDF Preview:**
@@ -63,6 +65,7 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
   * Status kontrol publikasi (`Publik` vs `Draft`) dan penanda khusus *"Pilihan Sensei"* (*Featured*).
   * Form edit materi dan dialog modal konfirmasi sebelum menghapus data.
 * **Manajemen Kategori:** Tambah dan atur urutan kategori dengan proteksi integritas relasi data (kategori tidak dapat dihapus jika masih menampung materi aktif).
+* **Manajemen Permintaan & Laporan Link (`/admin/requests`):** Panel ringkasan metrik status (Menunggu Review, Request Buku Baru, Laporan Link Rusak, Selesai) dengan filter interaktif status/tipe dan kontrol aksi admin untuk merespons masukan pembelajar.
 
 ---
 

@@ -30,6 +30,14 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
       <a href="/#jlpt-filter" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Level JLPT</a>
       <a href="/#kategori" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Kategori</a>
       <a href="/about" class="hover:text-[var(--color-vermilion)] transition-colors py-1">Tentang</a>
+      <button
+        type="button"
+        data-open-request
+        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--color-vermilion)] bg-red-50/80 dark:bg-red-950/40 border border-red-200/80 dark:border-red-900/50 hover:bg-red-100/70 transition-all cursor-pointer"
+        title="Ajukan permintaan buku baru atau lapor link bermasalah"
+      >
+        <span>Request Buku</span>
+      </button>
     </nav>
 
     <!-- Actions: Search, Theme Toggle, Admin Link & Mobile Hamburger -->
@@ -121,6 +129,15 @@ import { Lock, Search, BookOpen, Layers, Award, Menu, X, Sun, Moon, User } from 
         <User class="w-4 h-4 text-[var(--color-ink-tertiary)]" />
         <span>Tentang Pembuat</span>
       </a>
+
+      <button
+        type="button"
+        data-open-request
+        class="mobile-nav-link w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-[var(--color-vermilion)] hover:bg-red-50/60 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+      >
+        <span class="text-sm">📝</span>
+        <span>Request Buku / Lapor Link</span>
+      </button>
     </div>
 
     <div class="pt-2 border-t border-[var(--color-border-washi)] space-y-2">

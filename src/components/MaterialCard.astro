@@ -47,6 +47,7 @@ const levelCode = material.levelCode || 'ALL';
   data-author={material.author ? material.author.toLowerCase() : ''}
   data-level={levelCode}
   data-category={material.categorySlug || 'all'}
+  data-file-type={material.fileType || 'PDF'}
 >
   <div>
     <!-- Top Metadata: Badges & Tags -->
@@ -66,6 +67,9 @@ const levelCode = material.levelCode || 'ALL';
 
       <!-- Format & Recommended Badges & Bookmark -->
       <div class="flex items-center gap-1.5">
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-mono font-semibold bg-[var(--color-surface-subtle)] text-[var(--color-ink-tertiary)] border border-[var(--color-border-washi)]">
+          {material.fileType === 'AUDIO_ZIP' ? '🎧 Audio' : material.fileType === 'ANKI' ? '🎴 Anki' : material.fileType === 'EXCEL' ? '📊 Sheet' : '📄 PDF'}
+        </span>
         {material.isRecommended === 1 && (
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200" title="Rekomendasi Utama">
             <Star class="w-3 h-3 fill-amber-500 text-amber-500" />

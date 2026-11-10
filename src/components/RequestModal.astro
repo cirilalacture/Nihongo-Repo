@@ -1,0 +1,389 @@
+---
+// Request & Broken Link Report Modal
+// Memungkinkan pembelajar me-request materi baru atau melaporkan link Google Drive bermasalah
+import { MessageSquare, AlertTriangle, Send, CheckCircle2, X } from '@lucide/astro';
+---
+
+<div
+  id="request-modal"
+  class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="request-modal-title"
+>
+  <!-- Modal Dialog Window (Bottom Sheet on mobile, Centered Card on desktop) -->
+  <div
+    class="w-full sm:max-w-lg bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-transform duration-300 transform translate-y-full sm:translate-y-0"
+    id="request-modal-container"
+  >
+    <!-- Grab handle for mobile touch bottom sheet -->
+    <div class="sm:hidden w-full flex justify-center pt-2.5 pb-1">
+      <div class="w-10 h-1 bg-[var(--color-border-washi)] rounded-full"></div>
+    </div>
+
+    <!-- Header & Close Button -->
+    <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[var(--color-border-washi)] bg-[var(--color-surface-subtle)]">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/60 text-[var(--color-vermilion)] flex items-center justify-center shrink-0 border border-red-200 dark:border-red-900/50">
+          <MessageSquare class="w-4 h-4" />
+        </div>
+        <div class="min-w-0">
+          <h3 id="request-modal-title" class="text-sm sm:text-base font-bold text-[var(--color-ink-primary)] truncate">
+            Request Materi & Lapor Link
+          </h3>
+          <p class="text-[11px] text-[var(--color-ink-tertiary)]">
+            Bantu kami memperkaya dan merawat repositori bersama
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        id="close-request-modal-btn"
+        class="text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)] p-1.5 rounded-xl hover:bg-neutral-200/50 dark:hover:bg-neutral-800 transition-colors cursor-pointer shrink-0"
+        aria-label="Tutup formulir"
+        title="Tutup"
+      >
+        <X class="w-4 h-4" />
+      </button>
+    </div>
+
+    <!-- Tab Switcher: Request Buku vs Lapor Link Rusak -->
+    <div class="px-5 sm:px-6 pt-3 pb-1 border-b border-[var(--color-border-washi)] bg-[var(--color-surface)]">
+      <div class="grid grid-cols-2 gap-1.5 p-1 bg-[var(--color-surface-subtle)] rounded-xl border border-[var(--color-border-washi)] text-xs font-semibold">
+        <button
+          type="button"
+          id="tab-request-btn"
+          class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer bg-[var(--color-surface)] text-[var(--color-vermilion)] shadow-2xs font-bold"
+        >
+          <MessageSquare class="w-3.5 h-3.5" />
+          <span>Request Buku</span>
+        </button>
+        <button
+          type="button"
+          id="tab-report-btn"
+          class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] font-medium"
+        >
+          <AlertTriangle class="w-3.5 h-3.5 text-amber-500" />
+          <span>Lapor Link Rusak</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body: Form / Success States -->
+    <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
+      
+      <!-- 1. Form State -->
+      <form id="request-form" class="space-y-4">
+        <input type="hidden" id="req-type" name="type" value="REQUEST" />
+        <input type="hidden" id="req-material-id" name="materialId" value="" />
+
+        <!-- Info Notice -->
+        <div id="req-info-notice" class="p-3 rounded-xl bg-red-50/60 dark:bg-red-950/30 border border-red-200/60 dark:border-red-900/30 text-[11.5px] text-[var(--color-ink-secondary)] leading-relaxed">
+          Punya judul buku, audio, atau materi JLPT yang belum tersedia? Tuliskan judulnya di bawah ini agar segera kami kurasi dan carikan link Google Drive-nya.
+        </div>
+
+        <!-- Judul Materi Field -->
+        <div>
+          <label for="req-title" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1">
+            Judul Materi / Buku <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="req-title"
+            name="title"
+            required
+            placeholder="Contoh: Shin Kanzen Master Dokkai N2"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs sm:text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all"
+          />
+        </div>
+
+        <!-- Grid 2 Col: Level JLPT & Pengarang -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="req-level" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1">
+              Perkiraan Level JLPT
+            </label>
+            <select
+              id="req-level"
+              name="jlptLevel"
+              class="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs sm:text-sm text-[var(--color-ink-primary)] focus:outline-none focus:border-[var(--color-vermilion)] transition-all cursor-pointer"
+            >
+              <option value="ALL">Semua / Belum Tahu</option>
+              <option value="N5">N5 (Pemula)</option>
+              <option value="N4">N4 (Dasar Lanjutan)</option>
+              <option value="N3">N3 (Menengah)</option>
+              <option value="N2">N2 (Pra-Mahir)</option>
+              <option value="N1">N1 (Tingkat Mahir)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="req-author" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1">
+              Pengarang / Penerbit <span class="text-[10px] text-[var(--color-ink-tertiary)] font-normal">(opsional)</span>
+            </label>
+            <input
+              type="text"
+              id="req-author"
+              name="authorOrPublisher"
+              placeholder="Contoh: 3A Corporation"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs sm:text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] transition-all"
+            />
+          </div>
+        </div>
+
+        <!-- Catatan / Rincian Kendala -->
+        <div>
+          <label for="req-notes" id="req-notes-label" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1">
+            Catatan Tambahan <span class="text-[10px] text-[var(--color-ink-tertiary)] font-normal">(opsional)</span>
+          </label>
+          <textarea
+            id="req-notes"
+            name="notes"
+            rows="3"
+            placeholder="Tuliskan edisi buku, link rujukan, atau jenis kendala link Google Drive jika ada..."
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs sm:text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Email Kontak -->
+        <div>
+          <label for="req-email" class="block text-xs font-bold text-[var(--color-ink-primary)] mb-1">
+            Email Anda <span class="text-[10px] text-[var(--color-ink-tertiary)] font-normal">(opsional, untuk kabar status)</span>
+          </label>
+          <input
+            type="email"
+            id="req-email"
+            name="contactEmail"
+            placeholder="nama@email.com"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-xs sm:text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] transition-all"
+          />
+        </div>
+
+        <!-- Form Alert Error Box -->
+        <div id="req-error-alert" class="hidden p-3 rounded-xl bg-red-100 text-red-800 text-xs font-medium border border-red-300"></div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button
+            type="submit"
+            id="submit-request-btn"
+            class="w-full py-3 px-5 rounded-xl bg-[var(--color-vermilion)] hover:opacity-95 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Send class="w-4 h-4" />
+            <span id="submit-btn-text">Kirim Permintaan</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- 2. Success Feedback State (Hidden by default) -->
+      <div id="request-success-box" class="hidden py-8 px-4 text-center space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 mx-auto flex items-center justify-center shadow-sm border border-emerald-200">
+          <CheckCircle2 class="w-7 h-7" />
+        </div>
+        <div>
+          <span class="text-xs font-bold font-japanese text-[var(--color-vermilion)] block mb-1">
+            「ありがとうございます！」
+          </span>
+          <h4 class="text-base font-bold text-[var(--color-ink-primary)]">
+            Laporan Berhasil Terkirim!
+          </h4>
+          <p id="success-message-text" class="text-xs text-[var(--color-ink-secondary)] mt-1.5 max-w-sm mx-auto leading-relaxed">
+            Terima kasih telah berpartisipasi menjaga dan memperkaya repositori Nihongo_repo.
+          </p>
+        </div>
+        <div class="pt-2">
+          <button
+            type="button"
+            id="reset-request-btn"
+            class="px-5 py-2.5 rounded-xl bg-[var(--color-surface-subtle)] hover:bg-neutral-200/60 text-xs font-bold text-[var(--color-ink-primary)] border border-[var(--color-border-washi)] transition-all cursor-pointer"
+          >
+            Kirim Laporan / Request Lain
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function initRequestModal() {
+      const modal = document.getElementById('request-modal');
+      const container = document.getElementById('request-modal-container');
+      const closeBtn = document.getElementById('close-request-modal-btn');
+      const form = document.getElementById('request-form') as HTMLFormElement | null;
+      const successBox = document.getElementById('request-success-box');
+      const submitBtn = document.getElementById('submit-request-btn') as HTMLButtonElement | null;
+      const submitBtnText = document.getElementById('submit-btn-text');
+      const errorAlert = document.getElementById('req-error-alert');
+      const successMsgEl = document.getElementById('success-message-text');
+      const resetBtn = document.getElementById('reset-request-btn');
+
+      const tabRequestBtn = document.getElementById('tab-request-btn');
+      const tabReportBtn = document.getElementById('tab-report-btn');
+      const typeInput = document.getElementById('req-type') as HTMLInputElement | null;
+      const materialIdInput = document.getElementById('req-material-id') as HTMLInputElement | null;
+      const titleInput = document.getElementById('req-title') as HTMLInputElement | null;
+      const noticeBox = document.getElementById('req-info-notice');
+      const notesLabel = document.getElementById('req-notes-label');
+
+      if (!modal || !form || !submitBtn) return;
+
+      function setMode(mode: 'REQUEST' | 'BROKEN_LINK', prefillTitle = '', prefillId = '') {
+        if (!typeInput) return;
+        typeInput.value = mode;
+
+        if (prefillId && materialIdInput) materialIdInput.value = prefillId;
+        if (prefillTitle && titleInput) titleInput.value = prefillTitle;
+
+        if (mode === 'REQUEST') {
+          tabRequestBtn?.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs', 'font-bold');
+          tabRequestBtn?.classList.remove('text-[var(--color-ink-secondary)]', 'font-medium');
+
+          tabReportBtn?.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs', 'font-bold');
+          tabReportBtn?.classList.add('text-[var(--color-ink-secondary)]', 'font-medium');
+
+          if (noticeBox) {
+            noticeBox.textContent = 'Punya judul buku, audio, atau materi JLPT yang belum tersedia? Tuliskan judulnya di bawah ini agar segera kami kurasi dan carikan link Google Drive-nya.';
+          }
+          if (notesLabel) {
+            notesLabel.innerHTML = 'Catatan Tambahan <span class="text-[10px] text-[var(--color-ink-tertiary)] font-normal">(opsional)</span>';
+          }
+          if (submitBtnText) submitBtnText.textContent = 'Kirim Permintaan Buku';
+        } else {
+          tabReportBtn?.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs', 'font-bold');
+          tabReportBtn?.classList.remove('text-[var(--color-ink-secondary)]', 'font-medium');
+
+          tabRequestBtn?.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-vermilion)]', 'shadow-2xs', 'font-bold');
+          tabRequestBtn?.classList.add('text-[var(--color-ink-secondary)]', 'font-medium');
+
+          if (noticeBox) {
+            noticeBox.textContent = 'Menemukan link Google Drive yang mati, dibatasi akses (Need Permission), atau file yang rusak? Laporkan di sini agar segera kami perbarui link cadangannya.';
+          }
+          if (notesLabel) {
+            notesLabel.innerHTML = 'Jelaskan Kendala Link <span class="text-[10px] text-[var(--color-ink-tertiary)] font-normal">(misal: perlu izin akses, 404, berkas korup)</span>';
+          }
+          if (submitBtnText) submitBtnText.textContent = 'Kirim Laporan Link';
+        }
+      }
+
+      function openModal(mode: 'REQUEST' | 'BROKEN_LINK' = 'REQUEST', prefillTitle = '', prefillId = '') {
+        setMode(mode, prefillTitle, prefillId);
+        form.classList.remove('hidden');
+        if (successBox) successBox.classList.add('hidden');
+        if (errorAlert) errorAlert.classList.add('hidden');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+
+        setTimeout(() => {
+          container?.classList.remove('translate-y-full');
+          titleInput?.focus();
+        }, 10);
+      }
+
+      function closeModal() {
+        container?.classList.add('translate-y-full');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+        }, 200);
+      }
+
+      tabRequestBtn?.addEventListener('click', () => setMode('REQUEST'));
+      tabReportBtn?.addEventListener('click', () => setMode('BROKEN_LINK'));
+      closeBtn?.addEventListener('click', closeModal);
+
+      // Close when clicking modal backdrop
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      // Global open triggers (e.g. from buttons with data-open-request or data-open-report)
+      document.addEventListener('click', (e) => {
+        const target = (e.target as HTMLElement)?.closest('[data-open-request], [data-open-report]');
+        if (!target) return;
+        e.preventDefault();
+
+        const isReport = target.hasAttribute('data-open-report');
+        const mode = isReport ? 'BROKEN_LINK' : 'REQUEST';
+        const title = target.getAttribute('data-report-title') || '';
+        const id = target.getAttribute('data-report-id') || '';
+
+        openModal(mode, title, id);
+      });
+
+      // Form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (errorAlert) errorAlert.classList.add('hidden');
+
+        submitBtn.disabled = true;
+        if (submitBtnText) submitBtnText.textContent = 'Mengirim...';
+
+        try {
+          const formData = new FormData(form);
+          const payload = Object.fromEntries(formData.entries());
+
+          const res = await fetch('/api/requests/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || data.error) {
+            throw new Error(data.error || 'Gagal mengirim formulir.');
+          }
+
+          // Show success state
+          form.classList.add('hidden');
+          if (successBox) {
+            successBox.classList.remove('hidden');
+            if (successMsgEl && data.message) {
+              successMsgEl.textContent = data.message;
+            }
+          }
+          form.reset();
+        } catch (err: any) {
+          if (errorAlert) {
+            errorAlert.textContent = err.message || 'Terjadi kesalahan. Silakan coba lagi.';
+            errorAlert.classList.remove('hidden');
+          }
+        } finally {
+          submitBtn.disabled = false;
+          if (submitBtnText) {
+            submitBtnText.textContent = typeInput?.value === 'BROKEN_LINK' ? 'Kirim Laporan Link' : 'Kirim Permintaan Buku';
+          }
+        }
+      });
+
+      resetBtn?.addEventListener('click', () => {
+        if (successBox) successBox.classList.add('hidden');
+        form.classList.remove('hidden');
+        titleInput?.focus();
+      });
+
+      // Expose to window for external component calls
+      (window as any).openNihongoRequestModal = openModal;
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRequestModal);
+    } else {
+      initRequestModal();
+    }
+  })();
+</script>

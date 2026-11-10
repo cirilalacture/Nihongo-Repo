@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
-import { LayoutDashboard, BookOpen, PlusCircle, Layers, Globe, LogOut, ShieldCheck, CheckCircle2, AlertCircle, KeyRound } from '@lucide/astro';
+import { LayoutDashboard, BookOpen, PlusCircle, Layers, Globe, LogOut, ShieldCheck, CheckCircle2, AlertCircle, KeyRound, Inbox } from '@lucide/astro';
 
 interface Props {
   title?: string;
-  activeNav?: 'dashboard' | 'materials' | 'new-material' | 'categories' | 'settings';
+  activeNav?: 'dashboard' | 'materials' | 'new-material' | 'categories' | 'requests' | 'settings';
 }
 
 const { title = 'Admin Dashboard — Nihongo_repo', activeNav = 'dashboard' } = Astro.props;
@@ -112,6 +112,18 @@ const errorMsg = urlParams.get('err');
           >
             <Layers class="w-4 h-4" />
             <span>Kelola Kategori</span>
+          </a>
+
+          <a
+            href="/admin/requests"
+            class={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+              activeNav === 'requests'
+                ? 'bg-[var(--color-vermilion-subtle)] text-[var(--color-vermilion)] font-bold'
+                : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)]'
+            }`}
+          >
+            <Inbox class="w-4 h-4" />
+            <span>Permintaan & Laporan</span>
           </a>
 
           <a
@@ -281,7 +293,7 @@ const errorMsg = urlParams.get('err');
 
         <a
           href="/admin/categories"
-          class={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl min-w-[56px] min-h-[48px] transition-all ${
+          class={`flex flex-col items-center justify-center py-1 px-2 rounded-xl min-w-[50px] min-h-[48px] transition-all ${
             activeNav === 'categories'
               ? 'text-[var(--color-vermilion)] font-bold'
               : 'text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)]'
@@ -289,6 +301,18 @@ const errorMsg = urlParams.get('err');
         >
           <Layers class={`w-5 h-5 mb-0.5 ${activeNav === 'categories' ? 'stroke-[2.5]' : ''}`} />
           <span class="text-[10px]">Kategori</span>
+        </a>
+
+        <a
+          href="/admin/requests"
+          class={`flex flex-col items-center justify-center py-1 px-2 rounded-xl min-w-[50px] min-h-[48px] transition-all ${
+            activeNav === 'requests'
+              ? 'text-[var(--color-vermilion)] font-bold'
+              : 'text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)]'
+          }`}
+        >
+          <Inbox class={`w-5 h-5 mb-0.5 ${activeNav === 'requests' ? 'stroke-[2.5]' : ''}`} />
+          <span class="text-[10px]">Laporan</span>
         </a>
 
         <a

@@ -112,6 +112,52 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
       ))}
     </div>
 
+    <!-- Format Media Type Chips (Fast Filter) -->
+    <div id="format-filter" class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-dashed border-[var(--color-border-washi)]">
+      <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 shrink-0">
+        Tipe Media:
+      </span>
+      <button
+        type="button"
+        data-filter-format="ALL"
+        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-semibold border transition-all duration-150 bg-neutral-900 text-white border-neutral-900 dark:bg-neutral-100 dark:text-neutral-950 dark:border-neutral-100 shadow-2xs active:scale-95"
+      >
+        Semua
+      </button>
+      <button
+        type="button"
+        data-filter-format="PDF"
+        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 flex items-center gap-1"
+      >
+        <span>📄</span>
+        <span>Dokumen PDF</span>
+      </button>
+      <button
+        type="button"
+        data-filter-format="AUDIO_ZIP"
+        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 flex items-center gap-1"
+      >
+        <span>🎧</span>
+        <span>Audio MP3</span>
+      </button>
+      <button
+        type="button"
+        data-filter-format="ANKI"
+        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 flex items-center gap-1"
+      >
+        <span>🎴</span>
+        <span>Deck Anki</span>
+      </button>
+      <button
+        type="button"
+        data-filter-format="EXCEL"
+        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 flex items-center gap-1"
+      >
+        <span>📊</span>
+        <span>Lembar Latihan</span>
+      </button>
+    </div>
+
     <!-- Bottom Row: Category Pills (Horizontal Touch-Scroll Friendly) -->
     <div class="relative">
       <div id="kategori" class="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none text-xs touch-pan-x overscroll-x-contain">

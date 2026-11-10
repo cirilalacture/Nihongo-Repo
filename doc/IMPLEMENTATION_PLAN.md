@@ -200,3 +200,32 @@ gantt
 - [x] Dilengkapi animasi lompat mikro (*lively micro-hop*), tooltip idle *"💬 Klik Sensei!"*, tombol tutup, dukungan tombol `Esc`, dan penutupan otomatis saat klik di luar area.
 - [x] Terintegrasi di `src/layouts/BaseLayout.astro` sehingga selalu hadir mendampingi pembelajar di seluruh halaman publik.
 - [x] Penambahan test case Playwright E2E ke-19 dengan hasil eksekusi **19/19 passed (100% lulus)**.
+
+---
+
+### [x] Fase 15: Filter Cepat Tipe Media & Modul Permintaan/Laporan Link (STATUS: SELESAI)
+- [x] **Skema Basis Data D1 & Drizzle ORM:**
+  - Pembuatan tabel `material_requests` di `src/db/schema.ts` dan migrasi DDL pada `schema.sql`.
+  - Eksekusi migrasi lokal D1 Cloudflare (`npx wrangler d1 execute nihongo-repo-db --local`).
+- [x] **Public API Endpoint:**
+  - Endpoint `src/pages/api/requests/submit.ts` untuk memproses pengajuan (mendukung format JSON & FormData, sanitasi data, validasi field wajib, dan insert ke Cloudflare D1).
+- [x] **Komponen Modal Dwitab Interaktif (`RequestModal.astro`):**
+  - Modal dwitab responsif ("Request Buku" & "Lapor Link Rusak").
+  - Auto-prefill judul dan ID materi saat dipicu dari modal detail buku (`#detail-modal`).
+  - Indikator loading, penanganan pesan error, dan state umpan balik sukses beranimasi.
+  - Pemicu (*trigger*) modal terintegrasi pada Navbar desktop & drawer mobile, serta modal detail materi.
+- [x] **Filter Cepat Tipe Media (`FilterBar.astro` & `index.astro`):**
+  - Deretan tombol filter format media: Dokumen PDF (📄), Audio MP3 (🎧), Deck Anki (🎴), dan Lembar Latihan (📊).
+  - Integrasi atribut `data-file-type` pada kartu materi `MaterialCard.astro` dan tabel materi `index.astro`.
+  - Logika filter real-time instan sisi klien di `index.astro` (sinkron dengan search, level JLPT, kategori, dan bookmark).
+- [x] **Admin CMS Manajemen Permintaan & Laporan (`/admin/requests`):**
+  - Ringkasan metrik statistik (Menunggu Review, Request Buku Baru, Laporan Link Rusak, Sudah Selesai).
+  - Filter interaktif status dan tipe materi.
+  - Endpoint API admin untuk ubah status (`/api/admin/requests/status.ts`) dan hapus data (`/api/admin/requests/delete.ts`).
+  - Integrasi navigasi menu admin di sidebar desktop dan mobile bottom navigation (`AdminLayout.astro`).
+- [x] **Pengujian Otomatis Playwright E2E:**
+  - Penambahan 3 test case baru (Total 22 skenario E2E):
+    1. Filter cepat tipe media (PDF, Audio MP3, Semua).
+    2. Alur pembukaan modal request dari navbar, pengisian form, pengiriman, dan validasi sukses.
+    3. Akses admin ke `/admin/requests`, verifikasi metrik statistik, dan pengecekan data pengajuan.
+  - Hasil eksekusi: **22/22 passed (100% lulus)**.

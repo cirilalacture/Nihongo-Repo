@@ -68,8 +68,25 @@ CREATE TABLE IF NOT EXISTS material_tags (
     PRIMARY KEY (material_id, tag_id)
 );
 
+-- 6. Tabel Permintaan Buku & Laporan Link Rusak
+CREATE TABLE IF NOT EXISTS material_requests (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL DEFAULT 'REQUEST', -- 'REQUEST' | 'BROKEN_LINK'
+    title TEXT NOT NULL,
+    material_id TEXT,
+    author_or_publisher TEXT,
+    jlpt_level TEXT DEFAULT 'ALL',
+    notes TEXT,
+    contact_email TEXT,
+    status TEXT NOT NULL DEFAULT 'PENDING', -- 'PENDING' | 'RESOLVED' | 'REJECTED'
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
 -- Indeks Performa
 CREATE INDEX IF NOT EXISTS idx_materials_category ON materials(category_id);
 CREATE INDEX IF NOT EXISTS idx_materials_level ON materials(level_id);
 CREATE INDEX IF NOT EXISTS idx_materials_title ON materials(title);
 CREATE INDEX IF NOT EXISTS idx_materials_published ON materials(is_published);
+CREATE INDEX IF NOT EXISTS idx_requests_status ON material_requests(status);
+CREATE INDEX IF NOT EXISTS idx_requests_type ON material_requests(type);

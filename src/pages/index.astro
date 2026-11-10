@@ -286,6 +286,7 @@ if (materialsList.length === 0) {
               data-author={item.author ? item.author.toLowerCase() : ''}
               data-level={item.levelCode || 'ALL'}
               data-category={item.categorySlug || 'all'}
+              data-file-type={item.fileType || 'PDF'}
             >
               <td class="py-3.5 px-4 font-bold">
                 <span
@@ -385,6 +386,7 @@ if (materialsList.length === 0) {
       // Filter State
       let selectedLevel = 'ALL';
       let selectedCategory = 'ALL';
+      let selectedFormat = 'ALL';
       let searchKeyword = '';
       let showOnlyBookmarks = false;
       let activeView = 'grid'; // 'grid' | 'table'
@@ -393,6 +395,7 @@ if (materialsList.length === 0) {
       const searchInput = document.getElementById('search-input');
       const levelButtons = document.querySelectorAll('.filter-level-btn');
       const categoryButtons = document.querySelectorAll('.filter-category-btn');
+      const formatButtons = document.querySelectorAll('.filter-format-btn');
       const bookmarkFilterBtn = document.getElementById('filter-bookmarks-btn');
       const bookmarkCountBadge = document.getElementById('bookmarks-count-badge');
       const gridContainer = document.getElementById('grid-container');
@@ -444,6 +447,7 @@ if (materialsList.length === 0) {
           const matchBookmark = !showOnlyBookmarks || (cardId && savedBookmarks.has(cardId));
           const matchLevel = selectedLevel === 'ALL' || card.getAttribute('data-level') === selectedLevel;
           const matchCategory = selectedCategory === 'ALL' || card.getAttribute('data-category') === selectedCategory;
+          const matchFormat = selectedFormat === 'ALL' || (card.getAttribute('data-file-type') || 'PDF') === selectedFormat;
           
           const title = card.getAttribute('data-title') || '';
           const romaji = card.getAttribute('data-romaji') || '';
@@ -457,7 +461,7 @@ if (materialsList.length === 0) {
             orig.includes(query) ||
             author.includes(query);
 
-          if (matchBookmark && matchLevel && matchCategory && matchQuery) {
+          if (matchBookmark && matchLevel && matchCategory && matchFormat && matchQuery) {
             card.style.display = 'flex';
             visibleCount++;
           } else {
@@ -470,6 +474,7 @@ if (materialsList.length === 0) {
           const matchBookmark = !showOnlyBookmarks || (rowId && savedBookmarks.has(rowId));
           const matchLevel = selectedLevel === 'ALL' || row.getAttribute('data-level') === selectedLevel;
           const matchCategory = selectedCategory === 'ALL' || row.getAttribute('data-category') === selectedCategory;
+          const matchFormat = selectedFormat === 'ALL' || (row.getAttribute('data-file-type') || 'PDF') === selectedFormat;
           
           const title = row.getAttribute('data-title') || '';
           const romaji = row.getAttribute('data-romaji') || '';
@@ -483,7 +488,7 @@ if (materialsList.length === 0) {
             orig.includes(query) ||
             author.includes(query);
 
-          if (matchBookmark && matchLevel && matchCategory && matchQuery) {
+          if (matchBookmark && matchLevel && matchCategory && matchFormat && matchQuery) {
             row.style.display = 'table-row';
           } else {
             row.style.display = 'none';
@@ -593,6 +598,26 @@ if (materialsList.length === 0) {
         });
       });
 
+      // Format Filter Styling Constants & Handlers
+      const ACTIVE_FORMAT_CLASSES = ['bg-neutral-900', 'text-white', 'border-neutral-900', 'dark:bg-neutral-100', 'dark:text-neutral-950', 'dark:border-neutral-100', 'font-semibold'];
+      const INACTIVE_FORMAT_CLASSES = ['bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]', 'font-medium'];
+
+      formatButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedFormat = btn.getAttribute('data-filter-format') || 'ALL';
+
+          formatButtons.forEach((b) => {
+            b.classList.remove(...ACTIVE_FORMAT_CLASSES);
+            b.classList.add(...INACTIVE_FORMAT_CLASSES);
+          });
+
+          btn.classList.remove(...INACTIVE_FORMAT_CLASSES);
+          btn.classList.add(...ACTIVE_FORMAT_CLASSES);
+
+          applyFilters();
+        });
+      });
+
       // View Switcher Handlers
       if (viewGridBtn && viewListBtn) {
         viewGridBtn.addEventListener('click', () => {
@@ -646,6 +671,17 @@ if (materialsList.length === 0) {
             } else {
               b.classList.remove('bg-[var(--color-surface-subtle)]', 'border-neutral-300', 'font-semibold', 'text-[var(--color-ink-primary)]');
               b.classList.add('bg-transparent', 'border-transparent', 'text-[var(--color-ink-secondary)]');
+            }
+          });
+
+          selectedFormat = 'ALL';
+          formatButtons.forEach((b) => {
+            if (b.getAttribute('data-filter-format') === 'ALL') {
+              b.classList.add(...ACTIVE_FORMAT_CLASSES);
+              b.classList.remove(...INACTIVE_FORMAT_CLASSES);
+            } else {
+              b.classList.remove(...ACTIVE_FORMAT_CLASSES);
+              b.classList.add(...INACTIVE_FORMAT_CLASSES);
             }
           });
 
@@ -758,6 +794,12 @@ if (materialsList.length === 0) {
 
         if (modalPermalinkBtn) {
           modalPermalinkBtn.href = `/materi/${item.id}`;
+        }
+
+        const reportBtn = document.getElementById('modal-report-btn');
+        if (reportBtn) {
+          reportBtn.setAttribute('data-report-id', item.id);
+          reportBtn.setAttribute('data-report-title', item.title);
         }
 
         if (modalCopyBtn) {

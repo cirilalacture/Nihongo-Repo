@@ -1,0 +1,398 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getDb, materialRequests } from '../../../db';
+import { desc } from 'drizzle-orm';
+import { MessageSquare, AlertTriangle, CheckCircle, XCircle, Trash2, Plus, ExternalLink, Inbox } from '@lucide/astro';
+
+let requestsList: any[] = [];
+let pendingCount = 0;
+let requestCount = 0;
+let reportCount = 0;
+let resolvedCount = 0;
+
+const db = getDb();
+if (db) {
+  try {
+    requestsList = await db.select().from(materialRequests).orderBy(desc(materialRequests.createdAt)).all();
+
+    requestsList.forEach((r) => {
+      if (r.status === 'PENDING') pendingCount++;
+      if (r.status === 'RESOLVED') resolvedCount++;
+      if (r.type === 'REQUEST') requestCount++;
+      if (r.type === 'BROKEN_LINK') reportCount++;
+    });
+  } catch (err) {
+    console.error('Error querying material_requests:', err);
+  }
+}
+---
+
+<AdminLayout title="Permintaan Materi & Laporan Link — Admin CMS" activeNav="requests">
+  <div class="space-y-6">
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-[var(--color-ink-primary)] tracking-tight">
+          Permintaan Materi & Laporan Link
+        </h2>
+        <p class="text-xs text-[var(--color-ink-tertiary)] mt-1">
+          Daftar request buku baru dan laporan link Google Drive yang dikirimkan oleh pembelajar
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a
+          href="/admin/materials/new"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-vermilion)] hover:opacity-90 text-white text-xs font-semibold shadow-2xs transition-all active:scale-95"
+        >
+          <Plus class="w-4 h-4" />
+          <span>Tambah Materi Baru</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-4 shadow-2xs">
+        <span class="text-[11px] font-semibold text-[var(--color-ink-tertiary)] block">Menunggu Review</span>
+        <span class="text-2xl font-extrabold text-amber-600 block mt-1">{pendingCount}</span>
+      </div>
+
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-4 shadow-2xs">
+        <span class="text-[11px] font-semibold text-[var(--color-ink-tertiary)] block">Request Buku Baru</span>
+        <span class="text-2xl font-extrabold text-[var(--color-ink-primary)] block mt-1">{requestCount}</span>
+      </div>
+
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-4 shadow-2xs">
+        <span class="text-[11px] font-semibold text-[var(--color-ink-tertiary)] block">Laporan Link Rusak</span>
+        <span class="text-2xl font-extrabold text-red-600 block mt-1">{reportCount}</span>
+      </div>
+
+      <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl p-4 shadow-2xs">
+        <span class="text-[11px] font-semibold text-[var(--color-ink-tertiary)] block">Sudah Selesai</span>
+        <span class="text-2xl font-extrabold text-emerald-600 block mt-1">{resolvedCount}</span>
+      </div>
+    </div>
+
+    <!-- Main Data Table Container -->
+    <div class="bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl shadow-2xs overflow-hidden">
+      
+      <!-- Filter Controls Bar -->
+      <div class="p-4 border-b border-[var(--color-border-washi)] bg-[var(--color-surface-subtle)] flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="font-bold text-[var(--color-ink-tertiary)] mr-1">Status:</span>
+          <button
+            type="button"
+            data-filter-status="ALL"
+            class="req-filter-btn px-3 py-1 rounded-lg font-bold bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 transition-all cursor-pointer"
+          >
+            Semua
+          </button>
+          <button
+            type="button"
+            data-filter-status="PENDING"
+            class="req-filter-btn px-3 py-1 rounded-lg font-medium text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface)] transition-all cursor-pointer"
+          >
+            Menunggu
+          </button>
+          <button
+            type="button"
+            data-filter-status="RESOLVED"
+            class="req-filter-btn px-3 py-1 rounded-lg font-medium text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface)] transition-all cursor-pointer"
+          >
+            Selesai
+          </button>
+          <button
+            type="button"
+            data-filter-status="REJECTED"
+            class="req-filter-btn px-3 py-1 rounded-lg font-medium text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface)] transition-all cursor-pointer"
+          >
+            Ditolak
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <span class="font-bold text-[var(--color-ink-tertiary)] mr-1">Tipe:</span>
+          <select
+            id="req-type-filter"
+            class="px-2.5 py-1 rounded-lg border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs text-[var(--color-ink-primary)] focus:outline-none"
+          >
+            <option value="ALL">Semua Tipe</option>
+            <option value="REQUEST">Request Buku Saja</option>
+            <option value="BROKEN_LINK">Link Rusak Saja</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs" id="requests-table">
+          <thead class="bg-[var(--color-surface-subtle)] border-b border-[var(--color-border-washi)] text-[var(--color-ink-tertiary)] uppercase font-semibold">
+            <tr>
+              <th class="py-3 px-4">Tipe</th>
+              <th class="py-3 px-4">Judul & Level</th>
+              <th class="py-3 px-4 hidden md:table-cell">Catatan / Detail</th>
+              <th class="py-3 px-4 hidden sm:table-cell">Pengirim</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border-washi)]">
+            {requestsList.length === 0 ? (
+              <tr>
+                <td colspan="6" class="py-12 text-center text-[var(--color-ink-tertiary)]">
+                  <Inbox class="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p class="font-medium text-xs">Belum ada permintaan buku atau laporan link yang masuk.</p>
+                </td>
+              </tr>
+            ) : (
+              requestsList.map((item) => (
+                <tr
+                  class="req-row hover:bg-neutral-50/70 dark:hover:bg-neutral-800/40 transition-colors"
+                  data-id={item.id}
+                  data-status={item.status}
+                  data-type={item.type}
+                >
+                  <td class="py-3.5 px-4 font-semibold whitespace-nowrap">
+                    {item.type === 'BROKEN_LINK' ? (
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-red-50 text-red-600 border border-red-200">
+                        <AlertTriangle class="w-3 h-3 text-red-500" />
+                        <span>Link Rusak</span>
+                      </span>
+                    ) : (
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200">
+                        <MessageSquare class="w-3 h-3 text-indigo-500" />
+                        <span>Request Buku</span>
+                      </span>
+                    )}
+                  </td>
+
+                  <td class="py-3.5 px-4 max-w-xs">
+                    <div class="font-bold text-[var(--color-ink-primary)] line-clamp-1">{item.title}</div>
+                    <div class="text-[11px] text-[var(--color-ink-tertiary)] flex items-center gap-2 mt-0.5">
+                      {item.jlptLevel && item.jlptLevel !== 'ALL' && (
+                        <span class="font-bold text-[var(--color-vermilion)]">{item.jlptLevel}</span>
+                      )}
+                      {item.authorOrPublisher && (
+                        <span class="truncate">Oleh: {item.authorOrPublisher}</span>
+                      )}
+                    </div>
+                  </td>
+
+                  <td class="py-3.5 px-4 hidden md:table-cell max-w-sm text-[var(--color-ink-secondary)]">
+                    <p class="line-clamp-2 text-xs">{item.notes || '-'}</p>
+                    {item.materialId && (
+                      <a
+                        href={`/materi/${item.materialId}`}
+                        target="_blank"
+                        class="text-[10px] text-[var(--color-vermilion)] hover:underline inline-flex items-center gap-0.5 mt-1"
+                      >
+                        <span>Lihat Buku di Web</span>
+                        <ExternalLink class="w-2.5 h-2.5" />
+                      </a>
+                    )}
+                  </td>
+
+                  <td class="py-3.5 px-4 hidden sm:table-cell text-xs text-[var(--color-ink-tertiary)] whitespace-nowrap">
+                    {item.contactEmail ? (
+                      <a href={`mailto:${item.contactEmail}`} class="hover:underline text-[var(--color-ink-secondary)]">
+                        {item.contactEmail}
+                      </a>
+                    ) : (
+                      <span class="italic text-[11px]">Anonim</span>
+                    )}
+                    <span class="block text-[10px] opacity-75 mt-0.5">
+                      {item.createdAt ? new Date(item.createdAt * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'}
+                    </span>
+                  </td>
+
+                  <td class="py-3.5 px-4 whitespace-nowrap">
+                    <span
+                      class={`row-status-badge inline-block px-2 py-0.5 rounded-full text-[10.5px] font-bold border ${
+                        item.status === 'RESOLVED'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : item.status === 'REJECTED'
+                          ? 'bg-neutral-100 text-neutral-600 border-neutral-300'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }`}
+                    >
+                      {item.status === 'RESOLVED' ? 'Selesai' : item.status === 'REJECTED' ? 'Ditolak' : 'Menunggu'}
+                    </span>
+                  </td>
+
+                  <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                    <div class="inline-flex items-center gap-1 justify-end">
+                      <!-- Mark as RESOLVED button -->
+                      <button
+                        type="button"
+                        class="btn-status-resolve p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer"
+                        title="Tandai Selesai"
+                        data-id={item.id}
+                      >
+                        <CheckCircle class="w-4 h-4" />
+                      </button>
+
+                      <!-- Mark as REJECTED button -->
+                      <button
+                        type="button"
+                        class="btn-status-reject p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                        title="Tolak / Abaikan"
+                        data-id={item.id}
+                      >
+                        <XCircle class="w-4 h-4" />
+                      </button>
+
+                      <!-- Delete button -->
+                      <button
+                        type="button"
+                        class="btn-delete-req p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                        title="Hapus Laporan"
+                        data-id={item.id}
+                      >
+                        <Trash2 class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      function initRequestsAdmin() {
+        const rows = document.querySelectorAll('.req-row');
+        const filterBtns = document.querySelectorAll('.req-filter-btn');
+        const typeFilter = document.getElementById('req-type-filter') as HTMLSelectElement | null;
+
+        let activeStatus = 'ALL';
+        let activeType = 'ALL';
+
+        function applyTableFilters() {
+          rows.forEach((row) => {
+            const status = row.getAttribute('data-status') || '';
+            const type = row.getAttribute('data-type') || '';
+
+            const matchStatus = activeStatus === 'ALL' || status === activeStatus;
+            const matchType = activeType === 'ALL' || type === activeType;
+
+            if (matchStatus && matchType) {
+              (row as HTMLElement).style.display = 'table-row';
+            } else {
+              (row as HTMLElement).style.display = 'none';
+            }
+          });
+        }
+
+        filterBtns.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            activeStatus = btn.getAttribute('data-filter-status') || 'ALL';
+
+            filterBtns.forEach((b) => {
+              b.classList.remove('bg-neutral-900', 'text-white', 'dark:bg-white', 'dark:text-neutral-900', 'font-bold');
+              b.classList.add('font-medium', 'text-[var(--color-ink-secondary)]');
+            });
+
+            btn.classList.remove('font-medium', 'text-[var(--color-ink-secondary)]');
+            btn.classList.add('bg-neutral-900', 'text-white', 'dark:bg-white', 'dark:text-neutral-900', 'font-bold');
+
+            applyTableFilters();
+          });
+        });
+
+        typeFilter?.addEventListener('change', () => {
+          activeType = typeFilter.value;
+          applyTableFilters();
+        });
+
+        // Handle Status Updates
+        async function updateStatus(id: string, newStatus: string, targetRow: HTMLElement) {
+          try {
+            const res = await fetch('/api/admin/requests/status', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, status: newStatus }),
+            });
+
+            if (!res.ok) throw new Error('Gagal memperbarui status.');
+
+            targetRow.setAttribute('data-status', newStatus);
+            const badge = targetRow.querySelector('.row-status-badge');
+            if (badge) {
+              if (newStatus === 'RESOLVED') {
+                badge.className = 'row-status-badge inline-block px-2 py-0.5 rounded-full text-[10.5px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200';
+                badge.textContent = 'Selesai';
+              } else if (newStatus === 'REJECTED') {
+                badge.className = 'row-status-badge inline-block px-2 py-0.5 rounded-full text-[10.5px] font-bold border bg-neutral-100 text-neutral-600 border-neutral-300';
+                badge.textContent = 'Ditolak';
+              } else {
+                badge.className = 'row-status-badge inline-block px-2 py-0.5 rounded-full text-[10.5px] font-bold border bg-amber-50 text-amber-700 border-amber-200';
+                badge.textContent = 'Menunggu';
+              }
+            }
+
+            applyTableFilters();
+          } catch (err: any) {
+            alert(err.message || 'Gagal mengubah status.');
+          }
+        }
+
+        // Handle Deletions
+        async function deleteRequest(id: string, targetRow: HTMLElement) {
+          if (!confirm('Hapus laporan / permintaan ini secara permanen?')) return;
+
+          try {
+            const res = await fetch('/api/admin/requests/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id }),
+            });
+
+            if (!res.ok) throw new Error('Gagal menghapus.');
+
+            targetRow.remove();
+          } catch (err: any) {
+            alert(err.message || 'Gagal menghapus data.');
+          }
+        }
+
+        document.querySelectorAll('.btn-status-resolve').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+            const row = (e.currentTarget as HTMLElement).closest('.req-row') as HTMLElement;
+            if (id && row) updateStatus(id, 'RESOLVED', row);
+          });
+        });
+
+        document.querySelectorAll('.btn-status-reject').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+            const row = (e.currentTarget as HTMLElement).closest('.req-row') as HTMLElement;
+            if (id && row) updateStatus(id, 'REJECTED', row);
+          });
+        });
+
+        document.querySelectorAll('.btn-delete-req').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+            const row = (e.currentTarget as HTMLElement).closest('.req-row') as HTMLElement;
+            if (id && row) deleteRequest(id, row);
+          });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRequestsAdmin);
+      } else {
+        initRequestsAdmin();
+      }
+    })();
+  </script>
+</AdminLayout>

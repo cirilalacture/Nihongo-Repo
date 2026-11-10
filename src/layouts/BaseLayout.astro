@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import SenseiCompanion from '../components/SenseiCompanion.astro';
+import RequestModal from '../components/RequestModal.astro';
 
 interface Props {
   title?: string;
@@ -60,5 +61,6 @@ const {
     <slot name="footer" />
     <slot name="modals" />
     <SenseiCompanion />
+    <RequestModal />
   </body>
 </html>

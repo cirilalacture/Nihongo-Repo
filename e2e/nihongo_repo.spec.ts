@@ -426,6 +426,7 @@ test.describe('Nihongo_repo Responsive & Mobile/Tablet UX Tests', () => {
     await expect(bottomNav.locator('text=Materi')).toBeVisible();
     await expect(bottomNav.locator('text=Tambah')).toBeVisible();
     await expect(bottomNav.locator('text=Kategori')).toBeVisible();
+    await expect(bottomNav.locator('text=Laporan')).toBeVisible();
 
     // Desktop sidebar should be hidden
     const desktopSidebar = page.locator('aside');
@@ -441,6 +442,94 @@ test.describe('Nihongo_repo Responsive & Mobile/Tablet UX Tests', () => {
       return document.documentElement.scrollWidth > window.innerWidth;
     });
     expect(isHorizontallyScrollable).toBeFalsy();
+  });
+
+});
+
+test.describe('Nihongo_repo Media Format Filter & User Requests/Reports E2E Tests', () => {
+
+  test('Fast media format filter chips filter catalog by PDF and Audio MP3', async ({ page }) => {
+    await page.goto('/');
+
+    // Check media format filter buttons exist
+    const pdfBtn = page.locator('button.filter-format-btn[data-filter-format="PDF"]');
+    const audioBtn = page.locator('button.filter-format-btn[data-filter-format="AUDIO_ZIP"]');
+    const allBtn = page.locator('button.filter-format-btn[data-filter-format="ALL"]');
+
+    await expect(pdfBtn).toBeVisible();
+    await expect(audioBtn).toBeVisible();
+    await expect(allBtn).toBeVisible();
+
+    // Click PDF filter
+    await pdfBtn.click();
+    const visibleCardsPdf = page.locator('.material-item:visible');
+    const pdfCount = await visibleCardsPdf.count();
+    expect(pdfCount).toBeGreaterThan(0);
+
+    // Verify all visible items have PDF format attribute
+    for (let i = 0; i < pdfCount; i++) {
+      const formatAttr = await visibleCardsPdf.nth(i).getAttribute('data-file-type');
+      expect(formatAttr).toBe('PDF');
+    }
+
+    // Switch back to ALL
+    await allBtn.click();
+    const allCount = await page.locator('.material-item:visible').count();
+    expect(allCount).toBeGreaterThanOrEqual(pdfCount);
+  });
+
+  test('Request Modal opens from navbar, validates input, and submits a book request', async ({ page }) => {
+    await page.goto('/');
+
+    // Click Request Buku in Navbar
+    const requestNavBtn = page.locator('button[data-open-request]').first();
+    await expect(requestNavBtn).toBeVisible();
+    await requestNavBtn.click();
+
+    // Verify Modal is visible
+    const modal = page.locator('#request-modal');
+    await expect(modal).toBeVisible();
+    await expect(page.locator('#request-modal-title')).toContainText('Request Materi & Lapor Link');
+
+    // Fill the request form
+    await page.locator('#tab-request-btn').click();
+    await page.locator('#req-title').fill('Tobira: Gateway to Advanced Japanese');
+    await page.locator('#req-author').fill('Mayumi Oka');
+    await page.locator('#req-level').selectOption('N3');
+    await page.locator('#req-notes').fill('Buku pelajaran bahasa Jepang tingkat menengah.');
+
+    // Submit form
+    await page.locator('#submit-request-btn').click();
+
+    // Verify Success Box is shown
+    const successBox = page.locator('#request-success-box');
+    await expect(successBox).toBeVisible({ timeout: 5000 });
+    await expect(successBox).toContainText('Laporan Berhasil Terkirim!');
+
+    // Close Modal
+    await page.locator('#close-request-modal-btn').click();
+    await expect(modal).toBeHidden();
+  });
+
+  test('Admin can access and review requests and broken link reports at /admin/requests', async ({ page }) => {
+    // Login to Admin
+    await page.goto('/admin/login');
+    await page.fill('#username', 'admin');
+    await page.fill('#password', 'admin123');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/\/admin$/);
+
+    // Navigate to /admin/requests
+    await page.goto('/admin/requests');
+    await expect(page).toHaveURL(/\/admin\/requests/);
+
+    // Verify header and metric stats
+    await expect(page.locator('main h2')).toContainText('Permintaan Materi & Laporan Link');
+    await expect(page.locator('text=Menunggu Review')).toBeVisible();
+    await expect(page.getByText('Request Buku Baru', { exact: true })).toBeVisible();
+
+    // Verify the previously submitted request appears in the table or list
+    await expect(page.locator('text=Tobira: Gateway to Advanced Japanese').first()).toBeVisible();
   });
 
 });

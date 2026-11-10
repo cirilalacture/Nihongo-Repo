@@ -66,6 +66,15 @@
   * Menampilkan badge tech-stack modern (Astro v7, Cloudflare Pages/D1, Tailwind CSS v4, TypeScript).
   * Tautan interaktif ke profil GitHub pembuat, repositori kode sumber, dan kontak surel.
   * Terdaftar secara otomatis di XML Sitemap (`/sitemap.xml`) dengan prioritas pencarian 0.7.
+* **Filter Cepat Tipe Media (Fast Format Chips):**
+  * Tombol filter format instan di baris filter katalog: Dokumen PDF (📄), Audio MP3 (🎧), Deck Anki (🎴), dan Lembar Latihan Excel/Sheet (📊).
+  * Filter sisi klien secepat kilat (*zero latency*) yang berpadu mulus dengan filter level JLPT, pencarian kata kunci, dan kategori topik.
+  * Badge visual format media yang informatif pada setiap kartu buku dan baris tabel.
+* **Formulir Permintaan Buku & Pelaporan Tautan Rusak (Request / Report Modal):**
+  * Modal interaktif dwitab ("Request Buku Baru" dan "Lapor Link Rusak") yang dapat diakses langsung dari header navigasi dan menu laci mobile.
+  * Tombol pelaporan langsung (*direct report trigger*) di modal detail materi (`#detail-modal`) yang otomatis mengisikan judul dan ID materi yang bermasalah.
+  * Validasi form client-side, pencegahan double-submit, dan umpan balik status berhasil beranimasi (*success feedback*).
+  * API publik `/api/requests/submit` yang memvalidasi dan menyimpan pengajuan ke tabel D1 `material_requests`.
 * **Sensei Companion / Pendamping Belajar Interaktif:**
   * Komponen mengambang (*floating*) di pojok kanan bawah seluruh halaman publik (`BaseLayout.astro`) menggunakan Avatar #7 bertema Sensei dengan badge segel *"先生"*.
   * Ketika diklik, memunculkan gelembung percakapan (*speech bubble*) bergaya manga yang menyajikan kata-kata motivasi dan peribahasa Jepang (*kotowaza*) yang berbeda-beda setiap kali diklik (lengkap dengan kanji, romaji, arti bahasa Indonesia, dan tag kategori).
@@ -119,6 +128,14 @@ Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:
 #### E. Manajemen Level & Tag (`/admin/tags`)
 * Manajemen tag pelengkap (misal: `#AudioTersedia`, `#KunciJawaban`, `#AnkiDeck`, `#FullColor`).
 * Menghubungkan atau melepaskan tag dari materi buku.
+
+#### F. Manajemen Permintaan & Laporan Link (`/admin/requests`)
+* **Ringkasan Kartu Metrik:** Menunggu Review, Request Buku Baru, Laporan Link Rusak, dan Sudah Selesai.
+* **Filter Interaktif Sisi Klien:** Filter berdasarkan status (*Semua, Menunggu, Selesai, Ditolak*) dan filter tipe (*Semua, Request Buku, Lapor Link*).
+* **Tindakan Admin Cepat:**
+  * Tandai status pengajuan: *Selesai* (`RESOLVED`) atau *Tolak* (`REJECTED`) via API `/api/admin/requests/status`.
+  * Hapus permanen riwayat permintaan/laporan via API `/api/admin/requests/delete`.
+  * Tautan cepat ke form penambahan materi baru (`/admin/materials/new`) dengan judul terisi otomatis untuk mempercepat kurasi buku yang diminta.
 
 ---
 
