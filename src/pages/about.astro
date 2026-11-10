@@ -131,7 +131,7 @@ const avatarPoses = [
           <!-- Helper Caption below Character -->
           <span class="text-[11px] font-medium text-[var(--color-ink-tertiary)] mt-2.5 flex items-center gap-1.5 select-none group-hover:text-[var(--color-vermilion)] transition-colors">
             <span class="text-xs">✨</span>
-            <span>Klik karakter untuk ganti pose</span>
+            <span>Otomatis berganti tiap 5s • Klik untuk ganti pose</span>
           </span>
         </div>
 
@@ -290,8 +290,10 @@ const avatarPoses = [
       });
 
       let currentIndex = 0;
+      let autoRotateTimer: ReturnType<typeof setInterval> | null = null;
 
-      btn.addEventListener('click', () => {
+      function changePose() {
+        if (!img || !label) return;
         currentIndex = (currentIndex + 1) % poses.length;
 
         // Lively character hop/bounce transition effect
@@ -310,6 +312,40 @@ const avatarPoses = [
             img.style.transform = '';
           }, 150);
         }, 75);
+      }
+
+      function startAutoRotate() {
+        stopAutoRotate();
+        autoRotateTimer = setInterval(() => {
+          if (document.visibilityState !== 'hidden') {
+            changePose();
+          }
+        }, 5000);
+      }
+
+      function stopAutoRotate() {
+        if (autoRotateTimer) {
+          clearInterval(autoRotateTimer);
+          autoRotateTimer = null;
+        }
+      }
+
+      btn.addEventListener('click', () => {
+        changePose();
+        // Reset 5s timer on manual click
+        startAutoRotate();
+      });
+
+      // Start automatic rotation every 5 seconds
+      startAutoRotate();
+
+      // Pause when tab is hidden to conserve resources
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAutoRotate();
+        } else {
+          startAutoRotate();
+        }
       });
     }
 

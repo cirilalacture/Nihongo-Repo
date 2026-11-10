@@ -95,14 +95,14 @@ const senseiQuotes: SenseiQuote[] = [
   <!-- Sensei Speech Bubble / Chat Penyemangat -->
   <div
     id="sensei-speech-bubble"
-    class="hidden absolute bottom-[108%] right-0 w-[calc(100vw-32px)] max-w-[280px] sm:max-w-[320px] bg-[var(--color-surface)] dark:bg-neutral-900 border border-[var(--color-border-washi)] rounded-2xl shadow-xl p-3.5 sm:p-4 transition-all duration-200 transform origin-bottom-right"
+    class="hidden absolute bottom-[108%] right-0 w-[calc(100vw-32px)] max-w-[280px] sm:max-w-[320px] bg-[var(--color-surface)] border border-[var(--color-border-washi)] rounded-2xl shadow-xl p-3.5 sm:p-4 transition-all duration-200 transform origin-bottom-right"
     role="dialog"
     aria-label="Pesan motivasi dari Sensei"
   >
     <!-- Speech Bubble Pointer Arrow (Connecting to Sensei) -->
     <div
       id="sensei-bubble-arrow"
-      class="absolute -bottom-2 right-8 sm:right-10 w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 border-r border-b border-[var(--color-border-washi)] rotate-45 pointer-events-none"
+      class="absolute -bottom-2 right-8 sm:right-10 w-3.5 h-3.5 bg-[var(--color-surface)] border-r border-b border-[var(--color-border-washi)] rotate-45 pointer-events-none"
     ></div>
 
     <!-- Bubble Header -->
@@ -184,7 +184,7 @@ const senseiQuotes: SenseiQuote[] = [
     <!-- Idle Tooltip (Disappears when chat is open or dragging) -->
     <div
       id="sensei-idle-tooltip"
-      class="absolute -top-7 right-0 bg-[var(--color-surface)] dark:bg-neutral-800 border border-[var(--color-border-washi)] shadow-xs rounded-full px-2 py-0.5 text-[9.5px] font-bold text-[var(--color-ink-secondary)] group-hover:text-[var(--color-vermilion)] group-hover:border-red-300 transition-all pointer-events-none whitespace-nowrap animate-bounce"
+      class="absolute -top-7 right-0 bg-[var(--color-surface)] border border-[var(--color-border-washi)] shadow-xs rounded-full px-2 py-0.5 text-[9.5px] font-bold text-[var(--color-ink-secondary)] group-hover:text-[var(--color-vermilion)] group-hover:border-red-300 transition-all pointer-events-none whitespace-nowrap animate-bounce"
     >
       💬 Klik / Geser Sensei!
     </div>
@@ -283,7 +283,7 @@ const senseiQuotes: SenseiQuote[] = [
         );
 
         if (arrowEl) {
-          arrowEl.className = 'absolute w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 rotate-45 pointer-events-none';
+          arrowEl.className = 'absolute w-3.5 h-3.5 bg-[var(--color-surface)] rotate-45 pointer-events-none';
         }
 
         const isNearTop = rect.top < 240;

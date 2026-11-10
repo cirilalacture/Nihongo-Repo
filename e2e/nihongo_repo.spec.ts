@@ -242,6 +242,10 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(avatarImg).toHaveAttribute('src', '/avatar/3.webp');
     await expect(poseBadge).toHaveText('Pose 3/7');
 
+    // Verify auto-rotation: After 5 seconds, avatar automatically rotates to pose 4
+    await expect(poseBadge).toHaveText('Pose 4/7', { timeout: 6000 });
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/4.webp');
+
     // Verify story section
     await expect(page.locator('text=Cerita di Balik Nihongo_repo')).toBeVisible();
 
@@ -278,6 +282,12 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
 
     const meaningText = page.locator('#sensei-quote-meaning');
     await expect(meaningText).toBeVisible();
+
+    // Verify contrast in light mode: bubble background is white and text is dark legible
+    const bubbleBg = await speechBubble.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    const jpColor = await jpText.evaluate((el) => window.getComputedStyle(el).color);
+    expect(bubbleBg).toBe('rgb(255, 255, 255)');
+    expect(jpColor).toBe('rgb(28, 25, 23)');
 
     // Close button dismisses speech bubble
     const closeBtn = page.locator('#sensei-close-btn');
