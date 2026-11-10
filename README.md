@@ -9,11 +9,12 @@
 </p>
 
 <p align="center">
+  <a href="https://nihongo-repo.cirilalacture.workers.dev"><img src="https://img.shields.io/badge/Live_Demo-nihongo--repo.workers.dev-0051C3?style=flat-square&logo=cloudflare&logoColor=white" alt="Live Demo" /></a>
   <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-v7%20SSR-BC52EE?style=flat-square&logo=astro&logoColor=white" alt="Astro v7" /></a>
-  <a href="https://pages.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Pages" /></a>
+  <a href="https://workers.cloudflare.com"><img src="https://img.shields.io/badge/Cloudflare-Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare Workers" /></a>
   <a href="https://developers.cloudflare.com/d1/"><img src="https://img.shields.io/badge/Cloudflare-D1%20SQLite-F38020?style=flat-square&logo=sqlite&logoColor=white" alt="Cloudflare D1" /></a>
   <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4" /></a>
-  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-22%2F22%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/E2E_Tests-25%2F25%20Passed%20(100%25)-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright Tests" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License MIT" /></a>
 </p>
 
@@ -102,7 +103,7 @@ flowchart TD
 ## 🛠️ Tech Stack & Ekosistem
 
 * **Framework:** [Astro v7](https://astro.build/) (`^7.4.7`, `output: 'server'` dengan adapter `@astrojs/cloudflare` v14)
-* **Hosting & Runtime:** [Cloudflare Pages](https://pages.cloudflare.com/) (V8 Edge Isolate)
+* **Hosting & Runtime:** [Cloudflare Workers](https://workers.cloudflare.com/) with Static Assets (`workerd` edge runtime)
 * **Database:** [Cloudflare D1](https://developers.cloudflare.com/d1/) (Serverless SQL SQLite distributed globally)
 * **ORM:** [Drizzle ORM](https://orm.drizzle.team/) + Drizzle Kit
 * **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) + `@lucide/astro`
@@ -197,29 +198,21 @@ npm run test:e2e
 
 ---
 
-## ☁️ Panduan Deployment (GitHub ➔ Cloudflare Pages)
+## ☁️ Panduan Deployment (GitHub ➔ Cloudflare Workers)
 
-1. **Buat Database D1 di Cloudflare:**
+1. **Deploy Cepat dari Terminal Lokal:**
    ```bash
-   npx wrangler d1 create nihongo-repo-db
+   npm run deploy
    ```
-2. **Jalankan Migrasi & Seeding ke Production (Remote):**
-   ```bash
-   npx wrangler d1 execute nihongo-repo-db --remote --file=./schema.sql
-   npx wrangler d1 execute nihongo-repo-db --remote --file=./src/db/seed.sql
-   ```
-3. **Hubungkan Repository ke Cloudflare Pages:**
-   * Di Cloudflare Dashboard, pilih **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**.
-   * Pilih repository GitHub Anda.
+2. **Setup Otomatisasi Git CI/CD (Workers Builds):**
+   * Di Cloudflare Dashboard, pilih **Workers & Pages** > klik Worker **`nihongo-repo`**.
+   * Buka tab **Settings** > menu **Builds** > klik **Connect to Git**.
+   * Pilih repository GitHub: `Nihongo-Repo`.
    * **Build command:** `npm run build`
-   * **Build output directory:** `dist`
-   * **Environment variable:** `NODE_VERSION` = `22`
-4. **Pasang Binding Database D1:**
-   * Buka project Pages > **Settings** > **Functions** > **D1 Database Bindings**.
-   * Tambahkan binding dengan nama variabel: `DB` dan arahkan ke database `nihongo-repo-db`.
-   * Klik **Save** dan lakukan redeploy.
+   * **Deploy command:** `npx wrangler deploy`
+   * Simpan. Setiap push ke branch `main` akan di-build dan di-deploy otomatis oleh Cloudflare.
 
-> 📖 Panduan lengkap dan troubleshooting operasional dapat dilihat di [`doc/DEPLOYMENT_GUIDE.md`](./doc/DEPLOYMENT_GUIDE.md).
+> 📖 Panduan lengkap, migrasi D1, dan troubleshooting operasional dapat dilihat di [`doc/DEPLOYMENT_GUIDE.md`](./doc/DEPLOYMENT_GUIDE.md).
 
 ---
 
