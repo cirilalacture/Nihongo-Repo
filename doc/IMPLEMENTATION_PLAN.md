@@ -215,7 +215,7 @@ gantt
   - Indikator loading, penanganan pesan error, dan state umpan balik sukses beranimasi.
   - Pemicu (*trigger*) modal terintegrasi pada Navbar desktop & drawer mobile, serta modal detail materi.
 - [x] **Filter Cepat Tipe Media (`FilterBar.astro` & `index.astro`):**
-  - Deretan tombol filter format media: Dokumen PDF (📄), Audio MP3 (🎧), Deck Anki (🎴), dan Lembar Latihan (📊).
+  - Deretan tombol filter format media berbasis tipografi teks bersih tanpa ikon/emoji: Semua, Dokumen PDF, Audio MP3, Deck Anki, dan Lembar Latihan.
   - Integrasi atribut `data-file-type` pada kartu materi `MaterialCard.astro` dan tabel materi `index.astro`.
   - Logika filter real-time instan sisi klien di `index.astro` (sinkron dengan search, level JLPT, kategori, dan bookmark).
 - [x] **Admin CMS Manajemen Permintaan & Laporan (`/admin/requests`):**

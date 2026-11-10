@@ -72,9 +72,9 @@
   * Tautan interaktif ke profil GitHub pembuat, repositori kode sumber, dan kontak surel.
   * Terdaftar secara otomatis di XML Sitemap (`/sitemap.xml`) dengan prioritas pencarian 0.7.
 * **Filter Cepat Tipe Media (Fast Format Chips):**
-  * Tombol filter format instan di baris filter katalog: Dokumen PDF (📄), Audio MP3 (🎧), Deck Anki (🎴), dan Lembar Latihan Excel/Sheet (📊).
+  * Tombol filter format instan di baris filter katalog dengan tipografi editorial bersih tanpa ikon/emoji: Semuanya, Dokumen PDF, Audio MP3, Deck Anki, dan Lembar Latihan.
   * Filter sisi klien secepat kilat (*zero latency*) yang berpadu mulus dengan filter level JLPT, pencarian kata kunci, dan kategori topik.
-  * Badge visual format media yang informatif pada setiap kartu buku dan baris tabel.
+  * Format media ditampilkan dalam tipografi teks natural yang rapi dan elegan.
 * **Formulir Permintaan Buku & Pelaporan Tautan Rusak (Request / Report Modal):**
   * Modal interaktif dwitab ("Request Buku Baru" dan "Lapor Link Rusak") yang dapat diakses langsung dari header navigasi dan menu laci mobile.
   * Tombol pelaporan langsung (*direct report trigger*) di modal detail materi (`#detail-modal`) yang otomatis mengisikan judul dan ID materi yang bermasalah.
