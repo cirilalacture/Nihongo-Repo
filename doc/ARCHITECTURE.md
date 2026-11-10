@@ -78,6 +78,7 @@ nihongo_repo/
 │   │   ├── FilterBar.astro     # Search bar, JLPT level chips, bookmark filter, view switcher
 │   │   ├── MaterialCard.astro  # Kartu buku dengan quick bookmark, cover, badge, direct drive link
 │   │   ├── MaterialDetailModal.astro # Modal tabbed (Detail & Google Drive iframe preview)
+│   │   ├── SenseiCompanion.astro # Pendamping belajar di pojok kanan bawah (Avatar #7, chat penyemangat interaktif)
 │   │   └── admin/              # Komponen khusus Admin
 │   │       ├── AdminSidebar.astro
 │   │       ├── AdminNavbar.astro

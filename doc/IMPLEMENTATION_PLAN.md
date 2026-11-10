@@ -14,8 +14,9 @@ Dokumen ini memuat jadwal, status pengerjaan saat ini, dan panduan langkah demi 
 > * [x] **Fase 9: Admin Ops & Keamanan (Opsi B)** — `SELESAI (Completed)`
 > * [x] **Fase 10: SEO, Social Discovery & Feeds (Opsi C)** — `SELESAI (Completed)`
 > * [x] **Fase 11: Estetika & Night Mode (Opsi D)** — `SELESAI (Completed)`
-> * [x] **Fase 12: Pengujian E2E Playwright (18/18 Skenario)** — `SELESAI (Completed)`
+> * [x] **Fase 12: Pengujian E2E Playwright (19/19 Skenario)** — `SELESAI (Completed)`
 > * [x] **Fase 13: Halaman Profil Pembuat & Repositori (/about)** — `SELESAI (Completed)`
+> * [x] **Fase 14: Sensei Companion & Chat Penyemangat Interaktif** — `SELESAI (Completed)`
 
 ---
 
@@ -174,7 +175,8 @@ gantt
   16. Sticky bottom navigation bar admin pada tampilan mobile.
   17. Layout fluid responsif pada viewport tablet (768x1024).
   18. Pemuatan halaman About (`/about`) dengan profil pembuat, narasi cerita, avatar, dan tautan sosial.
-- [x] Hasil eksekusi: **18 passed (100% sukses)**.
+  19. Sensei companion di pojok kanan bawah memunculkan dialog chat penyemangat saat diklik.
+- [x] Hasil eksekusi: **19 passed (100% sukses)**.
 
 ---
 
@@ -186,4 +188,15 @@ gantt
 - [x] Integrasi navigasi tautan "Tentang" pada navbar desktop dan hamburger drawer mobile (`src/components/Navbar.astro`), serta tautan footer (`src/components/Footer.astro`).
 - [x] Optimasi layout tablet 768px (`md:`) agar bebas dari *horizontal scroll overflow*.
 - [x] Pendaftaran URL `/about` pada dynamic XML sitemap (`src/pages/sitemap.xml.ts`).
-- [x] Penambahan test case Playwright E2E ke-18 (`e2e/nihongo_repo.spec.ts`) yang memverifikasi interaksi klik ganti pose dengan hasil pengujian **18/18 passed (100% lulus)**.
+- [x] Penambahan test case Playwright E2E ke-18 (`e2e/nihongo_repo.spec.ts`) yang memverifikasi interaksi klik ganti pose.
+
+---
+
+### [x] Fase 14: Sensei Companion & Chat Motivasi Interaktif (STATUS: SELESAI)
+- [x] Pembuatan komponen `src/components/SenseiCompanion.astro` yang mengambang di pojok kanan bawah (`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40`).
+- [x] Memanfaatkan Avatar #7 sebagai karakter visual Sensei dengan stempel segel artistik *"先生"* dan bayangan lantai lembut (*contact shadow*).
+- [x] Speech bubble penyemangat interaktif yang menyajikan 12 kata mutiara, peribahasa Jepang (*kotowaza*), dan frasa motivasi belajar (dilengkapi Kanji, Romaji, terjemahan Indonesia, dan tag kategori).
+- [x] Algoritma random non-repetitif agar setiap klik menghasilkan kata penyemangat yang berbeda secara bergantian.
+- [x] Dilengkapi animasi lompat mikro (*lively micro-hop*), tooltip idle *"💬 Klik Sensei!"*, tombol tutup, dukungan tombol `Esc`, dan penutupan otomatis saat klik di luar area.
+- [x] Terintegrasi di `src/layouts/BaseLayout.astro` sehingga selalu hadir mendampingi pembelajar di seluruh halaman publik.
+- [x] Penambahan test case Playwright E2E ke-19 dengan hasil eksekusi **19/19 passed (100% lulus)**.

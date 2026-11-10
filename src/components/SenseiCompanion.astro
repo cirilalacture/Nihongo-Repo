@@ -1,0 +1,303 @@
+---
+// Sensei Companion / Pendamping Belajar (Fixed Bottom-Right Corner)
+// Menampilkan Avatar #7 sebagai Sensei yang memberikan kata-kata penyemangat setiap kali diklik.
+
+interface SenseiQuote {
+  japanese: string;
+  romaji: string;
+  meaning: string;
+  tag: string;
+}
+
+const senseiQuotes: SenseiQuote[] = [
+  {
+    japanese: '「頑張ってください！」',
+    romaji: 'Ganbatte kudasai!',
+    meaning: 'Semangat ya! Lakukan yang terbaik dan jangan mudah menyerah hari ini!',
+    tag: '🔥 Semangat',
+  },
+  {
+    japanese: '「七転び八起き」',
+    romaji: 'Nana korobi ya oki',
+    meaning: 'Tujuh kali jatuh, delapan kali bangkit! Kegagalan adalah awal keberhasilan.',
+    tag: '⛩️ Peribahasa',
+  },
+  {
+    japanese: '「継続は力なり」',
+    romaji: 'Keizoku wa chikara nari',
+    meaning: 'Konsistensi adalah kekuatan! Belajar sedikit setiap hari jauh lebih baik daripada terburu-buru.',
+    tag: '💪 Konsistensi',
+  },
+  {
+    japanese: '「塵も積もれば山となる」',
+    romaji: 'Chiri mo tsumoreba yama to naru',
+    meaning: 'Debu pun jika ditumpuk akan menjadi gunung! Hafalan 5 kosakata hari ini akan jadi ratusan kosakata nanti.',
+    tag: '⛰️ Langkah Kecil',
+  },
+  {
+    japanese: '「千里の道も一歩から」',
+    romaji: 'Senri no michi mo ippo kara',
+    meaning: 'Perjalanan seribu mil dimulai dari satu langkah awal. Kamu sudah melangkah hebat hari ini!',
+    tag: '🚶 Langkah Awal',
+  },
+  {
+    japanese: '「為せば成る」',
+    romaji: 'Naseba naru',
+    meaning: 'Jika bersungguh-sungguh, pasti bisa tercapai! Percayalah pada kemampuan dan proses belajarmu.',
+    tag: '✨ Percaya Diri',
+  },
+  {
+    japanese: '「今日もお疲れ様でした！」',
+    romaji: 'Kyou mo otsukaresama deshita!',
+    meaning: 'Terima kasih atas kerja kerasmu belajar bahasa Jepang hari ini! Jangan lupa istirahat yang cukup ya.',
+    tag: '🍵 Apresiasi',
+  },
+  {
+    japanese: '「失敗は成功の基」',
+    romaji: 'Shippai wa seikou no moto',
+    meaning: 'Kesalahan adalah dasar kesuksesan. Jangan takut salah saat latihan kanji atau tata bahasa!',
+    tag: '🌱 Pembelajaran',
+  },
+  {
+    japanese: '「一期一会」',
+    romaji: 'Ichi-go ichi-e',
+    meaning: 'Hargai setiap momen belajar berharga. Materi yang kamu baca hari ini akan membuka wawasan baru!',
+    tag: '🌸 Filosofi',
+  },
+  {
+    japanese: '「焦らず、休まず」',
+    romaji: 'Aserazu, yasumazu',
+    meaning: 'Tanpa terburu-buru, tanpa berhenti. Nikmati alur belajarmu perlahan tapi pasti.',
+    tag: '⏳ Ritme Belajar',
+  },
+  {
+    japanese: '「大丈夫、きっとできる！」',
+    romaji: 'Daijoubu, kitto dekiru!',
+    meaning: 'Tenang saja, kamu pasti bisa menaklukkan JLPT impianmu! Sensei selalu mendukungmu!',
+    tag: '🎯 Target JLPT',
+  },
+  {
+    japanese: '「雨降って地固まる」',
+    romaji: 'Ame futte ji katamaru',
+    meaning: 'Setelah hujan, tanah menjadi semakin padat. Rintangan belajar saat ini membuat pemahamanmu makin kokoh!',
+    tag: '🌈 Ketangguhan',
+  },
+];
+---
+
+<div id="sensei-companion-container" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 select-none">
+  
+  <!-- Sensei Speech Bubble / Chat Penyemangat -->
+  <div
+    id="sensei-speech-bubble"
+    class="hidden absolute bottom-[108%] right-0 w-[calc(100vw-32px)] max-w-[280px] sm:max-w-[320px] bg-[var(--color-surface)] dark:bg-neutral-900 border border-[var(--color-border-washi)] rounded-2xl shadow-xl p-3.5 sm:p-4 transition-all duration-200 transform origin-bottom-right"
+    role="dialog"
+    aria-label="Pesan motivasi dari Sensei"
+  >
+    <!-- Speech Bubble Pointer Arrow (Connecting to Sensei) -->
+    <div class="absolute -bottom-2 right-8 sm:right-10 w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 border-r border-b border-[var(--color-border-washi)] rotate-45 pointer-events-none"></div>
+
+    <!-- Bubble Header -->
+    <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-[var(--color-border-washi)] relative z-10">
+      <div class="flex items-center gap-1.5 min-w-0">
+        <span class="w-2 h-2 rounded-full bg-[var(--color-vermilion)] animate-pulse shrink-0"></span>
+        <span class="text-[11px] font-bold text-[var(--color-vermilion)] uppercase tracking-wider truncate">Sensei Nihongo</span>
+        <span
+          id="sensei-quote-tag"
+          class="px-1.5 py-0.5 rounded-md bg-red-50 dark:bg-red-950/60 text-[9.5px] font-bold text-[var(--color-vermilion)] border border-red-200/80 dark:border-red-900/50 shrink-0"
+        >
+          {senseiQuotes[0].tag}
+        </span>
+      </div>
+
+      <button
+        id="sensei-close-btn"
+        type="button"
+        class="text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)] p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer shrink-0"
+        aria-label="Tutup pesan Sensei"
+        title="Tutup pesan"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Bubble Body with Smooth Fade Transition -->
+    <div id="sensei-quote-body" class="relative z-10 space-y-1 transition-opacity duration-150">
+      <p
+        id="sensei-quote-japanese"
+        class="text-base sm:text-lg font-bold text-[var(--color-ink-primary)] font-japanese leading-snug tracking-tight"
+      >
+        {senseiQuotes[0].japanese}
+      </p>
+      <p
+        id="sensei-quote-romaji"
+        class="text-xs font-semibold text-[var(--color-vermilion)] font-sans italic"
+      >
+        {senseiQuotes[0].romaji}
+      </p>
+      <p
+        id="sensei-quote-meaning"
+        class="text-xs text-[var(--color-ink-secondary)] leading-relaxed pt-0.5"
+      >
+        {senseiQuotes[0].meaning}
+      </p>
+    </div>
+
+    <!-- Bubble Footer -->
+    <div class="mt-2.5 pt-2 border-t border-dashed border-[var(--color-border-washi)] flex items-center justify-between text-[10px] text-[var(--color-ink-tertiary)] relative z-10">
+      <span class="flex items-center gap-1">
+        <span>✨</span>
+        <span>Klik Sensei untuk kata lain</span>
+      </span>
+      <span id="sensei-quote-counter" class="font-mono font-semibold text-[var(--color-ink-secondary)]">1/{senseiQuotes.length}</span>
+    </div>
+  </div>
+
+  <!-- Sensei Character Button -->
+  <button
+    id="sensei-trigger-btn"
+    type="button"
+    class="group relative flex flex-col items-center cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-vermilion)] rounded-2xl transition-all"
+    title="Sensei Pendamping — Klik untuk kata penyemangat!"
+    aria-label="Sensei Pendamping - Klik untuk pesan penyemangat"
+  >
+    <!-- Floating 'Sensei' Stamp Seal Badge (Hanko) -->
+    <div
+      class="absolute -top-1.5 -left-1.5 z-20 px-1.5 py-0.5 rounded-lg bg-[var(--color-vermilion)] text-white font-bold text-[9.5px] shadow-sm border border-white/50 dark:border-neutral-900 -rotate-6 group-hover:rotate-0 transition-transform duration-200"
+      title="Sensei Pendamping"
+    >
+      先生
+    </div>
+
+    <!-- Idle Tooltip (Disappears when chat is open) -->
+    <div
+      id="sensei-idle-tooltip"
+      class="absolute -top-7 right-0 bg-[var(--color-surface)] dark:bg-neutral-800 border border-[var(--color-border-washi)] shadow-xs rounded-full px-2 py-0.5 text-[9.5px] font-bold text-[var(--color-ink-secondary)] group-hover:text-[var(--color-vermilion)] group-hover:border-red-300 transition-all pointer-events-none whitespace-nowrap animate-bounce"
+    >
+      💬 Klik Sensei!
+    </div>
+
+    <!-- Sensei Character Image Container (Avatar #7) -->
+    <div class="w-[72px] h-[88px] sm:w-[84px] sm:h-[100px] flex items-end justify-center group-hover:-translate-y-1.5 transition-transform duration-300 ease-out">
+      <img
+        id="sensei-avatar-img"
+        src="/avatar/7.png"
+        alt="Sensei Pendamping Nihongo_repo"
+        class="w-full h-full object-contain object-bottom filter drop-shadow-md group-hover:drop-shadow-xl transition-all duration-200"
+        loading="eager"
+      />
+    </div>
+
+    <!-- Soft Contact Floor Shadow -->
+    <div class="w-12 sm:w-14 h-1.5 bg-neutral-900/15 dark:bg-black/45 rounded-full blur-[2px] mx-auto -mt-1 group-hover:scale-90 group-hover:opacity-60 transition-all duration-300 pointer-events-none"></div>
+  </button>
+
+</div>
+
+<script define:vars={{ senseiQuotes }}>
+  (function () {
+    const quotes = senseiQuotes;
+    let lastIndex = -1;
+
+    function initSensei() {
+      const container = document.getElementById('sensei-companion-container');
+      const triggerBtn = document.getElementById('sensei-trigger-btn');
+      const speechBubble = document.getElementById('sensei-speech-bubble');
+      const closeBtn = document.getElementById('sensei-close-btn');
+      const avatarImg = document.getElementById('sensei-avatar-img');
+      const idleTooltip = document.getElementById('sensei-idle-tooltip');
+
+      const tagEl = document.getElementById('sensei-quote-tag');
+      const jpEl = document.getElementById('sensei-quote-japanese');
+      const romajiEl = document.getElementById('sensei-quote-romaji');
+      const meaningEl = document.getElementById('sensei-quote-meaning');
+      const counterEl = document.getElementById('sensei-quote-counter');
+      const bodyEl = document.getElementById('sensei-quote-body');
+
+      if (!triggerBtn || !speechBubble || !closeBtn || !avatarImg) return;
+
+      function updateQuote(index) {
+        const q = quotes[index];
+        if (!q) return;
+
+        if (bodyEl) bodyEl.style.opacity = '0.2';
+
+        setTimeout(() => {
+          if (tagEl) tagEl.textContent = q.tag;
+          if (jpEl) jpEl.textContent = q.japanese;
+          if (romajiEl) romajiEl.textContent = q.romaji;
+          if (meaningEl) meaningEl.textContent = q.meaning;
+          if (counterEl) counterEl.textContent = `${index + 1}/${quotes.length}`;
+
+          if (bodyEl) bodyEl.style.opacity = '1';
+        }, 80);
+      }
+
+      function openBubble() {
+        speechBubble.classList.remove('hidden');
+        if (idleTooltip) idleTooltip.classList.add('hidden');
+
+        // Play lively character hop
+        avatarImg.style.transform = 'scale(1.1) translateY(-6px)';
+        setTimeout(() => {
+          avatarImg.style.transform = '';
+        }, 180);
+      }
+
+      function closeBubble() {
+        speechBubble.classList.add('hidden');
+        if (idleTooltip) idleTooltip.classList.remove('hidden');
+      }
+
+      function cycleNextQuote() {
+        let nextIndex;
+        if (quotes.length > 1) {
+          do {
+            nextIndex = Math.floor(Math.random() * quotes.length);
+          } while (nextIndex === lastIndex);
+        } else {
+          nextIndex = 0;
+        }
+
+        lastIndex = nextIndex;
+        updateQuote(nextIndex);
+        openBubble();
+      }
+
+      // Click Sensei: Cycle to next quote
+      triggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cycleNextQuote();
+      });
+
+      // Close button
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeBubble();
+      });
+
+      // Close on clicking outside container
+      document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+          closeBubble();
+        }
+      });
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeBubble();
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSensei);
+    } else {
+      initSensei();
+    }
+  })();
+</script>

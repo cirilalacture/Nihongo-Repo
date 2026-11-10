@@ -66,6 +66,11 @@
   * Menampilkan badge tech-stack modern (Astro v7, Cloudflare Pages/D1, Tailwind CSS v4, TypeScript).
   * Tautan interaktif ke profil GitHub pembuat, repositori kode sumber, dan kontak surel.
   * Terdaftar secara otomatis di XML Sitemap (`/sitemap.xml`) dengan prioritas pencarian 0.7.
+* **Sensei Companion / Pendamping Belajar Interaktif:**
+  * Komponen mengambang (*floating*) di pojok kanan bawah seluruh halaman publik (`BaseLayout.astro`) menggunakan Avatar #7 bertema Sensei dengan badge segel *"先生"*.
+  * Ketika diklik, memunculkan gelembung percakapan (*speech bubble*) bergaya manga yang menyajikan kata-kata motivasi dan peribahasa Jepang (*kotowaza*) yang berbeda-beda setiap kali diklik (lengkap dengan kanji, romaji, arti bahasa Indonesia, dan tag kategori).
+  * Dilengkapi animasi lompat ceria (*lively micro-hop*), tooltip idle, tombol tutup, dukungan pintasan tombol `Esc`, serta penutupan saat mengklik di luar area.
+  * Responsif di ponsel cerdas (maksimal lebar adaptif dan tidak memicu *horizontal scroll overflow*).
 
 ### 4.2 Halaman Admin & CMS (`/admin`)
 Halaman admin dirancang terproteksi dan mencakup modul manajemen komprehensif:

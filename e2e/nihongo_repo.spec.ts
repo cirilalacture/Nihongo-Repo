@@ -247,6 +247,41 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(githubBtn).toBeVisible();
   });
 
+  test('Sensei companion (Avatar #7) in bottom-right corner displays speech bubble with encouraging quotes on click', async ({ page }) => {
+    await page.goto('/');
+
+    // Sensei container and avatar #7 should be visible in bottom-right
+    const senseiContainer = page.locator('#sensei-companion-container');
+    await expect(senseiContainer).toBeVisible();
+
+    const senseiImg = page.locator('#sensei-avatar-img');
+    await expect(senseiImg).toBeVisible();
+    await expect(senseiImg).toHaveAttribute('src', '/avatar/7.png');
+
+    // Speech bubble is initially hidden
+    const speechBubble = page.locator('#sensei-speech-bubble');
+    await expect(speechBubble).toBeHidden();
+
+    // Click Sensei trigger to open encouragement chat
+    const triggerBtn = page.locator('#sensei-trigger-btn');
+    await triggerBtn.click();
+    await expect(speechBubble).toBeVisible();
+
+    // Verify speech bubble displays Japanese quote and meaning
+    const jpText = page.locator('#sensei-quote-japanese');
+    await expect(jpText).toBeVisible();
+    const jpContent = await jpText.textContent();
+    expect(jpContent?.length).toBeGreaterThan(0);
+
+    const meaningText = page.locator('#sensei-quote-meaning');
+    await expect(meaningText).toBeVisible();
+
+    // Close button dismisses speech bubble
+    const closeBtn = page.locator('#sensei-close-btn');
+    await closeBtn.click();
+    await expect(speechBubble).toBeHidden();
+  });
+
 });
 
 test.describe('Nihongo_repo Admin CMS E2E Tests', () => {
