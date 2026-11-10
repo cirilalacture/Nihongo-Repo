@@ -2,17 +2,25 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "nihongo-repo",
 	"compatibility_date": "2024-09-23",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "8f5a6962af41409f8a46cae13bb597fa"
+		}
+	],
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "nihongo-repo-db",
-			"database_id": "local-nihongo-db"
+			"database_id": "60b65c2d-5763-463a-ac9f-ee041a50739c"
 		}
 	],
 	"observability": {
