@@ -180,9 +180,10 @@ gantt
 
 ### [x] Fase 13: Halaman Profil Pembuat & Repositori (/about) (STATUS: SELESAI)
 - [x] Desain halaman `/about` (`src/pages/about.astro`) bernuansa *Digital Washi & Sumi-e* dengan kartu profil pembuat, badge stempel segel merah "日", dan avatar representatif.
+- [x] Fitur **Interactive Multi-Pose Avatar Switcher**: 7 variasi pose karakter avatar dari `public/avatar/` (1.png s.d. 7.png) yang beralih secara mulus dan instan saat diklik, dilengkapi efek micro-bounce, counter badge `Pose X/7`, dan preloading memori peramban tanpa jeda.
 - [x] Narasi komprehensif latar belakang "Cerita di Balik Nihongo_repo" dan 3 pilar nilai inti: 100% Bebas Akses, Terkurasi & Standar, serta Modern & Cepat.
 - [x] Tautan sosial interaktif (GitHub profil pembuat via inline SVG, repositori kode sumber, surel kontak).
 - [x] Integrasi navigasi tautan "Tentang" pada navbar desktop dan hamburger drawer mobile (`src/components/Navbar.astro`), serta tautan footer (`src/components/Footer.astro`).
 - [x] Optimasi layout tablet 768px (`md:`) agar bebas dari *horizontal scroll overflow*.
 - [x] Pendaftaran URL `/about` pada dynamic XML sitemap (`src/pages/sitemap.xml.ts`).
-- [x] Penambahan test case Playwright E2E ke-18 (`e2e/nihongo_repo.spec.ts`) dengan hasil pengujian **18/18 passed (100% lulus)**.
+- [x] Penambahan test case Playwright E2E ke-18 (`e2e/nihongo_repo.spec.ts`) yang memverifikasi interaksi klik ganti pose dengan hasil pengujian **18/18 passed (100% lulus)**.

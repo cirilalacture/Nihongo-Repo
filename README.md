@@ -43,7 +43,7 @@ Selain antarmuka publik, proyek ini dilengkapi **Admin CMS** mandiri yang diprot
   * Tab 2: **Intip Isi Buku** (*Google Drive Preview Embed* iframe viewer langsung di dalam situs).
   * Tombol **Salin Link** (*one-click clipboard*), tautan langsung ke **Google Drive**, dan navigasi ke halaman penuh.
 * **Halaman Rincian Mandiri (*Standalone Permalink* — `/materi/[id]`):** Halaman SEO SSR dengan OpenGraph metadata lengkap untuk sharing media sosial, breadcrumb navigasi, Web Share API, dan rekomendasi buku terkait.
-* **Halaman Profil Pembuat (*About Page* — `/about`):** Halaman profil naratif pembuat/author, avatar representatif, stempel stempel segel merah Jepang, visi nirlaba proyek, teknologi di balik situs, dan tautan sosial GitHub.
+* **Halaman Profil Pembuat (*About Page* — `/about`):** Halaman profil naratif pembuat/author, **avatar karakter interaktif (7 pose dinamis)** yang berganti pose seketika saat diklik, stempel segel merah Jepang "日", visi nirlaba proyek, teknologi di balik situs, dan tautan sosial GitHub.
 * **Washi Night Mode (*Sumi-e Dark Mode*):** Dukungan tema terang kertas Washi dan tema gelap tinta arang Sumi-e dengan script anti-FOUC (Flash of Unstyled Content).
 * **SEO, Sitemap & RSS Feed:** Dynamic XML Sitemap (`/sitemap.xml`) dan RSS 2.0 Feed (`/rss.xml`) untuk sindikasi konten dan auto-indexing.
 * **Desain Responsif Adaptif (Mobile, Tablet, Desktop):** Drawer menu navigasi mobile yang rapi, bar filter sentuh horizontal tanpa overflow, target sentuhan jari minimal 44px, dan modal detail adaptif (berubah menjadi *bottom sheet* di smartphone dan kartu terpusat di tablet/desktop).

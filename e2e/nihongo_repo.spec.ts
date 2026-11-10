@@ -220,9 +220,24 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     const creatorName = page.locator('main h1');
     await expect(creatorName).toContainText('Ciril Alacture');
 
-    // Verify avatar image is visible
-    const avatarImg = page.locator('main img[alt="Ciril Alacture"]');
+    // Verify avatar image is visible and starts at pose 1
+    const avatarImg = page.locator('#avatar-image');
     await expect(avatarImg).toBeVisible();
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/1.png');
+
+    const poseBadge = page.locator('#avatar-pose-label');
+    await expect(poseBadge).toHaveText('Pose 1/7');
+
+    // Click avatar button to switch pose to 2.png
+    const avatarBtn = page.locator('#avatar-pose-btn');
+    await avatarBtn.click();
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/2.png');
+    await expect(poseBadge).toHaveText('Pose 2/7');
+
+    // Click again to switch pose to 3.png
+    await avatarBtn.click();
+    await expect(avatarImg).toHaveAttribute('src', '/avatar/3.png');
+    await expect(poseBadge).toHaveText('Pose 3/7');
 
     // Verify story section
     await expect(page.locator('text=Cerita di Balik Nihongo_repo')).toBeVisible();
