@@ -282,6 +282,37 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     await expect(speechBubble).toBeHidden();
   });
 
+  test('Sensei companion is draggable on mobile and desktop viewports', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const container = page.locator('#sensei-companion-container');
+    await expect(container).toBeVisible();
+
+    const initialBox = await container.boundingBox();
+    expect(initialBox).not.toBeNull();
+
+    // Drag Sensei from bottom-right towards upper-left
+    const startX = initialBox!.x + initialBox!.width / 2;
+    const startY = initialBox!.y + initialBox!.height / 2;
+
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    await page.mouse.move(50, 300, { steps: 8 });
+    await page.mouse.up();
+
+    const newBox = await container.boundingBox();
+    expect(newBox).not.toBeNull();
+    expect(newBox!.x).toBeLessThan(100);
+    expect(newBox!.y).toBeLessThan(400);
+
+    // Verify click at the new position still opens speech bubble
+    await page.waitForTimeout(150);
+    const trigger = page.locator('#sensei-trigger-btn');
+    await trigger.click();
+    await expect(page.locator('#sensei-speech-bubble')).toBeVisible();
+  });
+
 });
 
 test.describe('Nihongo_repo Admin CMS E2E Tests', () => {

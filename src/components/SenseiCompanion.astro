@@ -1,6 +1,7 @@
 ---
-// Sensei Companion / Pendamping Belajar (Fixed Bottom-Right Corner)
+// Sensei Companion / Pendamping Belajar (Fixed & Draggable / Geser-able Mascot)
 // Menampilkan Avatar #7 sebagai Sensei yang memberikan kata-kata penyemangat setiap kali diklik.
+// Mendukung drag & drop sentuh (touch/pointer) pada mobile dan desktop agar tidak mengganggu bacaan.
 
 interface SenseiQuote {
   japanese: string;
@@ -85,7 +86,11 @@ const senseiQuotes: SenseiQuote[] = [
 ];
 ---
 
-<div id="sensei-companion-container" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 select-none">
+<div
+  id="sensei-companion-container"
+  class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 select-none touch-none"
+  style="touch-action: none;"
+>
   
   <!-- Sensei Speech Bubble / Chat Penyemangat -->
   <div
@@ -95,7 +100,10 @@ const senseiQuotes: SenseiQuote[] = [
     aria-label="Pesan motivasi dari Sensei"
   >
     <!-- Speech Bubble Pointer Arrow (Connecting to Sensei) -->
-    <div class="absolute -bottom-2 right-8 sm:right-10 w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 border-r border-b border-[var(--color-border-washi)] rotate-45 pointer-events-none"></div>
+    <div
+      id="sensei-bubble-arrow"
+      class="absolute -bottom-2 right-8 sm:right-10 w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 border-r border-b border-[var(--color-border-washi)] rotate-45 pointer-events-none"
+    ></div>
 
     <!-- Bubble Header -->
     <div class="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-[var(--color-border-washi)] relative z-10">
@@ -150,38 +158,39 @@ const senseiQuotes: SenseiQuote[] = [
     <div class="mt-2.5 pt-2 border-t border-dashed border-[var(--color-border-washi)] flex items-center justify-between text-[10px] text-[var(--color-ink-tertiary)] relative z-10">
       <span class="flex items-center gap-1">
         <span>✨</span>
-        <span>Klik Sensei untuk kata lain</span>
+        <span>Klik untuk pesan lain</span>
       </span>
       <span id="sensei-quote-counter" class="font-mono font-semibold text-[var(--color-ink-secondary)]">1/{senseiQuotes.length}</span>
     </div>
   </div>
 
-  <!-- Sensei Character Button -->
+  <!-- Sensei Character Button & Drag Target -->
   <button
     id="sensei-trigger-btn"
     type="button"
-    class="group relative flex flex-col items-center cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-vermilion)] rounded-2xl transition-all"
-    title="Sensei Pendamping — Klik untuk kata penyemangat!"
-    aria-label="Sensei Pendamping - Klik untuk pesan penyemangat"
+    class="group relative flex flex-col items-center cursor-grab active:cursor-grabbing select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-vermilion)] rounded-2xl transition-transform"
+    title="Sensei Pendamping — Klik untuk penyemangat, atau seret/geser jika menghalangi bacaan!"
+    aria-label="Sensei Pendamping - Klik untuk pesan motivasi atau geser posisi"
+    style="touch-action: none;"
   >
     <!-- Floating 'Sensei' Stamp Seal Badge (Hanko) -->
     <div
-      class="absolute -top-1.5 -left-1.5 z-20 px-1.5 py-0.5 rounded-lg bg-[var(--color-vermilion)] text-white font-bold text-[9.5px] shadow-sm border border-white/50 dark:border-neutral-900 -rotate-6 group-hover:rotate-0 transition-transform duration-200"
+      class="absolute -top-1.5 -left-1.5 z-20 px-1.5 py-0.5 rounded-lg bg-[var(--color-vermilion)] text-white font-bold text-[9.5px] shadow-sm border border-white/50 dark:border-neutral-900 -rotate-6 group-hover:rotate-0 transition-transform duration-200 pointer-events-none"
       title="Sensei Pendamping"
     >
       先生
     </div>
 
-    <!-- Idle Tooltip (Disappears when chat is open) -->
+    <!-- Idle Tooltip (Disappears when chat is open or dragging) -->
     <div
       id="sensei-idle-tooltip"
       class="absolute -top-7 right-0 bg-[var(--color-surface)] dark:bg-neutral-800 border border-[var(--color-border-washi)] shadow-xs rounded-full px-2 py-0.5 text-[9.5px] font-bold text-[var(--color-ink-secondary)] group-hover:text-[var(--color-vermilion)] group-hover:border-red-300 transition-all pointer-events-none whitespace-nowrap animate-bounce"
     >
-      💬 Klik Sensei!
+      💬 Klik / Geser Sensei!
     </div>
 
     <!-- Sensei Character Image Container (Avatar #7) -->
-    <div class="w-[72px] h-[88px] sm:w-[84px] sm:h-[100px] flex items-end justify-center group-hover:-translate-y-1.5 transition-transform duration-300 ease-out">
+    <div class="w-[72px] h-[88px] sm:w-[84px] sm:h-[100px] flex items-end justify-center group-hover:-translate-y-1.5 transition-transform duration-300 ease-out pointer-events-none">
       <img
         id="sensei-avatar-img"
         src="/avatar/sensei.webp"
@@ -196,6 +205,17 @@ const senseiQuotes: SenseiQuote[] = [
 
     <!-- Soft Contact Floor Shadow -->
     <div class="w-12 sm:w-14 h-1.5 bg-neutral-900/15 dark:bg-black/45 rounded-full blur-[2px] mx-auto -mt-1 group-hover:scale-90 group-hover:opacity-60 transition-all duration-300 pointer-events-none"></div>
+
+    <!-- Subtle Drag Handle Cue (3 Grip Dots) -->
+    <div
+      id="sensei-drag-grip"
+      class="flex items-center justify-center gap-1 mt-1 opacity-40 group-hover:opacity-90 transition-opacity pointer-events-none"
+      title="Bisa digeser ke mana saja"
+    >
+      <span class="w-1 h-1 rounded-full bg-[var(--color-ink-tertiary)]"></span>
+      <span class="w-1 h-1 rounded-full bg-[var(--color-ink-tertiary)]"></span>
+      <span class="w-1 h-1 rounded-full bg-[var(--color-ink-tertiary)]"></span>
+    </div>
   </button>
 
 </div>
@@ -212,6 +232,7 @@ const senseiQuotes: SenseiQuote[] = [
       const closeBtn = document.getElementById('sensei-close-btn');
       const avatarImg = document.getElementById('sensei-avatar-img');
       const idleTooltip = document.getElementById('sensei-idle-tooltip');
+      const arrowEl = document.getElementById('sensei-bubble-arrow');
 
       const tagEl = document.getElementById('sensei-quote-tag');
       const jpEl = document.getElementById('sensei-quote-japanese');
@@ -220,8 +241,9 @@ const senseiQuotes: SenseiQuote[] = [
       const counterEl = document.getElementById('sensei-quote-counter');
       const bodyEl = document.getElementById('sensei-quote-body');
 
-      if (!triggerBtn || !speechBubble || !closeBtn || !avatarImg) return;
+      if (!container || !triggerBtn || !speechBubble || !closeBtn || !avatarImg) return;
 
+      // --- Quote Cycling Logic ---
       function updateQuote(index) {
         const q = quotes[index];
         if (!q) return;
@@ -239,7 +261,63 @@ const senseiQuotes: SenseiQuote[] = [
         }, 80);
       }
 
+      function updateBubbleOrientation() {
+        const rect = container.getBoundingClientRect();
+        const winWidth = window.innerWidth;
+        const winHeight = window.innerHeight;
+
+        // Reset classes
+        speechBubble.classList.remove(
+          'bottom-[108%]',
+          'top-[108%]',
+          'right-0',
+          'left-0',
+          'left-1/2',
+          '-translate-x-1/2',
+          'origin-bottom-right',
+          'origin-bottom-left',
+          'origin-top-right',
+          'origin-top-left',
+          'origin-bottom',
+          'origin-top'
+        );
+
+        if (arrowEl) {
+          arrowEl.className = 'absolute w-3.5 h-3.5 bg-[var(--color-surface)] dark:bg-neutral-900 rotate-45 pointer-events-none';
+        }
+
+        const isNearTop = rect.top < 240;
+        const isNearLeft = rect.left < 160;
+        const isNearRight = winWidth - rect.right < 160;
+
+        // Vertical orientation
+        if (isNearTop) {
+          speechBubble.classList.add('top-[108%]');
+          if (arrowEl) {
+            arrowEl.classList.add('-top-2', 'border-l', 'border-t', 'border-[var(--color-border-washi)]');
+          }
+        } else {
+          speechBubble.classList.add('bottom-[108%]');
+          if (arrowEl) {
+            arrowEl.classList.add('-bottom-2', 'border-r', 'border-b', 'border-[var(--color-border-washi)]');
+          }
+        }
+
+        // Horizontal orientation
+        if (isNearLeft) {
+          speechBubble.classList.add('left-0', isNearTop ? 'origin-top-left' : 'origin-bottom-left');
+          if (arrowEl) arrowEl.classList.add('left-6');
+        } else if (isNearRight) {
+          speechBubble.classList.add('right-0', isNearTop ? 'origin-top-right' : 'origin-bottom-right');
+          if (arrowEl) arrowEl.classList.add('right-6');
+        } else {
+          speechBubble.classList.add('left-1/2', '-translate-x-1/2', isNearTop ? 'origin-top' : 'origin-bottom');
+          if (arrowEl) arrowEl.classList.add('left-1/2', '-translate-x-1/2');
+        }
+      }
+
       function openBubble() {
+        updateBubbleOrientation();
         speechBubble.classList.remove('hidden');
         if (idleTooltip) idleTooltip.classList.add('hidden');
 
@@ -252,7 +330,7 @@ const senseiQuotes: SenseiQuote[] = [
 
       function closeBubble() {
         speechBubble.classList.add('hidden');
-        if (idleTooltip) idleTooltip.classList.remove('hidden');
+        if (idleTooltip && !isDragging) idleTooltip.classList.remove('hidden');
       }
 
       function cycleNextQuote() {
@@ -270,9 +348,136 @@ const senseiQuotes: SenseiQuote[] = [
         openBubble();
       }
 
-      // Click Sensei: Cycle to next quote
+      // --- Draggable Mascot Implementation (Pointer / Touch / Mouse) ---
+      let isDragging = false;
+      let hasDragged = false;
+      let startPointerX = 0;
+      let startPointerY = 0;
+      let initialLeft = 0;
+      let initialTop = 0;
+      let justFinishedDrag = false;
+
+      // Restore saved position from localStorage
+      try {
+        const savedPos = localStorage.getItem('nihongo_sensei_pos');
+        if (savedPos) {
+          const { leftRatio, topRatio } = JSON.parse(savedPos);
+          if (typeof leftRatio === 'number' && typeof topRatio === 'number') {
+            const clampX = Math.min(Math.max(8, leftRatio * window.innerWidth), window.innerWidth - 80);
+            const clampY = Math.min(Math.max(64, topRatio * window.innerHeight), window.innerHeight - 100);
+            container.style.left = `${clampX}px`;
+            container.style.top = `${clampY}px`;
+            container.style.bottom = 'auto';
+            container.style.right = 'auto';
+            updateBubbleOrientation();
+          }
+        }
+      } catch (err) {}
+
+      function onPointerDown(e) {
+        // Only accept primary button (left click or single touch)
+        if (e.button !== undefined && e.button !== 0) return;
+
+        startPointerX = e.clientX;
+        startPointerY = e.clientY;
+
+        const rect = container.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        hasDragged = false;
+        isDragging = false;
+
+        try {
+          triggerBtn.setPointerCapture(e.pointerId);
+        } catch (_) {}
+
+        triggerBtn.addEventListener('pointermove', onPointerMove);
+        triggerBtn.addEventListener('pointerup', onPointerUp);
+        triggerBtn.addEventListener('pointercancel', onPointerUp);
+      }
+
+      function onPointerMove(e) {
+        const deltaX = e.clientX - startPointerX;
+        const deltaY = e.clientY - startPointerY;
+
+        if (!hasDragged && Math.hypot(deltaX, deltaY) > 6) {
+          hasDragged = true;
+          isDragging = true;
+          if (idleTooltip) idleTooltip.classList.add('hidden');
+          container.style.transition = 'none';
+          triggerBtn.style.cursor = 'grabbing';
+          container.style.bottom = 'auto';
+          container.style.right = 'auto';
+        }
+
+        if (isDragging) {
+          e.preventDefault();
+
+          const targetLeft = initialLeft + deltaX;
+          const targetTop = initialTop + deltaY;
+
+          const containerWidth = container.offsetWidth || 72;
+          const containerHeight = container.offsetHeight || 90;
+
+          const minX = 8;
+          const maxX = window.innerWidth - containerWidth - 8;
+          const minY = 64; // Below header
+          const maxY = window.innerHeight - containerHeight - 8;
+
+          const clampedX = Math.min(Math.max(minX, targetLeft), Math.max(minX, maxX));
+          const clampedY = Math.min(Math.max(minY, targetTop), Math.max(minY, maxY));
+
+          container.style.left = `${clampedX}px`;
+          container.style.top = `${clampedY}px`;
+
+          updateBubbleOrientation();
+        }
+      }
+
+      function onPointerUp(e) {
+        try {
+          if (triggerBtn.hasPointerCapture(e.pointerId)) {
+            triggerBtn.releasePointerCapture(e.pointerId);
+          }
+        } catch (_) {}
+
+        triggerBtn.removeEventListener('pointermove', onPointerMove);
+        triggerBtn.removeEventListener('pointerup', onPointerUp);
+        triggerBtn.removeEventListener('pointercancel', onPointerUp);
+
+        triggerBtn.style.cursor = 'grab';
+
+        if (hasDragged) {
+          justFinishedDrag = true;
+          isDragging = false;
+          setTimeout(() => {
+            justFinishedDrag = false;
+            hasDragged = false;
+          }, 100);
+
+          // Persist position
+          const rect = container.getBoundingClientRect();
+          try {
+            localStorage.setItem(
+              'nihongo_sensei_pos',
+              JSON.stringify({
+                leftRatio: rect.left / window.innerWidth,
+                topRatio: rect.top / window.innerHeight,
+              })
+            );
+          } catch (_) {}
+        }
+      }
+
+      triggerBtn.addEventListener('pointerdown', onPointerDown);
+
+      // Click Sensei: Cycle quote if user tapped/clicked without dragging
       triggerBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (justFinishedDrag) {
+          return;
+        }
         cycleNextQuote();
       });
 
@@ -293,6 +498,20 @@ const senseiQuotes: SenseiQuote[] = [
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           closeBubble();
+        }
+      });
+
+      // Handle window resize: keep clamped
+      window.addEventListener('resize', () => {
+        if (container.style.left && container.style.top) {
+          const rect = container.getBoundingClientRect();
+          const maxX = window.innerWidth - (container.offsetWidth || 72) - 8;
+          const maxY = window.innerHeight - (container.offsetHeight || 90) - 8;
+          const clampedX = Math.min(Math.max(8, rect.left), Math.max(8, maxX));
+          const clampedY = Math.min(Math.max(64, rect.top), Math.max(64, maxY));
+          container.style.left = `${clampedX}px`;
+          container.style.top = `${clampedY}px`;
+          updateBubbleOrientation();
         }
       });
     }

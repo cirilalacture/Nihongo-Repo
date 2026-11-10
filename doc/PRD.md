@@ -84,6 +84,8 @@
   * Komponen mengambang (*floating*) di pojok kanan bawah seluruh halaman publik (`BaseLayout.astro`) menggunakan Avatar #7 bertema Sensei dengan badge segel *"先生"*.
   * Ketika diklik, memunculkan gelembung percakapan (*speech bubble*) bergaya manga yang menyajikan kata-kata motivasi dan peribahasa Jepang (*kotowaza*) yang berbeda-beda setiap kali diklik (lengkap dengan kanji, romaji, arti bahasa Indonesia, dan tag kategori).
   * Dilengkapi animasi lompat ceria (*lively micro-hop*), tooltip idle, tombol tutup, dukungan pintasan tombol `Esc`, serta penutupan saat mengklik di luar area.
+  * **Fitur Bebas Digeser (*Draggable / Touch & Mouse Movement*):** Karakter Sensei dapat digeser atau diseret bebas ke posisi mana pun di layar oleh pembaca (baik dengan sentuhan jari di layar sentuh ponsel maupun kursor mouse desktop) agar tidak menghalangi teks atau tombol bacaan. Posisi tersimpan otomatis di `localStorage`.
+  * **Orientasi Cerdas Gelembung Dialog (*Smart Adaptive Bubble*):** Arah kemunculan balon ucapan (atas, bawah, kiri, atau kanan) beradaptasi secara dinamis mengikuti posisi koordinat Sensei, sehingga dijamin tidak pernah terpotong di tepi layar (*zero viewport clipping*).
   * Responsif di ponsel cerdas (maksimal lebar adaptif dan tidak memicu *horizontal scroll overflow*).
 
 ### 4.2 Halaman Admin & CMS (`/admin`)

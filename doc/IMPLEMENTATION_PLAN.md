@@ -299,3 +299,24 @@ gantt
 - [x] **Verifikasi E2E & Build:**
   - Seluruh 24 pengujian Playwright E2E: **24/24 passed (100% lulus)**.
   - Build produksi Cloudflare Pages sukses sempurna dalam 6.9 detik.
+
+---
+
+### [x] Fase 20: Sensei Companion Draggable (Bebas Digeser) & Smart Bubble Orientation (STATUS: SELESAI)
+- [x] **Dukungan Interaksi Drag & Drop (Touch & Mouse Pointer):**
+  - Mengintegrasikan API Pointer Events (`pointerdown`, `pointermove`, `pointerup`, `pointercancel`) dengan `setPointerCapture` pada `SenseiCompanion.astro` agar kompatibel di layar sentuh ponsel Android/iOS serta desktop.
+  - Membedakan aksi drag vs click menggunakan ambang batas jarak (threshold 6px) dan swallow timeout 100ms, sehingga menyeret maskot tidak memicu terbukanya balon dialog motivasi.
+  - Indikator visual kursor `grab` / `grabbing` dan grip handle 3 titik halus di bawah karakter.
+  - Pembatasan koordinat drag agar selalu berada di dalam area batas layar (*viewport clamping*), tidak tertutup header atau keluar layar.
+- [x] **Orientasi Cerdas Gelembung Dialog (*Dynamic Smart Bubble*):**
+  - Balon ucapan mendeteksi posisi koordinat Sensei secara dinamis:
+    - Jika berada di dekat bagian atas layar (`top < 240px`), balon muncul di bawah Sensei.
+    - Jika berada di dekat sisi kiri layar (`left < 160px`), balon rata kiri.
+    - Jika berada di dekat sisi kanan layar, balon rata kanan.
+    - Jika di tengah, balon berada di tengah simetris.
+- [x] **Persistensi Posisi:**
+  - Menyimpan rasio koordinat posisi Sensei ke `localStorage` (`nihongo_sensei_pos`) agar posisinya tetap di tempat yang diinginkan pengguna saat berpindah halaman atau me-refresh peramban.
+- [x] **Verifikasi Pengujian E2E & Build:**
+  - Penambahan skenario uji Playwright E2E Test 12 untuk menguji interaksi drag maskot pada layar smartphone (390x844).
+  - Seluruh 25 pengujian Playwright E2E: **25/25 passed (100% lulus)**.
+  - Build produksi Cloudflare Pages sukses tanpa kendala.

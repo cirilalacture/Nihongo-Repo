@@ -157,7 +157,7 @@ Proyek ini telah dilengkapi dengan suite pengujian otomatis end-to-end yang meng
 npm run test:e2e
 ```
 
-**Cakupan Skenario Uji (24/24 Passed - 100% Lulus):**
+**Cakupan Skenario Uji (25/25 Passed - 100% Lulus):**
 * ✅ Tampilan tema visual & branding Washi Paper
 * ✅ Pencarian reaktif instan berdasarkan keyword
 * ✅ Filter chip level JLPT (N5 - N1)
@@ -169,6 +169,7 @@ npm run test:e2e
 * ✅ Validasi endpoint Dynamic XML Sitemap (`/sitemap.xml`) & RSS 2.0 Feed (`/rss.xml`)
 * ✅ Pemuatan halaman profil pembuat `/about` (avatar, bio, story, visi & tautan sosial)
 * ✅ Sensei companion di sudut kanan bawah dengan balon percakapan interaktif
+* ✅ Sensei companion bebas digeser (*draggable*) di mobile dan desktop dengan orientasi adaptif
 * ✅ Route guard redirection untuk akses yang belum terautentikasi
 * ✅ Alur login admin dengan kredensial valid
 * ✅ Navigasi admin, tabel materi, dan penambahan kategori
