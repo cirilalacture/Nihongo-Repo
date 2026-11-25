@@ -10,7 +10,9 @@
       "Shell(timeout 100 npx playwright test -g Font settings dropdown 2 >& 1)",
       "Shell(timeout 200 npx playwright test -g Homepage loads|media format filter|Mobile viewport|horizontal scroll|Tablet viewport 2 >& 1)",
       "Shell(timeout 120 npx playwright test -g Deep-link 2 >& 1)",
-      "Shell(git:*)"
+      "Shell(git:*)",
+      "Shell(timeout 200 npx playwright test -g JLPT level filter|Deep-link|search filters|bookmark|View switcher|Detail modal|media format filter|Homepage loads 2 >& 1)",
+      "Shell(timeout 150 npx playwright test -g Mobile viewport|horizontal scroll|Tablet viewport 2 >& 1)"
     ],
     "deny": [],
     "defaultMode": "default"

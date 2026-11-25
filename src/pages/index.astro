@@ -526,8 +526,10 @@ if (materialsList.length === 0) {
           if (activeFilters > 0) {
             filterActiveCount.textContent = String(activeFilters);
             filterActiveCount.classList.remove('hidden');
+            filterActiveCount.classList.add('flex');
           } else {
             filterActiveCount.classList.add('hidden');
+            filterActiveCount.classList.remove('flex');
           }
         }
 
@@ -643,18 +645,15 @@ if (materialsList.length === 0) {
       }
 
       if (filterToggleBtn && filterBody) {
+        const setCollapsed = (collapsed) => {
+          filterBody.classList.toggle('hidden', collapsed);
+          filterToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+          if (filterToggleLabel) filterToggleLabel.textContent = collapsed ? 'Tampilkan Filter' : 'Sembunyikan Filter';
+        };
         filterToggleBtn.addEventListener('click', () => {
-          const isHidden = filterBody.classList.toggle('hidden');
-          filterToggleBtn.setAttribute('aria-expanded', String(!isHidden));
-          if (filterToggleLabel) filterToggleLabel.textContent = isHidden ? 'Tampilkan Filter' : 'Sembunyikan Filter';
-          if (filterToggleChevron) filterToggleChevron.style.transform = isHidden ? 'rotate(-90deg)' : '';
+          setCollapsed(!filterBody.classList.contains('hidden'));
         });
-        if (window.innerWidth < 640) {
-          filterBody.classList.add('hidden');
-          filterToggleBtn.setAttribute('aria-expanded', 'false');
-          if (filterToggleLabel) filterToggleLabel.textContent = 'Tampilkan Filter';
-          if (filterToggleChevron) filterToggleChevron.style.transform = 'rotate(-90deg)';
-        }
+        setCollapsed(window.innerWidth < 640);
       }
 
       try {

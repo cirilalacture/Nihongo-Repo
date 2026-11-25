@@ -1,5 +1,5 @@
 ---
-import { Search, LayoutGrid, List, SlidersHorizontal, ChevronDown, X, BookOpen, PenTool, Layers, FileText, Headphones, CheckCircle, Bookmark } from '@lucide/astro';
+import { Search, LayoutGrid, List, SlidersHorizontal, ChevronDown, X, Bookmark } from '@lucide/astro';
 
 interface Level {
   id: string;
@@ -27,21 +27,21 @@ interface Props {
 const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL' } = Astro.props;
 ---
 
-<div id="pencarian" class="sticky top-16 z-30 scroll-mt-24 bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] py-4 sm:py-6 shadow-2xs">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-3 sm:gap-5">
-    
-    <!-- Top Row: Search Input & View Toggle -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+<div id="pencarian" class="sticky top-16 z-30 scroll-mt-24 bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] py-2.5 shadow-2xs">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-2">
+
+    <!-- Compact Bar: Search + Sort + View + Filter Toggle -->
+    <div class="flex items-center gap-2">
       <!-- Search Input Field -->
-      <div class="relative flex-1 max-w-xl">
-        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[var(--color-ink-tertiary)]">
+      <div class="relative flex-1 min-w-0">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--color-ink-tertiary)]">
           <Search class="w-4 h-4" />
         </div>
         <input
           type="search"
           id="search-input"
-          placeholder="Cari judul buku, romaji, kanji, atau pengarang..."
-          class="w-full pl-10 pr-10 py-2.5 sm:py-2.5 min-h-[44px] sm:min-h-0 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all shadow-2xs"
+          placeholder="Cari judul, romaji, kanji, pengarang..."
+          class="w-full pl-9 pr-9 py-2 min-h-[40px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all shadow-2xs"
         />
         <button
           type="button"
@@ -54,186 +54,174 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
         </button>
       </div>
 
-      <!-- View Switcher Toggle -->
-      <div class="flex items-center justify-between sm:justify-end gap-2">
-        <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] sm:hidden">
-          Tampilan:
-        </span>
-        <div class="flex items-center gap-1 p-1 bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] rounded-xl">
-          <button
-            type="button"
-            id="view-grid-btn"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold bg-[var(--color-surface)] text-[var(--color-ink-primary)] shadow-2xs transition-all active:scale-95"
-            title="Tampilan Kartu Visual"
-          >
-            <LayoutGrid class="w-3.5 h-3.5" />
-            <span>Grid</span>
-          </button>
-          <button
-            type="button"
-            id="view-list-btn"
-            class="flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-medium text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] transition-all active:scale-95"
-            title="Tampilan Tabel Ringkas"
-          >
-            <List class="w-3.5 h-3.5" />
-            <span>Tabel</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      <!-- Sort -->
+      <label for="sort-select" class="flex items-center shrink-0">
+        <span class="sr-only">Urutkan</span>
+        <select
+          id="sort-select"
+          class="pl-2 pr-7 py-2 min-h-[40px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs font-semibold text-[var(--color-ink-secondary)] focus:outline-none focus:border-[var(--color-vermilion)] cursor-pointer max-w-[112px] sm:max-w-none"
+          title="Urutkan materi"
+        >
+          <option value="default">Urutan</option>
+          <option value="populer">Populer</option>
+          <option value="terbaru">Terbaru</option>
+          <option value="judul">A–Z</option>
+        </select>
+      </label>
 
-    <!-- Toolbar Row: Filter Toggle, Result Count & Sort -->
-    <div class="flex items-center justify-between gap-2 pt-1">
+      <!-- View Switcher (icon only) -->
+      <div class="flex items-center gap-0.5 p-0.5 bg-[var(--color-surface-subtle)] border border-[var(--color-border-washi)] rounded-xl shrink-0">
+        <button
+          type="button"
+          id="view-grid-btn"
+          class="flex items-center justify-center w-9 h-9 rounded-lg text-xs bg-[var(--color-surface)] text-[var(--color-ink-primary)] shadow-2xs transition-all active:scale-95"
+          title="Tampilan Kartu Visual"
+          aria-label="Tampilan kartu"
+        >
+          <LayoutGrid class="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          id="view-list-btn"
+          class="flex items-center justify-center w-9 h-9 rounded-lg text-xs font-medium text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] transition-all active:scale-95"
+          title="Tampilan Tabel Ringkas"
+          aria-label="Tampilan tabel"
+        >
+          <List class="w-4 h-4" />
+        </button>
+      </div>
+
+      <!-- Filter Toggle (icon + badge) -->
       <button
         type="button"
         id="filter-toggle-btn"
         aria-expanded="true"
         aria-controls="filter-body"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
+        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
+        title="Tampilkan / sembunyikan filter"
       >
-        <SlidersHorizontal class="w-3.5 h-3.5" />
-        <span id="filter-toggle-label">Sembunyikan Filter</span>
-        <ChevronDown id="filter-toggle-chevron" class="w-3.5 h-3.5 transition-transform duration-200" />
-        <span id="filter-active-count" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--color-vermilion)] text-white font-bold">0</span>
+        <SlidersHorizontal class="w-4 h-4" />
+        <span id="filter-toggle-label" class="sr-only">Sembunyikan Filter</span>
+        <ChevronDown id="filter-toggle-chevron" class="hidden" />
+        <span id="filter-active-count" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] bg-[var(--color-vermilion)] text-white font-bold items-center justify-center">0</span>
       </button>
-
-      <div class="flex items-center gap-2 min-w-0">
-        <span id="search-count-text" class="text-[11px] text-[var(--color-ink-tertiary)] whitespace-nowrap hidden sm:inline"></span>
-        <label for="sort-select" class="flex items-center gap-1.5 text-xs text-[var(--color-ink-tertiary)] font-semibold shrink-0">
-          <span class="hidden md:inline">Urutkan:</span>
-          <select
-            id="sort-select"
-            class="pl-2.5 pr-7 py-1.5 min-h-[36px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs font-semibold text-[var(--color-ink-secondary)] focus:outline-none focus:border-[var(--color-vermilion)] cursor-pointer"
-          >
-            <option value="default">Default</option>
-            <option value="populer">Paling Populer</option>
-            <option value="terbaru">Terbaru</option>
-            <option value="judul">Judul A–Z</option>
-          </select>
-        </label>
-      </div>
     </div>
 
-    <div id="filter-body" class="flex flex-col gap-4 sm:gap-5">
-    <!-- Middle Row: JLPT Level Selector Chips -->
-    <div id="jlpt-filter" class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1">
-      <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 shrink-0">
-        Level JLPT:
-      </span>
-      <button
-        type="button"
-        data-filter-level="ALL"
-        class="filter-level-btn px-3.5 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-neutral-900 text-white border-neutral-900 dark:bg-neutral-100 dark:text-neutral-950 dark:border-neutral-100 shadow-2xs active:scale-95"
-      >
-        Semua
-      </button>
+    <!-- Result count line -->
+    <div class="flex items-center justify-between gap-2 text-[11px] text-[var(--color-ink-tertiary)] leading-none">
+      <span id="search-count-text" class="truncate"></span>
+    </div>
 
-      <button
-        type="button"
-        id="filter-bookmarks-btn"
-        aria-pressed="false"
-        class="filter-bookmark-btn px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-red-400 hover:text-red-600 active:scale-95 flex items-center gap-1.5"
-        title="Tampilkan hanya buku yang Anda simpan di Favorit"
-      >
-        <Bookmark class="w-3.5 h-3.5 text-red-500" />
-        <span>Tersimpan</span>
-        <span id="bookmarks-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-red-100 text-red-700 font-bold hidden">0</span>
-      </button>
-
-      <button
-        type="button"
-        id="filter-featured-btn"
-        aria-pressed="false"
-        class="px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-amber-400 hover:text-amber-600 active:scale-95 flex items-center gap-1.5"
-        title="Tampilkan hanya materi Pilihan Sensei"
-      >
-        <span class="text-amber-500">★</span>
-        <span>Pilihan</span>
-      </button>
-
-      {levels.filter(l => l.code !== 'ALL').map((lvl) => (
+    <!-- Single compact scroll strip: Level | Cepat | Kategori | Media -->
+    <div id="filter-body">
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none text-xs touch-pan-x overscroll-x-contain">
+        <span class="text-[10px] font-bold text-[var(--color-ink-tertiary)] uppercase tracking-wider shrink-0">Level</span>
         <button
           type="button"
-          data-filter-level={lvl.code}
-          class="filter-level-btn px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95"
-          style={`--active-bg: ${lvl.badgeBg}; --active-text: ${lvl.badgeText};`}
+          data-filter-level="ALL"
+          class="filter-level-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-semibold border transition-all duration-150 bg-neutral-900 text-white border-neutral-900 dark:bg-neutral-100 dark:text-neutral-950 dark:border-neutral-100 shadow-2xs active:scale-95 shrink-0"
         >
-          <span class="font-bold">{lvl.code}</span>
-          <span class="text-[10px] ml-1 opacity-75 hidden sm:inline">{lvl.label.replace(lvl.code, '').trim()}</span>
+          Semua
         </button>
-      ))}
-    </div>
 
-    <!-- Format Media Type Chips (Fast Filter) -->
-    <div id="format-filter" class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1 border-t border-dashed border-[var(--color-border-washi)]">
-      <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 shrink-0">
-        Tipe Media:
-      </span>
-      <button
-        type="button"
-        data-filter-format="ALL"
-        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-semibold border transition-all duration-150 bg-neutral-900 text-white border-neutral-900 dark:bg-neutral-100 dark:text-neutral-950 dark:border-neutral-100 shadow-2xs active:scale-95"
-      >
-        Semua
-      </button>
-      <button
-        type="button"
-        data-filter-format="PDF"
-        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95"
-      >
-        Dokumen PDF
-      </button>
-      <button
-        type="button"
-        data-filter-format="AUDIO_ZIP"
-        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95"
-      >
-        Audio MP3
-      </button>
-      <button
-        type="button"
-        data-filter-format="ANKI"
-        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95"
-      >
-        Deck Anki
-      </button>
-      <button
-        type="button"
-        data-filter-format="EXCEL"
-        class="filter-format-btn px-3 py-1 min-h-[34px] rounded-full text-xs font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95"
-      >
-        Lembar Latihan
-      </button>
-    </div>
+        {levels.filter(l => l.code !== 'ALL').map((lvl) => (
+          <button
+            type="button"
+            data-filter-level={lvl.code}
+            class="filter-level-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-bold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 shrink-0"
+            style={`--active-bg: ${lvl.badgeBg}; --active-text: ${lvl.badgeText};`}
+            title={lvl.label}
+          >
+            {lvl.code}
+          </button>
+        ))}
 
-    <!-- Bottom Row: Category Pills (Horizontal Touch-Scroll Friendly) -->
-    <div class="relative">
-      <div id="kategori" class="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none text-xs touch-pan-x overscroll-x-contain">
-        <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 whitespace-nowrap shrink-0">
-          Kategori:
-        </span>
+        <span class="w-px h-5 bg-[var(--color-border-washi)] shrink-0 mx-1"></span>
+
+        <button
+          type="button"
+          id="filter-bookmarks-btn"
+          aria-pressed="false"
+          class="px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-red-400 hover:text-red-600 active:scale-95 flex items-center gap-1 shrink-0"
+          title="Tampilkan hanya buku yang Anda simpan di Favorit"
+        >
+          <Bookmark class="w-3 h-3 text-red-500" />
+          <span>Tersimpan</span>
+          <span id="bookmarks-count-badge" class="px-1 rounded-full text-[10px] bg-red-100 text-red-700 font-bold hidden">0</span>
+        </button>
+
+        <button
+          type="button"
+          id="filter-featured-btn"
+          aria-pressed="false"
+          class="px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-amber-400 hover:text-amber-600 active:scale-95 flex items-center gap-1 shrink-0"
+          title="Tampilkan hanya materi Pilihan Sensei"
+        >
+          <span class="text-amber-500 text-[11px]">★</span>
+          <span>Pilihan</span>
+        </button>
+
+        <span class="w-px h-5 bg-[var(--color-border-washi)] shrink-0 mx-1"></span>
+
+        <span class="text-[10px] font-bold text-[var(--color-ink-tertiary)] uppercase tracking-wider shrink-0">Kategori</span>
         <button
           type="button"
           data-filter-category="ALL"
-          class="filter-category-btn px-3 py-1.5 min-h-[36px] rounded-xl font-medium whitespace-nowrap transition-all bg-[var(--color-surface-subtle)] text-[var(--color-ink-primary)] border border-neutral-300 font-semibold active:scale-95 shrink-0"
+          class="filter-category-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] whitespace-nowrap transition-all bg-[var(--color-surface-subtle)] text-[var(--color-ink-primary)] border border-neutral-300 font-semibold active:scale-95 shrink-0"
         >
-          Semua Kategori
+          Semua
         </button>
 
         {categories.map((cat) => (
           <button
             type="button"
             data-filter-category={cat.slug}
-            class="filter-category-btn px-3 py-1.5 min-h-[36px] rounded-xl font-medium whitespace-nowrap transition-all bg-transparent text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)] border border-transparent active:scale-95 shrink-0"
+            class="filter-category-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] whitespace-nowrap transition-all bg-transparent text-[var(--color-ink-secondary)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-ink-primary)] border border-transparent active:scale-95 shrink-0"
+            title={cat.japaneseName}
           >
-            <span>{cat.name}</span>
-            <span class="text-[10px] text-[var(--color-ink-tertiary)] font-japanese ml-1 opacity-80 hidden xs:inline">
-              {cat.japaneseName.split(' ')[0]}
-            </span>
+            {cat.name}
           </button>
         ))}
+
+        <span class="w-px h-5 bg-[var(--color-border-washi)] shrink-0 mx-1"></span>
+
+        <span class="text-[10px] font-bold text-[var(--color-ink-tertiary)] uppercase tracking-wider shrink-0">Media</span>
+        <button
+          type="button"
+          data-filter-format="ALL"
+          class="filter-format-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-semibold border transition-all duration-150 bg-neutral-900 text-white border-neutral-900 dark:bg-neutral-100 dark:text-neutral-950 dark:border-neutral-100 shadow-2xs active:scale-95 shrink-0"
+        >
+          Semua
+        </button>
+        <button
+          type="button"
+          data-filter-format="PDF"
+          class="filter-format-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 shrink-0"
+        >
+          PDF
+        </button>
+        <button
+          type="button"
+          data-filter-format="AUDIO_ZIP"
+          class="filter-format-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 shrink-0"
+        >
+          Audio
+        </button>
+        <button
+          type="button"
+          data-filter-format="ANKI"
+          class="filter-format-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 shrink-0"
+        >
+          Anki
+        </button>
+        <button
+          type="button"
+          data-filter-format="EXCEL"
+          class="filter-format-btn px-2.5 py-1 min-h-[32px] rounded-full text-[11px] font-medium border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-neutral-400 hover:text-[var(--color-ink-primary)] active:scale-95 shrink-0"
+        >
+          Sheet
+        </button>
       </div>
-    </div>
     </div>
 
   </div>
