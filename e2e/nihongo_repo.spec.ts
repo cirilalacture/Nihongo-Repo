@@ -60,6 +60,18 @@ test.describe('Nihongo_repo Public Catalog E2E Tests', () => {
     }
   });
 
+  test('Deep-link ?level=N5 prefilters catalog on page load', async ({ page }) => {
+    await page.goto('/?level=N5');
+
+    const visibleCards = page.locator('.material-item:visible');
+    const count = await visibleCards.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      await expect(visibleCards.nth(i)).toHaveAttribute('data-level', 'N5');
+    }
+  });
+
   test('View switcher toggles between Grid View and Table View', async ({ page }) => {
     await page.goto('/');
 

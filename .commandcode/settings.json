@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(npm:*)",
+      "Shell(npx playwright test 2 >& 1)",
+      "Shell(ls test-results/ 2>/dev/null; cat test-results/.last-run.json 2>/dev/null | head -5; ps aux | grep -E \"playwright|chromium\" | grep -v grep | head -10)",
+      "Shell(pkill:*)",
+      "Shell(sleep:*)",
+      "Shell(timeout 200 npx playwright test -g search filters|bookmark|View switcher|Detail modal 2 >& 1)",
+      "Shell(timeout 100 npx playwright test -g Font settings dropdown 2 >& 1)",
+      "Shell(timeout 200 npx playwright test -g Homepage loads|media format filter|Mobile viewport|horizontal scroll|Tablet viewport 2 >& 1)",
+      "Shell(timeout 120 npx playwright test -g Deep-link 2 >& 1)",
+      "Shell(git:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

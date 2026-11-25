@@ -288,6 +288,9 @@ if (materialsList.length === 0) {
               data-level={item.levelCode || 'ALL'}
               data-category={item.categorySlug || 'all'}
               data-file-type={item.fileType || 'PDF'}
+              data-clicks={item.clickCount ?? 0}
+              data-year={item.publishYear ?? 0}
+              data-featured={item.isRecommended === 1 ? '1' : '0'}
             >
               <td class="py-3.5 px-4 font-bold text-[var(--color-ink-primary)]">
                 {item.levelCode || 'ALL'}
@@ -385,6 +388,8 @@ if (materialsList.length === 0) {
       let selectedFormat = 'ALL';
       let searchKeyword = '';
       let showOnlyBookmarks = false;
+      let showOnlyFeatured = false;
+      let sortMode = 'default';
       let activeView = 'grid'; // 'grid' | 'table'
 
       // DOM Elements
@@ -401,6 +406,15 @@ if (materialsList.length === 0) {
       const visibleCountEl = document.getElementById('visible-count');
       const emptyStateEl = document.getElementById('empty-state');
       const resetFilterBtn = document.getElementById('reset-filter-btn');
+      const searchClearBtn = document.getElementById('search-clear-btn');
+      const searchCountText = document.getElementById('search-count-text');
+      const featuredFilterBtn = document.getElementById('filter-featured-btn');
+      const sortSelect = document.getElementById('sort-select');
+      const filterToggleBtn = document.getElementById('filter-toggle-btn');
+      const filterToggleLabel = document.getElementById('filter-toggle-label');
+      const filterToggleChevron = document.getElementById('filter-toggle-chevron');
+      const filterActiveCount = document.getElementById('filter-active-count');
+      const filterBody = document.getElementById('filter-body');
 
       // Update Bookmark UI on Cards and Badge
       function updateBookmarkVisuals() {
@@ -430,6 +444,50 @@ if (materialsList.length === 0) {
         });
       }
 
+      function matchesCommon(el, query) {
+        const elId = el.getAttribute('data-id');
+        if (showOnlyBookmarks && !(elId && savedBookmarks.has(elId))) return false;
+        if (showOnlyFeatured && el.getAttribute('data-featured') !== '1') return false;
+        if (selectedLevel !== 'ALL' && el.getAttribute('data-level') !== selectedLevel) return false;
+        if (selectedCategory !== 'ALL' && el.getAttribute('data-category') !== selectedCategory) return false;
+        if (selectedFormat !== 'ALL' && (el.getAttribute('data-file-type') || 'PDF') !== selectedFormat) return false;
+        if (!query) return true;
+        const title = el.getAttribute('data-title') || '';
+        const romaji = el.getAttribute('data-romaji') || '';
+        const orig = el.getAttribute('data-original') || '';
+        const author = el.getAttribute('data-author') || '';
+        return title.includes(query) || romaji.includes(query) || orig.includes(query) || author.includes(query);
+      }
+
+      function sortValue(el, key) {
+        const raw = el.getAttribute(key) || '';
+        if (key === 'data-clicks' || key === 'data-year') return parseInt(raw, 10) || 0;
+        return raw;
+      }
+
+      function applySort() {
+        if (!gridContainer || sortMode === 'default') return;
+        const nodes = Array.from(gridContainer.children);
+        nodes.sort((a, b) => {
+          if (sortMode === 'populer') return sortValue(b, 'data-clicks') - sortValue(a, 'data-clicks');
+          if (sortMode === 'terbaru') return sortValue(b, 'data-year') - sortValue(a, 'data-year');
+          if (sortMode === 'judul') return String(sortValue(a, 'data-title')).localeCompare(String(sortValue(b, 'data-title')));
+          return 0;
+        });
+        nodes.forEach((n) => gridContainer.appendChild(n));
+      }
+
+      function syncUrl() {
+        try {
+          const url = new URL(window.location.href);
+          if (selectedLevel !== 'ALL') url.searchParams.set('level', selectedLevel);
+          else url.searchParams.delete('level');
+          if (selectedCategory !== 'ALL') url.searchParams.set('kategori', selectedCategory);
+          else url.searchParams.delete('kategori');
+          window.history.replaceState({}, '', url);
+        } catch (err) {}
+      }
+
       // Filter Function
       function applyFilters() {
         const query = searchKeyword.toLowerCase().trim();
@@ -439,25 +497,7 @@ if (materialsList.length === 0) {
         const rows = document.querySelectorAll('.table-material-row');
 
         cards.forEach((card) => {
-          const cardId = card.getAttribute('data-id');
-          const matchBookmark = !showOnlyBookmarks || (cardId && savedBookmarks.has(cardId));
-          const matchLevel = selectedLevel === 'ALL' || card.getAttribute('data-level') === selectedLevel;
-          const matchCategory = selectedCategory === 'ALL' || card.getAttribute('data-category') === selectedCategory;
-          const matchFormat = selectedFormat === 'ALL' || (card.getAttribute('data-file-type') || 'PDF') === selectedFormat;
-          
-          const title = card.getAttribute('data-title') || '';
-          const romaji = card.getAttribute('data-romaji') || '';
-          const orig = card.getAttribute('data-original') || '';
-          const author = card.getAttribute('data-author') || '';
-
-          const matchQuery =
-            !query ||
-            title.includes(query) ||
-            romaji.includes(query) ||
-            orig.includes(query) ||
-            author.includes(query);
-
-          if (matchBookmark && matchLevel && matchCategory && matchFormat && matchQuery) {
+          if (matchesCommon(card, query)) {
             card.style.display = 'flex';
             visibleCount++;
           } else {
@@ -466,33 +506,49 @@ if (materialsList.length === 0) {
         });
 
         rows.forEach((row) => {
-          const rowId = row.getAttribute('data-id');
-          const matchBookmark = !showOnlyBookmarks || (rowId && savedBookmarks.has(rowId));
-          const matchLevel = selectedLevel === 'ALL' || row.getAttribute('data-level') === selectedLevel;
-          const matchCategory = selectedCategory === 'ALL' || row.getAttribute('data-category') === selectedCategory;
-          const matchFormat = selectedFormat === 'ALL' || (row.getAttribute('data-file-type') || 'PDF') === selectedFormat;
-          
-          const title = row.getAttribute('data-title') || '';
-          const romaji = row.getAttribute('data-romaji') || '';
-          const orig = row.getAttribute('data-original') || '';
-          const author = row.getAttribute('data-author') || '';
-
-          const matchQuery =
-            !query ||
-            title.includes(query) ||
-            romaji.includes(query) ||
-            orig.includes(query) ||
-            author.includes(query);
-
-          if (matchBookmark && matchLevel && matchCategory && matchFormat && matchQuery) {
+          if (matchesCommon(row, query)) {
             row.style.display = 'table-row';
           } else {
             row.style.display = 'none';
           }
         });
 
+        applySort();
+
+        const activeFilters =
+          (selectedLevel !== 'ALL' ? 1 : 0) +
+          (selectedCategory !== 'ALL' ? 1 : 0) +
+          (selectedFormat !== 'ALL' ? 1 : 0) +
+          (searchKeyword.trim() ? 1 : 0) +
+          (showOnlyBookmarks ? 1 : 0) +
+          (showOnlyFeatured ? 1 : 0);
+        if (filterActiveCount) {
+          if (activeFilters > 0) {
+            filterActiveCount.textContent = String(activeFilters);
+            filterActiveCount.classList.remove('hidden');
+          } else {
+            filterActiveCount.classList.add('hidden');
+          }
+        }
+
+        if (searchClearBtn) {
+          if (searchKeyword) {
+            searchClearBtn.classList.remove('hidden');
+            searchClearBtn.classList.add('flex');
+          } else {
+            searchClearBtn.classList.add('hidden');
+            searchClearBtn.classList.remove('flex');
+          }
+        }
+
+        syncUrl();
+
         // Update Visible Count Badge
         if (visibleCountEl) visibleCountEl.textContent = String(visibleCount);
+        if (searchCountText) {
+          const total = document.querySelectorAll('.material-item').length;
+          searchCountText.textContent = `${visibleCount} dari ${total} materi`;
+        }
 
         // Toggle Empty State
         if (emptyStateEl) {
@@ -513,20 +569,110 @@ if (materialsList.length === 0) {
         }
       }
 
+      // Level Filter Styling Constants
+      const ACTIVE_LEVEL_CLASSES = ['bg-neutral-900', 'text-white', 'border-neutral-900', 'dark:bg-neutral-100', 'dark:text-neutral-950', 'dark:border-neutral-100'];
+      const INACTIVE_LEVEL_CLASSES = ['bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]'];
+
       // Bookmark Filter Button Handler
+      function setBookmarkFilter(on) {
+        showOnlyBookmarks = on;
+        if (!bookmarkFilterBtn) return;
+        bookmarkFilterBtn.setAttribute('aria-pressed', String(on));
+        if (on) {
+          bookmarkFilterBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+          bookmarkFilterBtn.classList.add('bg-red-600', 'text-white', 'border-red-600');
+        } else {
+          bookmarkFilterBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+          bookmarkFilterBtn.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+        }
+      }
+
+      function setFeaturedFilter(on) {
+        showOnlyFeatured = on;
+        if (!featuredFilterBtn) return;
+        featuredFilterBtn.setAttribute('aria-pressed', String(on));
+        if (on) {
+          featuredFilterBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+          featuredFilterBtn.classList.add('bg-amber-500', 'text-white', 'border-amber-500');
+        } else {
+          featuredFilterBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
+          featuredFilterBtn.classList.remove('bg-amber-500', 'text-white', 'border-amber-500');
+        }
+      }
+
+      function setLevelFilter(level) {
+        selectedLevel = level;
+        levelButtons.forEach((b) => {
+          if (b.id === 'filter-bookmarks-btn' || b.id === 'filter-featured-btn') return;
+          const isActive = b.getAttribute('data-filter-level') === selectedLevel;
+          b.classList.remove(...(isActive ? INACTIVE_LEVEL_CLASSES : ACTIVE_LEVEL_CLASSES));
+          b.classList.add(...(isActive ? ACTIVE_LEVEL_CLASSES : INACTIVE_LEVEL_CLASSES));
+        });
+      }
+
       if (bookmarkFilterBtn) {
         bookmarkFilterBtn.addEventListener('click', () => {
-          showOnlyBookmarks = !showOnlyBookmarks;
-          if (showOnlyBookmarks) {
-            bookmarkFilterBtn.classList.remove('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
-            bookmarkFilterBtn.classList.add('bg-red-600', 'text-white', 'border-red-600');
-          } else {
-            bookmarkFilterBtn.classList.add('bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]');
-            bookmarkFilterBtn.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+          setBookmarkFilter(!showOnlyBookmarks);
+          applyFilters();
+        });
+      }
+
+      if (featuredFilterBtn) {
+        featuredFilterBtn.addEventListener('click', () => {
+          setFeaturedFilter(!showOnlyFeatured);
+          applyFilters();
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          sortMode = e.target.value || 'default';
+          applyFilters();
+        });
+      }
+
+      if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', () => {
+          searchKeyword = '';
+          if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
           }
           applyFilters();
         });
       }
+
+      if (filterToggleBtn && filterBody) {
+        filterToggleBtn.addEventListener('click', () => {
+          const isHidden = filterBody.classList.toggle('hidden');
+          filterToggleBtn.setAttribute('aria-expanded', String(!isHidden));
+          if (filterToggleLabel) filterToggleLabel.textContent = isHidden ? 'Tampilkan Filter' : 'Sembunyikan Filter';
+          if (filterToggleChevron) filterToggleChevron.style.transform = isHidden ? 'rotate(-90deg)' : '';
+        });
+        if (window.innerWidth < 640) {
+          filterBody.classList.add('hidden');
+          filterToggleBtn.setAttribute('aria-expanded', 'false');
+          if (filterToggleLabel) filterToggleLabel.textContent = 'Tampilkan Filter';
+          if (filterToggleChevron) filterToggleChevron.style.transform = 'rotate(-90deg)';
+        }
+      }
+
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const levelParam = (params.get('level') || '').toUpperCase();
+        if (['N5', 'N4', 'N3', 'N2', 'N1', 'ALL'].includes(levelParam)) {
+          setLevelFilter(levelParam);
+          applyFilters();
+        }
+        const catParam = (params.get('kategori') || '').toLowerCase();
+        if (catParam) {
+          const match = Array.from(categoryButtons).find(
+            (b) => (b.getAttribute('data-filter-category') || '').toLowerCase() === catParam
+          );
+          if (match) match.click();
+          else selectedCategory = 'ALL';
+        }
+      } catch (err) {}
 
       // Search Event Listener
       if (searchInput) {
@@ -556,12 +702,9 @@ if (materialsList.length === 0) {
         }
       });
 
-      // Level Filter Styling Constants
-      const ACTIVE_LEVEL_CLASSES = ['bg-neutral-900', 'text-white', 'border-neutral-900', 'dark:bg-neutral-100', 'dark:text-neutral-950', 'dark:border-neutral-100'];
-      const INACTIVE_LEVEL_CLASSES = ['bg-[var(--color-surface)]', 'text-[var(--color-ink-secondary)]', 'border-[var(--color-border-washi)]'];
-
       // Level Filter Click Handlers
       levelButtons.forEach((btn) => {
+        if (btn.id === 'filter-bookmarks-btn' || btn.id === 'filter-featured-btn') return;
         btn.addEventListener('click', () => {
           selectedLevel = btn.getAttribute('data-filter-level') || 'ALL';
 
@@ -641,7 +784,10 @@ if (materialsList.length === 0) {
           selectedLevel = 'ALL';
           selectedCategory = 'ALL';
           searchKeyword = '';
-          showOnlyBookmarks = false;
+          sortMode = 'default';
+          if (sortSelect) sortSelect.value = 'default';
+          setBookmarkFilter(false);
+          setFeaturedFilter(false);
           if (searchInput) searchInput.value = '';
 
           if (bookmarkFilterBtn) {

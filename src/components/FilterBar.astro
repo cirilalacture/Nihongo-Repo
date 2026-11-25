@@ -1,5 +1,5 @@
 ---
-import { Search, LayoutGrid, List, SlidersHorizontal, BookOpen, PenTool, Layers, FileText, Headphones, CheckCircle, Bookmark } from '@lucide/astro';
+import { Search, LayoutGrid, List, SlidersHorizontal, ChevronDown, X, BookOpen, PenTool, Layers, FileText, Headphones, CheckCircle, Bookmark } from '@lucide/astro';
 
 interface Level {
   id: string;
@@ -27,8 +27,8 @@ interface Props {
 const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL' } = Astro.props;
 ---
 
-<div id="pencarian" class="bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] py-5 sm:py-6 shadow-2xs">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-4 sm:gap-5">
+<div id="pencarian" class="sticky top-16 z-30 scroll-mt-24 bg-[var(--color-surface)] border-b border-[var(--color-border-washi)] py-4 sm:py-6 shadow-2xs">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col gap-3 sm:gap-5">
     
     <!-- Top Row: Search Input & View Toggle -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -43,8 +43,15 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
           placeholder="Cari judul buku, romaji, kanji, atau pengarang..."
           class="w-full pl-10 pr-10 py-2.5 sm:py-2.5 min-h-[44px] sm:min-h-0 rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink-primary)] placeholder-[var(--color-ink-tertiary)] focus:outline-none focus:border-[var(--color-vermilion)] focus:ring-2 focus:ring-red-500/15 transition-all shadow-2xs"
         />
-        <div id="search-count" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs text-[var(--color-ink-tertiary)]">
-        </div>
+        <button
+          type="button"
+          id="search-clear-btn"
+          class="hidden absolute inset-y-0 right-0 pr-3 items-center text-[var(--color-ink-tertiary)] hover:text-[var(--color-ink-primary)] transition-colors"
+          aria-label="Hapus kata kunci pencarian"
+          title="Hapus pencarian"
+        >
+          <X class="w-4 h-4" />
+        </button>
       </div>
 
       <!-- View Switcher Toggle -->
@@ -75,6 +82,39 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
       </div>
     </div>
 
+    <!-- Toolbar Row: Filter Toggle, Result Count & Sort -->
+    <div class="flex items-center justify-between gap-2 pt-1">
+      <button
+        type="button"
+        id="filter-toggle-btn"
+        aria-expanded="true"
+        aria-controls="filter-body"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs font-semibold text-[var(--color-ink-secondary)] hover:text-[var(--color-ink-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
+      >
+        <SlidersHorizontal class="w-3.5 h-3.5" />
+        <span id="filter-toggle-label">Sembunyikan Filter</span>
+        <ChevronDown id="filter-toggle-chevron" class="w-3.5 h-3.5 transition-transform duration-200" />
+        <span id="filter-active-count" class="hidden px-1.5 py-0.5 rounded-full text-[10px] bg-[var(--color-vermilion)] text-white font-bold">0</span>
+      </button>
+
+      <div class="flex items-center gap-2 min-w-0">
+        <span id="search-count-text" class="text-[11px] text-[var(--color-ink-tertiary)] whitespace-nowrap hidden sm:inline"></span>
+        <label for="sort-select" class="flex items-center gap-1.5 text-xs text-[var(--color-ink-tertiary)] font-semibold shrink-0">
+          <span class="hidden md:inline">Urutkan:</span>
+          <select
+            id="sort-select"
+            class="pl-2.5 pr-7 py-1.5 min-h-[36px] rounded-xl border border-[var(--color-border-washi)] bg-[var(--color-surface)] text-xs font-semibold text-[var(--color-ink-secondary)] focus:outline-none focus:border-[var(--color-vermilion)] cursor-pointer"
+          >
+            <option value="default">Default</option>
+            <option value="populer">Paling Populer</option>
+            <option value="terbaru">Terbaru</option>
+            <option value="judul">Judul A–Z</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div id="filter-body" class="flex flex-col gap-4 sm:gap-5">
     <!-- Middle Row: JLPT Level Selector Chips -->
     <div id="jlpt-filter" class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1">
       <span class="text-xs font-semibold text-[var(--color-ink-tertiary)] uppercase tracking-wider mr-1 shrink-0">
@@ -91,12 +131,24 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
       <button
         type="button"
         id="filter-bookmarks-btn"
+        aria-pressed="false"
         class="filter-bookmark-btn px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-red-400 hover:text-red-600 active:scale-95 flex items-center gap-1.5"
         title="Tampilkan hanya buku yang Anda simpan di Favorit"
       >
         <Bookmark class="w-3.5 h-3.5 text-red-500" />
         <span>Tersimpan</span>
         <span id="bookmarks-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-red-100 text-red-700 font-bold hidden">0</span>
+      </button>
+
+      <button
+        type="button"
+        id="filter-featured-btn"
+        aria-pressed="false"
+        class="px-3 py-1.5 min-h-[38px] rounded-full text-xs font-semibold border transition-all duration-150 bg-[var(--color-surface)] text-[var(--color-ink-secondary)] border-[var(--color-border-washi)] hover:border-amber-400 hover:text-amber-600 active:scale-95 flex items-center gap-1.5"
+        title="Tampilkan hanya materi Pilihan Sensei"
+      >
+        <span class="text-amber-500">★</span>
+        <span>Pilihan</span>
       </button>
 
       {levels.filter(l => l.code !== 'ALL').map((lvl) => (
@@ -181,6 +233,7 @@ const { levels = [], categories = [], activeLevel = 'ALL', activeCategory = 'ALL
           </button>
         ))}
       </div>
+    </div>
     </div>
 
   </div>

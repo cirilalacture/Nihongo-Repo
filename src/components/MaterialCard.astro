@@ -48,6 +48,9 @@ const levelCode = material.levelCode || 'ALL';
   data-level={levelCode}
   data-category={material.categorySlug || 'all'}
   data-file-type={material.fileType || 'PDF'}
+  data-clicks={material.clickCount ?? 0}
+  data-year={material.publishYear ?? 0}
+  data-featured={material.isRecommended === 1 ? '1' : '0'}
 >
   <div>
     <!-- Top Metadata: Clean typography, no boxy badges -->
